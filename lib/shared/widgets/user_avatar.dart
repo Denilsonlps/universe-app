@@ -1,45 +1,23 @@
 import 'package:flutter/material.dart';
-import '../../core/theme/app_theme.dart';
+import '../../core/theme/app_colors.dart';
 
 class UserAvatar extends StatelessWidget {
   final String name;
   final double size;
-
-  const UserAvatar({
-    super.key,
-    required this.name,
-    this.size = 44,
-  });
-
-  String get _initials {
-    final parts = name.trim().split(' ').where((p) => p.isNotEmpty).toList();
-    if (parts.isEmpty) return '?';
-    if (parts.length == 1) return parts[0][0].toUpperCase();
-    return (parts[0][0] + parts[1][0]).toUpperCase();
-  }
+  const UserAvatar(this.name, {super.key, this.size = 44});
 
   @override
   Widget build(BuildContext context) {
+    final c = context.c;
+    final initials = name.trim().split(RegExp(r'\s+')).take(2).map((s) => s.isEmpty ? '' : s[0]).join().toUpperCase();
     return Container(
-      width: size,
-      height: size,
-      decoration: const BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [AppColors.green500, AppColors.green800],
-        ),
-      ),
+      width: size, height: size,
       alignment: Alignment.center,
-      child: Text(
-        _initials,
-        style: TextStyle(
-          fontSize: size * 0.38,
-          fontWeight: FontWeight.w700,
-          color: Colors.white,
-        ),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [c.green500, c.green800]),
       ),
+      child: Text(initials, style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: size * 0.38)),
     );
   }
 }
