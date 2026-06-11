@@ -55,3 +55,43 @@ valores visuais já corretos (cores, espaçamentos) do protótipo.
 ### Próximo passo
 Criar o plano de implementação detalhado (Rodada 1) e iniciar a fundação
 (tema, design system, navegação, Firebase Auth).
+
+---
+
+## 2026-06-11 — Plano 1 concluído: Fundação visual & navegação
+
+### O que foi construído
+Reconstrução da base do app, executada em tasks com TDD e commits frequentes,
+na branch `feat/fundacao-visual-navegacao`:
+
+- **Tema claro + escuro** via `ThemeExtension` (`AppColorsX`) com as paletas
+  exatas do protótipo, e `AppTheme.light/dark` com a fonte Montserrat.
+- **Provider de tema** (`themeModeProvider`) com persistência em
+  `shared_preferences` — desenvolvido por TDD (teste vermelho → verde).
+- **Design system** (10 widgets): `IconTile`, `AppCard`, `SectionTitle`,
+  `AppButton`, `ListRow`, `StatusBadge`, `Stars`, `EmptyState`, `UserAvatar`,
+  `AppChip` — todos lendo cores via a extensão de tema (suporte a dark mode).
+- **Chrome** de navegação: `PageShell`, `HomeHeader`, `PageHeader`, `GreenHero`,
+  `AppBottomNav`, `MenuDrawer`.
+- **Navegação** com `go_router`: `ShellRoute` com 4 abas (Início, Cursos,
+  Dúvidas, Perfil) + drawer lateral verde. Telas de conteúdo são placeholders
+  (serão implementadas no Plano 3).
+- **Wiring** em `main.dart`: `ProviderScope` + `MaterialApp.router` + tema reativo.
+
+### Decisões técnicas (justificativa)
+- **`ThemeExtension` em vez de cores hardcoded:** permite alternar claro/escuro
+  sem reescrever widgets; cada widget acessa a paleta por `context.c`.
+- **Mapa de ícones (string → `IconData`):** preserva os nomes semânticos do
+  protótipo (`'cap'`, `'briefcase'`…) facilitando a tradução das telas no Plano 3.
+- **Tela placeholder reutilizável:** mantém o app navegável e demonstrável
+  enquanto as telas reais não chegam, sem código morto.
+
+### Verificação
+- `flutter analyze`: sem erros (apenas 3 infos estilísticos `use_null_aware_elements`).
+- `flutter test`: 4/4 testes passando (provider de tema, smoke test do design
+  system em ambos os temas, e boot do app exibindo a aba Início).
+- `flutter run -d chrome` (porta 5000): app compila e é servido sem erros.
+
+### Próximo passo
+Plano 2 — Dados & Autenticação (models, `UniverseRepository` + mock, providers,
+Firebase Auth, telas de splash/onboarding/login/registro).
