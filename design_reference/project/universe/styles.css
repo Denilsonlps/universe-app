@@ -1,0 +1,89 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap');
+
+:root {
+  /* Brand */
+  --green-900: #003D28;
+  --green-800: #00573A;   /* primary brand (wordmark) */
+  --green-700: #00734D;
+  --green-600: #008A5D;
+  --green-500: #1FA971;   /* accent */
+  --green-400: #26C17D;   /* bright secondary */
+  --green-100: #DCEEE4;
+  --green-050: #EEF6F0;
+
+  --navy: #2D425F;
+
+  /* Surface — warm off-white neutrals */
+  --bg: #F1F4F1;
+  --bg-2: #E9EEE9;
+  --card: #FFFFFF;
+  --ink: #16201B;
+  --ink-2: #46554D;
+  --ink-3: #8A958F;
+  --line: #E4EAE5;
+
+  --nav-bg: rgba(255,255,255,0.86);
+  --toast-bg: #16201B;
+  --chip-bg: #FFFFFF;
+  --hero-from: var(--green-700);
+  --hero-to: var(--green-900);
+
+  --radius: 18px;
+  --radius-sm: 12px;
+  --shadow-sm: 0 1px 2px rgba(13,40,28,0.05), 0 2px 8px rgba(13,40,28,0.04);
+  --shadow-md: 0 4px 14px rgba(13,40,28,0.08), 0 1px 3px rgba(13,40,28,0.05);
+  --shadow-lg: 0 14px 34px rgba(13,40,28,0.16);
+
+  --font: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* ─── Dark theme ─── flips neutral surfaces; keeps brand greens, lightens accent greens for contrast */
+:root[data-theme="dark"] {
+  --green-700: #34C089;   /* lighter accent for icons/text on dark */
+  --green-600: #2FB37C;
+  --green-100: #20342A;
+  --green-050: #17251F;
+
+  --bg: #0E1512;
+  --bg-2: #18211C;
+  --card: #1A231E;
+  --ink: #ECF1ED;
+  --ink-2: #A6B2AB;
+  --ink-3: #6C786F;
+  --line: #2A332E;
+
+  --nav-bg: rgba(18,25,21,0.82);
+  --toast-bg: #26322B;
+  --chip-bg: #26322B;
+  --hero-from: #0C5C3D;
+  --hero-to: #06301F;
+
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.35), 0 2px 8px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 14px rgba(0,0,0,0.45), 0 1px 3px rgba(0,0,0,0.4);
+  --shadow-lg: 0 14px 34px rgba(0,0,0,0.55);
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  color: var(--ink);
+}
+
+/* App screen scroll regions */
+.u-scroll { overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.u-scroll::-webkit-scrollbar { display: none; }
+
+/* Press feedback */
+.u-press { transition: transform .12s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease; }
+.u-press:active { transform: scale(0.975); }
+
+button { font-family: inherit; cursor: pointer; border: none; background: none; }
+input, textarea, select { font-family: inherit; }
+
+@keyframes u-fade-up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes u-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes u-scale-in { from { opacity: 0; transform: scale(.92); } to { opacity: 1; transform: none; } }
+@keyframes u-slide-in { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
+@keyframes u-pop { 0% { transform: scale(.6); opacity: 0; } 60% { transform: scale(1.08); } 100% { transform: scale(1); opacity: 1; } }

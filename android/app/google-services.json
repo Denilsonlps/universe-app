@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "57700216320",
+    "project_id": "universe-app-ifsp",
+    "storage_bucket": "universe-app-ifsp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:57700216320:android:71997c3c4ce5bd2ad1f2e5",
+        "android_client_info": {
+          "package_name": "br.edu.ifsp.ptb.universe_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAM4vvXvWZ69PlM6-nZbifNkkiLDaeYN8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(run)",
+      "PowerShell(cd D:\\\\projetos\\\\universe_app; Start-Process -FilePath \"flutter\" -ArgumentList \"run\", \"-d\", \"chrome\", \"--web-port\", \"8080\", \"--no-sound-null-safety\" -RedirectStandardOutput \"$env:TEMP\\\\flutter_out.txt\" -RedirectStandardError \"$env:TEMP\\\\flutter_err.txt\" -PassThru | Select-Object -ExpandProperty Id)",
+      "Bash(flutter analyze *)",
+      "Bash(flutter run *)",
+      "PowerShell(Stop-Process *)"
+    ]
+  }
+}
