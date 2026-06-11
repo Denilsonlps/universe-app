@@ -9,7 +9,7 @@ final appRouter = GoRouter(
   initialLocation: '/home',
   routes: [
     ShellRoute(
-      builder: (context, state, child) => _Shell(location: state.uri.path, child: child),
+      builder: (context, state, child) => _Shell(child: child),
       routes: [
         GoRoute(path: '/home', builder: (c, s) => const _Tab('Início', 'home')),
         GoRoute(path: '/cursos', builder: (c, s) => const _Tab('Cursos', 'cursos')),
@@ -35,9 +35,8 @@ class _Tab extends StatelessWidget {
 }
 
 class _Shell extends StatelessWidget {
-  final String location;
   final Widget child;
-  const _Shell({required this.location, required this.child});
+  const _Shell({required this.child});
 
   @override
   Widget build(BuildContext context) {

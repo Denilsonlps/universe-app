@@ -41,7 +41,24 @@ class AppColorsX extends ThemeExtension<AppColorsX> {
   );
 
   @override
-  AppColorsX copyWith() => this;
+  AppColorsX copyWith({
+    Color? green900, Color? green800, Color? green700, Color? green600,
+    Color? green500, Color? green400, Color? green100, Color? green050,
+    Color? navy, Color? bg, Color? bg2, Color? card,
+    Color? ink, Color? ink2, Color? ink3, Color? line,
+    Color? heroFrom, Color? heroTo, Color? error, Color? star,
+  }) => AppColorsX(
+    green900: green900 ?? this.green900, green800: green800 ?? this.green800,
+    green700: green700 ?? this.green700, green600: green600 ?? this.green600,
+    green500: green500 ?? this.green500, green400: green400 ?? this.green400,
+    green100: green100 ?? this.green100, green050: green050 ?? this.green050,
+    navy: navy ?? this.navy,
+    bg: bg ?? this.bg, bg2: bg2 ?? this.bg2, card: card ?? this.card,
+    ink: ink ?? this.ink, ink2: ink2 ?? this.ink2, ink3: ink3 ?? this.ink3,
+    line: line ?? this.line,
+    heroFrom: heroFrom ?? this.heroFrom, heroTo: heroTo ?? this.heroTo,
+    error: error ?? this.error, star: star ?? this.star,
+  );
 
   @override
   AppColorsX lerp(ThemeExtension<AppColorsX>? other, double t) {

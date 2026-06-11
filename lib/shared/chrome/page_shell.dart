@@ -18,14 +18,14 @@ class PageShell extends StatelessWidget {
     return Container(
       color: c.bg,
       child: Column(children: [
-        if (header != null) header!,
+        ?header,
         Expanded(
           child: SingleChildScrollView(
             padding: bodyPadding.copyWith(bottom: bodyPadding.bottom + (bottomNav != null ? kNavH + 28 : 28)),
             child: body,
           ),
         ),
-        if (bottomNav != null) bottomNav!,
+        ?bottomNav,
       ]),
     );
   }

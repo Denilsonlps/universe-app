@@ -85,7 +85,7 @@ class GreenHero extends StatelessWidget {
             if (subtitle != null) Padding(padding: const EdgeInsets.only(top: 5), child: Text(subtitle!, style: TextStyle(fontSize: 13, color: Colors.white.withValues(alpha: 0.78), height: 1.4))),
           ])),
         ]),
-        if (child != null) child!,
+        ?child,
       ]),
     );
   }

@@ -9,8 +9,8 @@ class StatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
-    final fg = closed ? const Color(0xFFC0392B) : c.green700;
-    final bg = closed ? const Color(0x1AE23B2E) : c.green050;
+    final fg = closed ? c.error : c.green700;
+    final bg = closed ? c.error.withValues(alpha: 0.10) : c.green050;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(999)),
