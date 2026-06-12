@@ -54,9 +54,9 @@ class MenuDrawer extends StatelessWidget {
           ]),
         ),
         Expanded(
-          child: ListView(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.all(14),
-            children: [
+            child: Column(children: [
               for (final m in drawerItems)
                 ListTile(
                   leading: Icon(appIcon(m.icon), color: c.green700),
@@ -70,7 +70,7 @@ class MenuDrawer extends StatelessWidget {
                 title: Text('Sair', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: c.error)),
                 onTap: onLogout,
               ),
-            ],
+            ]),
           ),
         ),
       ]),

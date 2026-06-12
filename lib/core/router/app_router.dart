@@ -11,6 +11,11 @@ import '../../features/auth/screens/splash_screen.dart';
 import '../../features/auth/screens/onboarding_screen.dart';
 import '../../features/auth/screens/login_screen.dart';
 import '../../features/auth/screens/register_screen.dart';
+import '../../features/home/screens/home_screen.dart';
+import '../../features/courses/screens/courses_screen.dart';
+import '../../features/courses/screens/course_detail_screen.dart';
+import '../../features/campus/screens/ifsp_screen.dart';
+import '../../features/campus/screens/ifsp_detail_screen.dart';
 
 const _authRoutes = {'/onboarding', '/login', '/register'};
 
@@ -39,12 +44,15 @@ final routerProvider = Provider<GoRouter>((ref) {
       ShellRoute(
         builder: (context, state, child) => _Shell(child: child),
         routes: [
-          GoRoute(path: '/home', builder: (c, s) => const _Tab('Início', 'home')),
-          GoRoute(path: '/cursos', builder: (c, s) => const _Tab('Cursos', 'cursos')),
+          GoRoute(path: '/home', builder: (c, s) => const HomeScreen()),
+          GoRoute(path: '/cursos', builder: (c, s) => const CoursesScreen()),
           GoRoute(path: '/duvidas', builder: (c, s) => const _Tab('Dúvidas', 'duvidas')),
           GoRoute(path: '/perfil', builder: (c, s) => const _Tab('Perfil', 'perfil')),
         ],
       ),
+      GoRoute(path: '/ifsp', builder: (c, s) => const IfspScreen()),
+      GoRoute(path: '/ifsp/:key', builder: (c, s) => IfspDetailScreen(detailKey: s.pathParameters['key']!)),
+      GoRoute(path: '/cursos/:name', builder: (c, s) => CourseDetailScreen(courseName: Uri.decodeComponent(s.pathParameters['name']!))),
     ],
   );
 });

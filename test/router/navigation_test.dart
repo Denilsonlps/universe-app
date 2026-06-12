@@ -6,53 +6,46 @@ import 'package:universe_app/core/providers/auth_provider.dart';
 import 'package:universe_app/core/router/app_router.dart';
 import 'package:universe_app/core/theme/app_theme.dart';
 import 'package:universe_app/data/auth/fake_auth_repository.dart';
+import 'package:universe_app/shared/chrome/bottom_nav.dart';
+
+Future<ProviderContainer> _loggedIn() async {
+  final fake = FakeAuthRepository();
+  await fake.register(name: 'Ana Beatriz', email: 'ana@aluno.ifsp.edu.br', password: 'Senha@123');
+  return ProviderContainer(overrides: [authRepositoryProvider.overrideWithValue(fake)]);
+}
 
 void main() {
-  testWidgets('troca de aba pela bottom nav', (t) async {
+  testWidgets('troca de aba pela bottom nav (home -> cursos)', (t) async {
     SharedPreferences.setMockInitialValues({});
-    final fake = FakeAuthRepository();
-    // Pré-autentica o usuário para iniciar na shell
-    await fake.register(name: 'Ana', email: 'ana@aluno.ifsp.edu.br', password: 'Senha@123');
-
-    final container = ProviderContainer(overrides: [authRepositoryProvider.overrideWithValue(fake)]);
+    final container = await _loggedIn();
     addTearDown(container.dispose);
-    final router = container.read(routerProvider);
-
     await t.pumpWidget(UncontrolledProviderScope(
       container: container,
-      child: MaterialApp.router(theme: AppTheme.light, routerConfig: router),
+      child: MaterialApp.router(theme: AppTheme.light, routerConfig: container.read(routerProvider)),
     ));
     await t.pumpAndSettle();
-
-    // Em /home, 'Cursos' aparece só no rótulo da bottom nav.
-    expect(find.text('Cursos'), findsOneWidget);
-
-    await t.tap(find.text('Cursos'));
+    // Home real mostra a busca placeholder:
+    expect(find.text('Buscar cursos, benefícios, dúvidas…'), findsOneWidget);
+    // toca na aba Cursos (dentro da bottom nav, para evitar ambiguidade):
+    await t.tap(find.descendant(of: find.byType(AppBottomNav), matching: find.text('Cursos')));
     await t.pumpAndSettle();
-
-    // Agora 'Cursos' aparece no título da tela E no rótulo da nav.
-    expect(find.text('Cursos'), findsNWidgets(2));
+    // CoursesScreen tem o campo de busca com hint único:
+    expect(find.text('Buscar curso…'), findsOneWidget);
   });
 
   testWidgets('abre o drawer pelo botão de menu', (t) async {
     SharedPreferences.setMockInitialValues({});
-    final fake = FakeAuthRepository();
-    // Pré-autentica o usuário para iniciar na shell
-    await fake.register(name: 'Ana', email: 'ana@aluno.ifsp.edu.br', password: 'Senha@123');
-
-    final container = ProviderContainer(overrides: [authRepositoryProvider.overrideWithValue(fake)]);
+    final container = await _loggedIn();
     addTearDown(container.dispose);
-    final router = container.read(routerProvider);
-
     await t.pumpWidget(UncontrolledProviderScope(
       container: container,
-      child: MaterialApp.router(theme: AppTheme.light, routerConfig: router),
+      child: MaterialApp.router(theme: AppTheme.light, routerConfig: container.read(routerProvider)),
     ));
     await t.pumpAndSettle();
-
-    expect(find.text('IFSP Pirituba'), findsNothing);
+    // 'Sair' só existe no drawer:
+    expect(find.text('Sair'), findsNothing);
     await t.tap(find.byIcon(Icons.menu));
     await t.pumpAndSettle();
-    expect(find.text('IFSP Pirituba'), findsOneWidget);
+    expect(find.text('Sair'), findsOneWidget);
   });
 }
