@@ -1,24 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/providers/repository_provider.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../data/models/course.dart';
 import '../../../shared/chrome/app_headers.dart';
 import '../../../shared/chrome/page_shell.dart';
 import '../../../shared/widgets/app_button.dart';
 import '../../../shared/widgets/app_card.dart';
+import '../../../shared/widgets/empty_state.dart';
 import '../../../shared/widgets/list_row.dart';
 import '../../../shared/widgets/section_title.dart';
 
-class CourseDetailScreen extends ConsumerWidget {
-  final String courseName;
-  const CourseDetailScreen({super.key, required this.courseName});
+/// Recebe o curso via `extra` do go_router (evita encoding de nomes com '/' e acentos).
+class CourseDetailScreen extends StatelessWidget {
+  final Course? course;
+  const CourseDetailScreen({super.key, required this.course});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final c = context.c;
-    final courses = ref.watch(universeRepositoryProvider).courses();
-    final course = courses.firstWhere((e) => e.name == courseName, orElse: () => courses.first);
+    final course = this.course;
+    if (course == null) {
+      return PageShell(
+        bodyPadding: EdgeInsets.zero,
+        header: PageHeader(title: 'Curso', onBack: () => context.pop()),
+        body: const EmptyState(icon: 'doc', title: 'Curso não encontrado'),
+      );
+    }
     final meta = [('Tipo', course.type), ('Duração', course.duration), ('Período', course.period), ('Modalidade', 'Presencial')];
 
     return PageShell(

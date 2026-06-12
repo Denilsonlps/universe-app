@@ -15,7 +15,9 @@ class PageShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
-    return Container(
+    // Material (não Container) para que telas full-screen fora do ShellRoute
+    // tenham um ancestral Material — InkWell/AppCard exigem isso.
+    return Material(
       color: c.bg,
       child: Column(children: [
         ?header,

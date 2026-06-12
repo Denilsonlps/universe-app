@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../providers/auth_provider.dart';
 import '../theme/app_colors.dart';
 import '../../data/models/app_user.dart';
+import '../../data/models/course.dart';
 import '../../shared/chrome/bottom_nav.dart';
 import '../../shared/chrome/menu_drawer.dart';
 import '../../features/_placeholder/placeholder_screen.dart';
@@ -52,7 +53,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(path: '/ifsp', builder: (c, s) => const IfspScreen()),
       GoRoute(path: '/ifsp/:key', builder: (c, s) => IfspDetailScreen(detailKey: s.pathParameters['key']!)),
-      GoRoute(path: '/cursos/:name', builder: (c, s) => CourseDetailScreen(courseName: Uri.decodeComponent(s.pathParameters['name']!))),
+      GoRoute(path: '/cursos/detail', builder: (c, s) => CourseDetailScreen(course: s.extra is Course ? s.extra as Course : null)),
     ],
   );
 });
