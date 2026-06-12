@@ -13,14 +13,17 @@ import '../../../shared/widgets/list_row.dart';
 import '../../../shared/widgets/section_title.dart';
 import '../../../shared/widgets/user_avatar.dart';
 
-const _availableRoutes = {'/home', '/cursos', '/ifsp', '/duvidas', '/perfil'};
-
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
+  static const _tabRoutes = {'/home', '/cursos', '/duvidas', '/perfil'};
+  static const _pushRoutes = {'/ifsp'};
+
   void _go(BuildContext context, String route) {
-    if (_availableRoutes.contains(route)) {
+    if (_tabRoutes.contains(route)) {
       context.go(route);
+    } else if (_pushRoutes.contains(route)) {
+      context.push(route);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Em breve')));
     }

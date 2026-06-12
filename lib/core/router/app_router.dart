@@ -82,7 +82,16 @@ class _Shell extends ConsumerWidget {
       drawer: MenuDrawer(
         userName: user?.name ?? 'Estudante',
         userEmail: user?.email ?? '',
-        onNavigate: (route) { Navigator.pop(context); if (navTabs.any((t) => '/${t.key}' == route)) context.go(route); },
+        onNavigate: (route) {
+          Navigator.pop(context);
+          if (navTabs.any((t) => '/${t.key}' == route)) {
+            context.go(route);
+          } else if (route == '/ifsp') {
+            context.push(route);
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Em breve')));
+          }
+        },
         onLogout: () { Navigator.pop(context); ref.read(authRepositoryProvider).signOut(); },
       ),
       body: child,

@@ -40,7 +40,7 @@ class IfspScreen extends ConsumerWidget {
           const SectionTitle('Sobre o campus'),
           for (final it in info) Padding(
             padding: const EdgeInsets.only(bottom: 10),
-            child: ListRow(icon: it.icon, title: it.title, subtitle: it.subtitle, onTap: () => context.go('/ifsp/${it.key}')),
+            child: ListRow(icon: it.icon, title: it.title, subtitle: it.subtitle, onTap: () => context.push('/ifsp/${it.key}')),
           ),
         ]),
       ),

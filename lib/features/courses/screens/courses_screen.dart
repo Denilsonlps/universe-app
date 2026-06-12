@@ -60,7 +60,7 @@ class _CoursesScreenState extends ConsumerState<CoursesScreen> {
         else
           for (final course in list) Padding(
             padding: const EdgeInsets.only(bottom: 11),
-            child: _CourseCard(course: course, onTap: () => context.go('/cursos/${Uri.encodeComponent(course.name)}')),
+            child: _CourseCard(course: course, onTap: () => context.push('/cursos/${Uri.encodeComponent(course.name)}')),
           ),
       ]),
     );
