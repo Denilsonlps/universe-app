@@ -215,3 +215,33 @@ Toda a camada de dados do conteúdo do app + o perfil do aluno. Branch
 ### Próximo passo
 Plano 4 — Telas de conteúdo (Home, Cursos, IFSP, Benefícios, Estágio/Concursos,
 Dúvidas, Perfil) consumindo esta camada de dados, substituindo os placeholders.
+
+---
+
+## 2026-06-11 — Identidade visual (marca Universe)
+
+### O que foi construído
+A identidade da marca foi portada do protótipo (`brand.jsx`) para widgets Flutter
+**vetoriais** em `lib/shared/brand/universe_brand.dart`:
+
+- **`UniverseMark`** — o glifo da marca: chevron em "V" (capelo/visto) coroado por
+  um ponto (cabeça do formando), desenhado via `CustomPainter` com a geometria
+  exata do SVG original (viewBox 64×64).
+- **`UniverseBadge`** — selo circular monograma (viewBox 44×44).
+- **`UniverseAppIcon`** — ícone do app: squircle com gradiente verde, brilho
+  radial e o mark em branco.
+- **`UniverseWordmark`** — wordmark "UNI⋁RSE" recriado em tipografia (Montserrat
+  800), com o mark no lugar do "V".
+
+Substituiu o texto simples `Text('UNIVERSE')` por esses widgets no cabeçalho da
+Home, no menu lateral, no login e no splash.
+
+### Decisões técnicas
+- **Vetor (CustomPainter) em vez de PNG:** escala nítida em qualquer tamanho,
+  cor parametrizável (funciona em tema claro e escuro) e sem dependência de assets.
+- A marca Universe é **própria e distinta do logo institucional do IFSP**
+  (`ifsp-logo.png`), conforme a intenção do design — o logo do IFSP entrará na
+  tela do campus (Plano 4).
+
+### Verificação
+- `flutter analyze`: sem erros. `flutter test`: **23/23** (inclui smoke test da marca).
