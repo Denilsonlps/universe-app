@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
+import '../brand/universe_brand.dart';
 import '../widgets/icon_tile.dart';
 import 'page_shell.dart';
 
@@ -27,7 +28,7 @@ class HomeHeader extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(18, kStatusH, 18, 14),
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         btn('menu', onMenu),
-        Text('UNIVERSE', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: c.green800, letterSpacing: 1)),
+        UniverseWordmark(height: 22, color: c.green800),
         btn('bell', onBell, dot: unread),
       ]),
     );

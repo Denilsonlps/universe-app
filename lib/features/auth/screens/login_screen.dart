@@ -6,6 +6,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../data/auth/auth_repository.dart';
 import '../../../shared/widgets/app_button.dart';
 import '../../../shared/widgets/app_field.dart';
+import '../../../shared/brand/universe_brand.dart';
 import '../../../shared/chrome/page_shell.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -54,7 +55,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             child: Padding(
               padding: EdgeInsets.fromLTRB(0, kStatusH + 26, 0, 26),
               child: Column(children: [
-                const Text('UNIVERSE', style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.w900, letterSpacing: 2)),
+                const UniverseAppIcon(size: 72),
+                const SizedBox(height: 16),
+                const UniverseWordmark(height: 26, color: Colors.white),
                 const SizedBox(height: 8),
                 Text('Guia do estudante · IFSP Pirituba', style: TextStyle(color: Colors.white.withValues(alpha: 0.72), fontSize: 13)),
               ]),
