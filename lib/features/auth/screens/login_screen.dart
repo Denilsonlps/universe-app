@@ -43,19 +43,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final c = context.c;
     return Scaffold(
       body: Container(
-        color: c.heroFrom,
+        // Gradiente contínuo atrás de tudo: os cantos arredondados da folha
+        // branca revelam exatamente a mesma cor do cabeçalho (sem fatia destoante).
+        decoration: BoxDecoration(
+          gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [c.heroFrom, c.heroTo]),
+        ),
         child: Column(children: [
-          Container(
+          SizedBox(
             width: double.infinity,
-            padding: EdgeInsets.fromLTRB(0, kStatusH + 26, 0, 26),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [c.heroFrom, c.heroTo]),
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(0, kStatusH + 26, 0, 26),
+              child: Column(children: [
+                const Text('UNIVERSE', style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.w900, letterSpacing: 2)),
+                const SizedBox(height: 8),
+                Text('Guia do estudante · IFSP Pirituba', style: TextStyle(color: Colors.white.withValues(alpha: 0.72), fontSize: 13)),
+              ]),
             ),
-            child: Column(children: [
-              const Text('UNIVERSE', style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.w900, letterSpacing: 2)),
-              const SizedBox(height: 8),
-              Text('Guia do estudante · IFSP Pirituba', style: TextStyle(color: Colors.white.withValues(alpha: 0.72), fontSize: 13)),
-            ]),
           ),
           Expanded(
             child: Container(
