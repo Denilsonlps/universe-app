@@ -95,3 +95,51 @@ na branch `feat/fundacao-visual-navegacao`:
 ### Próximo passo
 Plano 2 — Dados & Autenticação (models, `UniverseRepository` + mock, providers,
 Firebase Auth, telas de splash/onboarding/login/registro).
+
+---
+
+## 2026-06-11 — Plano 2 concluído: Autenticação
+
+### O que foi construído
+Autenticação real com Firebase, com o app protegido por estado de login. Branch
+`feat/autenticacao`, executado em tasks com TDD e commits frequentes.
+
+- **Design system complementado:** `AppField` e `PasswordField` (campos de texto
+  com rótulo, ícone, validação e erro), que faltavam para as telas de formulário.
+- **Modelo `AppUser`** com papel (`student`/`admin`) — o `admin` representa o
+  Setor de Estágios (spec §4), usado futuramente no painel de cadastro de vagas.
+- **Camada de auth desacoplada:** interface `AuthRepository` com duas
+  implementações — `FirebaseAuthRepository` (real, via `firebase_auth`, com
+  mensagens de erro em pt-BR) e `FakeAuthRepository` (em memória, para testes
+  sem rede). A UI depende só da interface.
+- **Providers Riverpod:** `authRepositoryProvider` e `authStateProvider`
+  (stream de `AppUser?`).
+- **Telas:** splash (marca), onboarding (3 slides), login e registro (com regras
+  de senha), fiéis ao protótipo.
+- **Navegação por autenticação:** o `routerProvider` (go_router) observa o estado
+  de auth e redireciona — carregando → splash; deslogado → onboarding/login/
+  registro; logado → home. Logout pelo drawer volta ao fluxo de entrada.
+- **`Firebase.initializeApp`** no `main`.
+
+### Decisões técnicas (justificativa)
+- **Interface `AuthRepository` + Fake:** concretiza a estratégia "híbrida" da spec
+  (auth real, dados mock depois) e torna toda a auth testável sem Firebase/rede.
+  Os testes injetam o fake via override do Riverpod.
+- **Redirect centralizado no router** (em vez de navegação manual nas telas):
+  fonte única de verdade para "onde o usuário pode estar" conforme o login.
+- **`FakeAuthRepository.authState()`** emite o estado atual ao ser ouvido e
+  depois repassa os eventos — replicando a semântica do `authStateChanges()`
+  real do Firebase (corrigiu uma corrida do desenho inicial do plano).
+
+### Verificação
+- `flutter analyze`: sem erros.
+- `flutter test`: 14/14 testes passando (auth repo, login, redirect, app boot,
+  além dos do Plano 1, com o teste de navegação adaptado ao novo fluxo de auth).
+- `flutter run -d chrome`: compila com Firebase inicializado e é servido sem erros.
+- **Pendência operacional:** habilitar o provedor **Email/Senha** no Firebase
+  Authentication do projeto para o cadastro/login reais funcionarem em produção.
+
+### Próximo passo
+Plano 3 — Camada de dados (models de conteúdo + `UniverseRepository` + mock com
+regras RF034/RF036) e telas de conteúdo (Home, Cursos, IFSP, Benefícios,
+Estágio/Concursos, Dúvidas, Perfil).
