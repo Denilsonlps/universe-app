@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
+import '../brand/universe_brand.dart';
 import '../widgets/icon_tile.dart';
 import '../widgets/user_avatar.dart';
 import 'page_shell.dart';
@@ -36,7 +37,11 @@ class MenuDrawer extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(22, kStatusH + 6, 22, 22),
           decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [c.heroFrom, c.heroTo])),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text('UNIVERSE', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 18, letterSpacing: 1)),
+            Row(children: const [
+              UniverseAppIcon(size: 40),
+              SizedBox(width: 12),
+              UniverseWordmark(height: 20, color: Colors.white),
+            ]),
             const SizedBox(height: 18),
             Row(children: [
               UserAvatar(userName, size: 46),
