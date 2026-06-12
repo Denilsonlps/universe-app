@@ -14,4 +14,10 @@ void main() {
   test('edital após o prazo não está mais aberto (RF036)', () {
     expect(_c(now.subtract(const Duration(days: 1))).isOpenAt(now), isFalse);
   });
+  test('edital encerrado há menos de 30 dias ainda é visível (RF036)', () {
+    expect(_c(now.subtract(const Duration(days: 20))).visibleAt(now), isTrue);
+  });
+  test('edital encerrado há mais de 30 dias some (RF036)', () {
+    expect(_c(now.subtract(const Duration(days: 31))).visibleAt(now), isFalse);
+  });
 }

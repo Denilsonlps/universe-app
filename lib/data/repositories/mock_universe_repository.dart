@@ -603,6 +603,7 @@ class MockUniverseRepository implements UniverseRepository {
         .toList();
   }
 
+  /// Retorna a vaga pelo id, independentemente da visibilidade (para deep-links).
   @override
   Internship? internship(String id) {
     final m = _internships.where((e) => e.id == id);
@@ -615,6 +616,7 @@ class MockUniverseRepository implements UniverseRepository {
     return _contests.where((c) => c.visibleAt(ref)).toList();
   }
 
+  /// Retorna o concurso pelo id, independentemente da visibilidade (para deep-links).
   @override
   Contest? contest(String id) {
     final m = _contests.where((c) => c.id == id);

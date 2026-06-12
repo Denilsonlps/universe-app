@@ -12,5 +12,5 @@ final profileRepositoryProvider = Provider<ProfileRepository>((ref) =>
 final currentProfileProvider = FutureProvider<StudentProfile?>((ref) async {
   final user = ref.watch(authStateProvider).valueOrNull;
   if (user == null) return null;
-  return ref.watch(profileRepositoryProvider).get(user.id);
+  return ref.read(profileRepositoryProvider).get(user.id);
 });
