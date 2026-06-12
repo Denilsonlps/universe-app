@@ -245,3 +245,37 @@ Home, no menu lateral, no login e no splash.
 
 ### Verificação
 - `flutter analyze`: sem erros. `flutter test`: **23/23** (inclui smoke test da marca).
+
+---
+
+## 2026-06-11 — Plano 4A concluído: telas Home, Cursos e IFSP
+
+### O que foi construído
+As primeiras telas de conteúdo reais, substituindo os placeholders, consumindo a
+camada de dados (`UniverseRepository`) e o design system/marca:
+
+- **Home (aba Início):** saudação com o nome do usuário autenticado, barra de busca
+  (placeholder), ações rápidas, card de destaque e a lista "Explorar".
+- **Cursos (aba):** filtro por categoria + busca, cards de curso, estado vazio;
+  **detalhe do curso** com metadados, "sobre" e formas de ingresso.
+- **IFSP (campus):** hero com estatísticas e lista "sobre o campus"; **detalhe**
+  com texto/linhas (história, endereço, horário, estrutura, contatos, site).
+- **Router:** Home e Cursos reais nas abas; `/ifsp`, `/ifsp/:key` e `/cursos/:name`
+  como rotas full-screen (top-level). Dúvidas e Perfil seguem placeholders (4C).
+
+### Decisões / correções da revisão
+- **Navegação:** detalhes abrem com `context.push` (não `go`), preservando a aba e
+  o estado de filtro e garantindo o botão voltar; trocar de aba usa `context.go`.
+- **Drawer:** itens de rotas ainda não implementadas mostram "Em breve" em vez de
+  não fazer nada; IFSP navega corretamente.
+- **MenuDrawer:** lista trocada para `SingleChildScrollView+Column` (constrói todos
+  os itens — lista curta e fixa).
+- Rotas não implementadas (benefícios, estágio, cadastrar, moradia) → SnackBar
+  "Em breve", sem links quebrados.
+
+### Verificação
+- `flutter analyze`: sem erros. `flutter test`: **23/23**.
+
+### Próximo passo
+Plano 4B — Benefícios (gov/inst + detalhe) e Estágio/Concursos (+ detalhes e
+depoimentos), consumindo o repositório (RF033/RF034/RF036 já no modelo).
