@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/providers/profile_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/auth/auth_repository.dart';
+import '../../../data/courses.dart';
+import '../../../data/profile/student_profile.dart';
 import '../../../shared/widgets/app_button.dart';
 import '../../../shared/widgets/app_field.dart';
 
@@ -16,6 +19,7 @@ class RegisterScreen extends ConsumerStatefulWidget {
 class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   String _name = '', _email = '', _pw = '', _pw2 = '';
   bool _loading = false;
+  String? _course;
 
   bool get _emailOk => RegExp(r'^\S+@\S+\.\S+$').hasMatch(_email);
   List<(String, bool)> get _rules => [
@@ -31,7 +35,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   Future<void> _submit() async {
     setState(() => _loading = true);
     try {
-      await ref.read(authRepositoryProvider).register(name: _name, email: _email, password: _pw);
+      final user = await ref.read(authRepositoryProvider).register(name: _name, email: _email, password: _pw);
+      if (_course != null) {
+        await ref.read(profileRepositoryProvider).save(StudentProfile(uid: user.id, course: _course));
+      }
     } on AuthException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
@@ -85,6 +92,18 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 PasswordField(label: 'Repetir senha', value: _pw2, valid: _matchOk,
                     error: _pw2.isNotEmpty && !_matchOk ? 'As senhas não coincidem' : null,
                     onChanged: (v) => setState(() => _pw2 = v)),
+                const SizedBox(height: 13),
+                DropdownButtonFormField<String>(
+                  initialValue: _course,
+                  isExpanded: true,
+                  decoration: InputDecoration(
+                    labelText: 'Curso (opcional)',
+                    filled: true, fillColor: c.card,
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(13)),
+                  ),
+                  items: [for (final n in campusCourses) DropdownMenuItem(value: n, child: Text(n, overflow: TextOverflow.ellipsis))],
+                  onChanged: (v) => setState(() => _course = v),
+                ),
                 const SizedBox(height: 24),
                 AppButton(_loading ? 'Criando…' : 'CRIAR CONTA', full: true, onTap: (_canSubmit && !_loading) ? _submit : null),
                 const SizedBox(height: 14),
