@@ -31,9 +31,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       await ref.read(authRepositoryProvider).signIn(email: _email, password: _pw);
     } on AuthException catch (e) {
       if (mounted) {
-        setState(() => _loading = false);
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
       }
+    } finally {
+      if (mounted) setState(() => _loading = false);
     }
   }
 

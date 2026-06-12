@@ -34,9 +34,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       await ref.read(authRepositoryProvider).register(name: _name, email: _email, password: _pw);
     } on AuthException catch (e) {
       if (mounted) {
-        setState(() => _loading = false);
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
       }
+    } finally {
+      if (mounted) setState(() => _loading = false);
     }
   }
 
