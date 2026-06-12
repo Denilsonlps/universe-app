@@ -173,3 +173,45 @@ IFSP Conecta integra com o SUAP. Detalhes em
 Corrigido um defeito visual na tela de login: a folha branca tinha cantos
 arredondados revelando uma "fatia" de verde destoante (fundo sólido vs. cabeçalho
 em gradiente). Solução: gradiente contínuo único atrás de todo o conteúdo.
+
+---
+
+## 2026-06-11 — Plano 3 concluído: Camada de dados & perfil do aluno
+
+### O que foi construído
+Toda a camada de dados do conteúdo do app + o perfil do aluno. Branch
+`feat/camada-dados-perfil`, em tasks com TDD e commits frequentes.
+
+- **Modelos de conteúdo:** `Course`, `Benefit` (+`BenefitKind`), `Internship`
+  (com os **10 campos do RF033**, separando descrição da vaga e da empresa),
+  `Contest`, `Testimonial`, `Faq`, `IfspInfo`/`IfspDetail`.
+- **Regras de negócio testadas (TDD):**
+  - RF034 — vaga encerrada permanece visível por até 30 dias (`Internship.visibleAt`).
+  - RF036 — edital de concurso só dentro do período de inscrição (`Contest.isOpenAt`/`visibleAt`).
+  - RF031 — estágios filtráveis por curso.
+- **`UniverseRepository`** (interface) + **`MockUniverseRepository`** com o conteúdo
+  pt-BR **transcrito fielmente** de `design_reference/.../data.jsx` (10 cursos, 8
+  benefícios, 3 depoimentos, 6 FAQs, 6 itens do campus, 6 estágios, 4 concursos).
+  Único campo sintetizado: a "descrição da vaga" (o protótipo unia-a à da empresa).
+- **Perfil do aluno:** `StudentProfile` (uid, curso, matrícula) + `ProfileRepository`
+  com `FirestoreProfileRepository` (real, coleção `users/{uid}`) e
+  `FakeProfileRepository` (testes). Providers `universeRepositoryProvider`,
+  `profileRepositoryProvider`, `currentProfileProvider`.
+- **Captura de curso no cadastro:** seletor opcional no registro grava o perfil
+  no Firestore; também será editável no perfil (decisão "Ambos").
+
+### Decisões técnicas
+- **Conteúdo como transcrição da fonte versionada** (`data.jsx`), não dados
+  inventados — fidelidade ao protótipo e rastreabilidade.
+- **Perfil atrás de interface** (`ProfileRepository`), como a auth — pronto para,
+  no futuro, a fonte virar o SUAP (ver `integracao-suap.md`).
+- Regras dos requisitos vivem **no modelo/repositório** (testáveis isoladamente),
+  não na UI.
+
+### Verificação
+- `flutter analyze`: sem erros. `flutter test`: **20/20** (modelos, regras
+  RF031/RF034/RF036, perfil, + tudo dos Planos 1–2).
+
+### Próximo passo
+Plano 4 — Telas de conteúdo (Home, Cursos, IFSP, Benefícios, Estágio/Concursos,
+Dúvidas, Perfil) consumindo esta camada de dados, substituindo os placeholders.
