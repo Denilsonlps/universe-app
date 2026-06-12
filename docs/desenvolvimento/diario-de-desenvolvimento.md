@@ -143,3 +143,33 @@ Autenticação real com Firebase, com o app protegido por estado de login. Branc
 Plano 3 — Camada de dados (models de conteúdo + `UniverseRepository` + mock com
 regras RF034/RF036) e telas de conteúdo (Home, Cursos, IFSP, Benefícios,
 Estágio/Concursos, Dúvidas, Perfil).
+
+---
+
+## 2026-06-11 — Decisão de identidade e dados do aluno (integração SUAP)
+
+### Achado relevante para o TCC
+Ao revisar a autenticação, constatou-se que **o TCC não documenta login/autenticação**
+nem como obter os dados acadêmicos do aluno. São necessidades vindas do protótipo/
+evolução do projeto. Registrada a pendência de documentar isso no TCC (requisito de
+autenticação ou nota de evolução de escopo).
+
+### Pesquisa
+O **SUAP possui API REST oficial** (DIGTI/IFRN, usada pelo IFSP) que fornece curso,
+matrícula, nome, e-mail e foto do aluno, com autenticação via JWT ou **OAuth2**
+(recomendado — IFSP como provedor de identidade, sem o app ver a senha). Requer
+registro do app junto ao IFSP (`suporte@ifsp.edu.br`). Há precedente: o app oficial
+IFSP Conecta integra com o SUAP. Detalhes em
+[`integracao-suap.md`](integracao-suap.md).
+
+### Decisão (confirmada com o autor): abordagem híbrida
+- **Agora:** Firebase Auth (e-mail/senha) + **perfil auto-declarado** no Firestore
+  (curso capturado no cadastro **e** editável no perfil).
+- **Preferencial/futuro:** `SuapAuthRepository` (OAuth2) como login institucional e
+  fonte dos dados do aluno, condicionado à aprovação do IFSP. A interface
+  `AuthRepository` + camada de perfil absorvem a troca sem reescrever a UI.
+
+### Correção de UI
+Corrigido um defeito visual na tela de login: a folha branca tinha cantos
+arredondados revelando uma "fatia" de verde destoante (fundo sólido vs. cabeçalho
+em gradiente). Solução: gradiente contínuo único atrás de todo o conteúdo.
