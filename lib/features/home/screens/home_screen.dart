@@ -17,7 +17,7 @@ class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   static const _tabRoutes = {'/home', '/cursos', '/duvidas', '/perfil'};
-  static const _pushRoutes = {'/ifsp', '/beneficios/gov', '/beneficios/inst', '/estagio'};
+  static const _pushRoutes = {'/ifsp', '/beneficios/gov', '/beneficios/inst', '/estagio', '/cadastrar'};
 
   void _go(BuildContext context, String route) {
     if (_tabRoutes.contains(route)) {
