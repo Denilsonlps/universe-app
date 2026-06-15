@@ -8,6 +8,7 @@ import '../../../shared/widgets/app_button.dart';
 import '../../../shared/widgets/app_card.dart';
 import '../../../shared/widgets/empty_state.dart';
 import '../../../shared/widgets/section_title.dart';
+import '../../../core/utils/launch.dart';
 
 class BenefitDetailScreen extends StatelessWidget {
   final Benefit? benefit;
@@ -65,7 +66,7 @@ class BenefitDetailScreen extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           AppButton('Acessar portal oficial', full: true, icon: 'globe',
-            onTap: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Abrindo portal oficial… (em breve)')))),
+            onTap: () => openExternalUrl(context, b.url)),
           const SizedBox(height: 8),
           Center(child: TextButton(
             onPressed: () => context.go('/duvidas'),

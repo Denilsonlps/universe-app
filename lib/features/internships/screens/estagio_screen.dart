@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/providers/repository_provider.dart';
+import '../../../core/providers/testimonials_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/courses.dart';
 import '../../../data/models/contest.dart';
@@ -35,7 +36,7 @@ class _EstagioScreenState extends ConsumerState<EstagioScreen> {
     final repo = ref.watch(universeRepositoryProvider);
     final vagas = repo.internships(courseFilter: _course);
     final concursos = repo.contests();
-    final depo = repo.testimonials();
+    final depo = [...ref.watch(userTestimonialsProvider), ...repo.testimonials()];
 
     return PageShell(
       bodyPadding: EdgeInsets.zero,
@@ -97,7 +98,7 @@ class _EstagioScreenState extends ConsumerState<EstagioScreen> {
               const SizedBox(height: 14),
               SectionTitle('Depoimentos', action: 'Ver todos', onAction: () => context.push('/estagio/depoimentos')),
               SizedBox(
-                height: 160,
+                height: 176,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   itemCount: depo.length,
