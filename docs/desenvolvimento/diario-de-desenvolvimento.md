@@ -279,3 +279,26 @@ camada de dados (`UniverseRepository`) e o design system/marca:
 ### Próximo passo
 Plano 4B — Benefícios (gov/inst + detalhe) e Estágio/Concursos (+ detalhes e
 depoimentos), consumindo o repositório (RF033/RF034/RF036 já no modelo).
+
+---
+
+## 2026-06-11 — Correção de bug e decisão de dados em tempo real
+
+### Correção (telas de detalhe — "tela vermelha")
+Ao abrir um curso ou o IFSP, aparecia erro. Duas causas:
+1. **"No Material widget found":** as telas de detalhe são rotas full-screen FORA
+   do `ShellRoute` (sem `Scaffold`); o `PageShell` usava `Container` e o `InkWell`
+   exige um ancestral `Material`. Corrigido: `PageShell` agora usa `Material`.
+2. **"Illegal percent encoding in URI":** nomes de curso com `/` e `—` quebravam o
+   parâmetro de URL. Corrigido: o curso é passado via `extra` do go_router.
+Adicionado teste de regressão (`detail_screens_test.dart`). 25 testes no total.
+
+### Decisão: atualização de dados e tempo real
+Discutido como manter os dados atualizados sem republicar o app. Solução:
+migrar a leitura para o **Firestore** (camada de dados do TCC), com **streams em
+tempo real** para dados dinâmicos (vagas, concursos, editais, notificações) e
+busca+cache para estáticos (cursos, IFSP, FAQ). A rotina de atualização fica no
+**pipeline Python agendado** e no **painel admin**, não no app (Firestore faz
+push). A interface `UniverseRepository` já isola a troca. Detalhes e proposta
+completa em [`arquitetura-dados-tempo-real.md`](arquitetura-dados-tempo-real.md).
+Sequência: terminar telas no mock (4B/4C) → Plano de Dados (Firestore).
