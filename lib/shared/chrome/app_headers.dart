@@ -78,7 +78,7 @@ class GreenHero extends StatelessWidget {
         Row(children: [
           InkWell(borderRadius: BorderRadius.circular(11), onTap: onBack, child: const SizedBox(width: 38, height: 38, child: Icon(Icons.chevron_left, size: 24, color: Colors.white))),
           const Spacer(),
-          if (action != null) action!,
+          ?action,
         ]),
         const SizedBox(height: 12),
         Row(children: [
