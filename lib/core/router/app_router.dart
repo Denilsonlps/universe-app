@@ -17,6 +17,15 @@ import '../../features/courses/screens/courses_screen.dart';
 import '../../features/courses/screens/course_detail_screen.dart';
 import '../../features/campus/screens/ifsp_screen.dart';
 import '../../features/campus/screens/ifsp_detail_screen.dart';
+import '../../data/models/benefit.dart';
+import '../../data/models/internship.dart';
+import '../../data/models/contest.dart';
+import '../../features/benefits/screens/benefits_screen.dart';
+import '../../features/benefits/screens/benefit_detail_screen.dart';
+import '../../features/internships/screens/estagio_screen.dart';
+import '../../features/internships/screens/vaga_detail_screen.dart';
+import '../../features/internships/screens/contest_detail_screen.dart';
+import '../../features/internships/screens/depoimentos_screen.dart';
 
 const _authRoutes = {'/onboarding', '/login', '/register'};
 
@@ -54,6 +63,17 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/ifsp', builder: (c, s) => const IfspScreen()),
       GoRoute(path: '/ifsp/:key', builder: (c, s) => IfspDetailScreen(detailKey: s.pathParameters['key']!)),
       GoRoute(path: '/cursos/detail', builder: (c, s) => CourseDetailScreen(course: s.extra is Course ? s.extra as Course : null)),
+      GoRoute(path: '/beneficios/gov', builder: (c, s) => const BenefitsScreen(kind: BenefitKind.gov)),
+      GoRoute(path: '/beneficios/inst', builder: (c, s) => const BenefitsScreen(kind: BenefitKind.inst)),
+      GoRoute(path: '/beneficios/detail', builder: (c, s) {
+        final x = s.extra;
+        if (x is ({Benefit benefit, bool isGov})) return BenefitDetailScreen(benefit: x.benefit, isGov: x.isGov);
+        return const BenefitDetailScreen(benefit: null, isGov: true);
+      }),
+      GoRoute(path: '/estagio', builder: (c, s) => EstagioScreen(initialCourse: s.extra is String ? s.extra as String : 'Todos')),
+      GoRoute(path: '/estagio/vaga', builder: (c, s) => VagaDetailScreen(vaga: s.extra is Internship ? s.extra as Internship : null)),
+      GoRoute(path: '/estagio/concurso', builder: (c, s) => ConcursoDetailScreen(contest: s.extra is Contest ? s.extra as Contest : null)),
+      GoRoute(path: '/estagio/depoimentos', builder: (c, s) => const DepoimentosScreen()),
     ],
   );
 });
@@ -87,7 +107,7 @@ class _Shell extends ConsumerWidget {
           Navigator.pop(context);
           if (navTabs.any((t) => '/${t.key}' == route)) {
             context.go(route);
-          } else if (route == '/ifsp') {
+          } else if (route == '/ifsp' || route == '/beneficios/gov' || route == '/beneficios/inst' || route == '/estagio') {
             context.push(route);
           } else {
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Em breve')));
