@@ -15,7 +15,7 @@ const appIcons = <String, IconData>{
   'search': Icons.search, 'bell': Icons.notifications_none, 'menu': Icons.menu,
   'star': Icons.star, 'home': Icons.home_outlined, 'logout': Icons.logout, 'check': Icons.check,
   'chevR': Icons.chevron_right, 'chevL': Icons.chevron_left, 'chevD': Icons.keyboard_arrow_down,
-  'checkCircle': Icons.check_circle, 'plus': Icons.add,
+  'checkCircle': Icons.check_circle, 'plus': Icons.add, 'send': Icons.send,
 };
 
 IconData appIcon(String name) => appIcons[name] ?? Icons.circle_outlined;
