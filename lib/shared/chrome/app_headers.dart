@@ -62,7 +62,8 @@ class GreenHero extends StatelessWidget {
   final String? subtitle, icon;
   final VoidCallback onBack;
   final Widget? child;
-  const GreenHero({super.key, required this.title, this.subtitle, this.icon, required this.onBack, this.child});
+  final Widget? action;
+  const GreenHero({super.key, required this.title, this.subtitle, this.icon, required this.onBack, this.child, this.action});
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +75,11 @@ class GreenHero extends StatelessWidget {
         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(28)),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        InkWell(borderRadius: BorderRadius.circular(11), onTap: onBack, child: const SizedBox(width: 38, height: 38, child: Icon(Icons.chevron_left, size: 24, color: Colors.white))),
+        Row(children: [
+          InkWell(borderRadius: BorderRadius.circular(11), onTap: onBack, child: const SizedBox(width: 38, height: 38, child: Icon(Icons.chevron_left, size: 24, color: Colors.white))),
+          const Spacer(),
+          if (action != null) action!,
+        ]),
         const SizedBox(height: 12),
         Row(children: [
           if (icon != null) ...[
