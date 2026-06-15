@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/models/course.dart';
+import '../../../data/courses.dart';
 import '../../../shared/chrome/app_headers.dart';
 import '../../../shared/chrome/page_shell.dart';
 import '../../../shared/widgets/app_button.dart';
@@ -57,7 +58,7 @@ class CourseDetailScreen extends StatelessWidget {
             Padding(padding: const EdgeInsets.only(bottom: 10), child: ListRow(icon: 'flag', title: t, subtitle: s, showChevron: false)),
           const SizedBox(height: 10),
           AppButton('Ver estágios para este curso', full: true, icon: 'briefcase',
-            onTap: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Em breve')))),
+            onTap: () => context.push('/estagio', extra: courseShort(course.name))),
         ]),
       ),
     );

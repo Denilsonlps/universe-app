@@ -302,3 +302,28 @@ busca+cache para estáticos (cursos, IFSP, FAQ). A rotina de atualização fica 
 push). A interface `UniverseRepository` já isola a troca. Detalhes e proposta
 completa em [`arquitetura-dados-tempo-real.md`](arquitetura-dados-tempo-real.md).
 Sequência: terminar telas no mock (4B/4C) → Plano de Dados (Firestore).
+
+---
+
+## 2026-06-11 — Plano 4B concluído: Benefícios e Estágio/Concursos
+
+### O que foi construído
+- **Benefícios (gov/inst):** lista em cards + **detalhe** ("O que é" e "Como
+  solicitar" em passos). Inclui **disclaimer RF012** (o app não cria/gere benefícios).
+- **Estágio e Concursos:** abas (Estágios/Concursos), **filtro por curso** (RF031),
+  cards de vaga e de concurso, e carrossel de **depoimentos**.
+- **Detalhe da vaga:** os **10 campos do RF033** (descrição da vaga e da empresa
+  separadas), **banner RF034** (encerrada visível por 1 mês) e **disclaimer RF037**.
+- **Detalhe do concurso:** metadados + prazo + **disclaimer RF037**.
+- **Depoimentos (RF032):** lista + publicação pelo aluno (em memória nesta fase).
+- **Navegação:** novas rotas full-screen via `push`+`extra`; Home/drawer habilitados;
+  "Ver estágios para este curso" abre a lista já filtrada pelo curso. `GreenHero`
+  ganhou `action` opcional.
+
+### Verificação
+- `flutter analyze`: sem erros. `flutter test`: **25/25**. Revisão final aprovada
+  (todos os RFs cobertos).
+
+### Próximo passo
+Plano 4C — Dúvidas (FAQ) e Perfil (com curso/edição). Depois, a fase de dados
+(Firestore + tempo real).
