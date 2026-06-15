@@ -40,11 +40,18 @@ class _CadastrarScreenState extends ConsumerState<CadastrarScreen> {
       final uid = user?.id;
       if (uid == null) return;
       setState(() => _loading = true);
-      await ref.read(profileRepositoryProvider).save(StudentProfile(uid: uid, course: _course, enrollment: _enroll.trim().isEmpty ? null : _enroll.trim()));
-      ref.invalidate(currentProfileProvider);
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Informações salvas!')));
-        context.pop();
+      try {
+        await ref.read(profileRepositoryProvider).save(StudentProfile(uid: uid, course: _course, enrollment: _enroll.trim().isEmpty ? null : _enroll.trim()));
+        ref.invalidate(currentProfileProvider);
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Informações salvas!')));
+          context.pop();
+        }
+      } catch (_) {
+        if (context.mounted) {
+          setState(() => _loading = false);
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Erro ao salvar. Tente novamente.')));
+        }
       }
     }
 

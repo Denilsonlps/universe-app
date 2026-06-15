@@ -24,7 +24,7 @@ class DuvidasScreen extends ConsumerStatefulWidget {
 class _DuvidasScreenState extends ConsumerState<DuvidasScreen> {
   String _cat = 'Todas';
   String _q = '';
-  int _openIdx = 0;
+  int _openIdx = -1;
   String _msg = '';
   String _formCat = 'Dúvidas gerais';
 
@@ -45,7 +45,7 @@ class _DuvidasScreenState extends ConsumerState<DuvidasScreen> {
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text('Dúvidas', style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: c.ink, letterSpacing: -0.4)),
           const SizedBox(height: 12),
-          AppField(icon: 'search', hint: 'Pesquisar dúvidas…', value: _q, onChanged: (v) => setState(() => _q = v)),
+          AppField(icon: 'search', hint: 'Pesquisar dúvidas…', value: _q, onChanged: (v) => setState(() { _q = v; _openIdx = -1; })),
         ]),
       ),
       body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -55,7 +55,7 @@ class _DuvidasScreenState extends ConsumerState<DuvidasScreen> {
             scrollDirection: Axis.horizontal,
             itemCount: _faqCats.length,
             separatorBuilder: (context, i) => const SizedBox(width: 9),
-            itemBuilder: (context, i) => AppChip(_faqCats[i], active: _cat == _faqCats[i], onTap: () => setState(() { _cat = _faqCats[i]; _openIdx = 0; })),
+            itemBuilder: (context, i) => AppChip(_faqCats[i], active: _cat == _faqCats[i], onTap: () => setState(() { _cat = _faqCats[i]; _openIdx = -1; })),
           ),
         ),
         const SizedBox(height: 16),
