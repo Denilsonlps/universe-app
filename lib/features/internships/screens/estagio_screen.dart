@@ -207,7 +207,7 @@ class _DepoCard extends StatelessWidget {
         const SizedBox(height: 9),
         Stars(t.stars),
         const SizedBox(height: 9),
-        Expanded(child: Text('"${t.text}"', maxLines: 3, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12.5, height: 1.5, color: c.ink2))),
+        Text('"${t.text}"', maxLines: 3, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12.5, height: 1.5, color: c.ink2)),
       ]),
     );
   }
