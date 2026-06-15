@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/providers/repository_provider.dart';
+import '../../../core/providers/testimonials_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/models/testimonial.dart';
 import '../../../shared/chrome/app_headers.dart';
@@ -20,28 +21,22 @@ class DepoimentosScreen extends ConsumerStatefulWidget {
 }
 
 class _DepoimentosScreenState extends ConsumerState<DepoimentosScreen> {
-  final List<Testimonial> _added = [];
   bool _adding = false;
   String _org = '', _text = '';
   int _stars = 5;
 
   void _submit() {
     final user = ref.read(authStateProvider).valueOrNull;
-    setState(() {
-      _added.insert(0, Testimonial(
-        name: user?.name ?? 'Estudante',
-        course: 'IFSP',
-        org: _org, stars: _stars, text: _text,
-      ));
-      _adding = false; _org = ''; _text = ''; _stars = 5;
-    });
+    final t = Testimonial(name: user?.name ?? 'Estudante', course: 'IFSP', org: _org, stars: _stars, text: _text);
+    ref.read(userTestimonialsProvider.notifier).update((list) => [t, ...list]);
+    setState(() { _adding = false; _org = ''; _text = ''; _stars = 5; });
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Depoimento publicado!')));
   }
 
   @override
   Widget build(BuildContext context) {
     final c = context.c;
-    final all = [..._added, ...ref.watch(universeRepositoryProvider).testimonials()];
+    final all = [...ref.watch(userTestimonialsProvider), ...ref.watch(universeRepositoryProvider).testimonials()];
     return PageShell(
       bodyPadding: EdgeInsets.zero,
       header: GreenHero(title: 'Depoimentos', subtitle: 'Quem já estagiou conta como foi', icon: 'star', onBack: () => context.pop()),

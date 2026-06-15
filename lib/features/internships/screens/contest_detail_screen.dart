@@ -10,6 +10,7 @@ import '../../../shared/widgets/empty_state.dart';
 import '../../../shared/widgets/icon_tile.dart';
 import '../../../shared/widgets/section_title.dart';
 import '../../../shared/widgets/status_badge.dart';
+import '../../../core/utils/launch.dart';
 
 class ConcursoDetailScreen extends StatelessWidget {
   final Contest? contest;
@@ -68,7 +69,7 @@ class ConcursoDetailScreen extends StatelessWidget {
           const SizedBox(height: 16),
           if (open)
             AppButton('Acessar edital', full: true, icon: 'doc',
-              onTap: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Abrindo edital… (em breve)'))))
+              onTap: () => openExternalUrl(context, ct.link))
           else
             const AppButton('Inscrições encerradas', full: true, variant: AppButtonVariant.ghost),
         ]),

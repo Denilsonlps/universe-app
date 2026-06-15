@@ -10,6 +10,7 @@ import '../../../shared/widgets/empty_state.dart';
 import '../../../shared/widgets/icon_tile.dart';
 import '../../../shared/widgets/section_title.dart';
 import '../../../shared/widgets/status_badge.dart';
+import '../../../core/utils/launch.dart';
 
 class VagaDetailScreen extends StatelessWidget {
   final Internship? vaga;
@@ -119,7 +120,7 @@ class VagaDetailScreen extends StatelessWidget {
             const AppButton('Vaga encerrada', full: true, variant: AppButtonVariant.ghost)
           else
             AppButton('Quero me candidatar', full: true, icon: 'send',
-              onTap: () => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Abrindo ${e.link ?? 'a vaga'}… (em breve)')))),
+              onTap: () => openExternalUrl(context, e.link)),
           if (e.link != null) Padding(
             padding: const EdgeInsets.only(top: 10),
             child: Center(child: Text('Você será direcionado para ${e.link}', style: TextStyle(fontSize: 11.5, color: c.ink3))),

@@ -110,6 +110,7 @@ class MockUniverseRepository implements UniverseRepository {
         'Procure um posto do CRAS da sua região',
         'Mantenha o cadastro atualizado a cada 2 anos',
       ],
+      url: 'https://www.gov.br/pt-br/servicos/inscrever-se-no-cadastro-unico-para-programas-sociais-do-governo-federal',
     ),
     Benefit(
       icon: 'user',
@@ -122,6 +123,7 @@ class MockUniverseRepository implements UniverseRepository {
         'Acesse o app ID Jovem',
         'Gere a carteira digital',
       ],
+      url: 'https://www.gov.br/pt-br/servicos/obter-a-carteira-de-identidade-jovem',
     ),
     Benefit(
       icon: 'bus',
@@ -134,6 +136,7 @@ class MockUniverseRepository implements UniverseRepository {
         'Solicite o bilhete na SPTrans',
         'Recarregue mensalmente',
       ],
+      url: 'https://www.sptrans.com.br/',
     ),
     Benefit(
       icon: 'doc',
@@ -146,6 +149,7 @@ class MockUniverseRepository implements UniverseRepository {
         'Informe seu nº do NIS',
         'Acompanhe o deferimento',
       ],
+      url: 'https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem',
     ),
   ];
 
@@ -161,6 +165,7 @@ class MockUniverseRepository implements UniverseRepository {
         'Anexe documentação socioeconômica',
         'Aguarde a análise do serviço social',
       ],
+      url: 'https://ptb.ifsp.edu.br/',
     ),
     Benefit(
       icon: 'award',
@@ -173,6 +178,7 @@ class MockUniverseRepository implements UniverseRepository {
         'Inscreva-se no edital de monitoria',
         'Passe pela seleção do docente',
       ],
+      url: 'https://ptb.ifsp.edu.br/',
     ),
     Benefit(
       icon: 'book',
@@ -185,6 +191,7 @@ class MockUniverseRepository implements UniverseRepository {
         'Submeta o projeto ao edital',
         'Apresente no congresso de IC',
       ],
+      url: 'https://ptb.ifsp.edu.br/',
     ),
     Benefit(
       icon: 'globe',
@@ -197,6 +204,7 @@ class MockUniverseRepository implements UniverseRepository {
         'Inscreva-se com o coordenador',
         'Cumpra a carga horária',
       ],
+      url: 'https://ptb.ifsp.edu.br/',
     ),
   ];
 
