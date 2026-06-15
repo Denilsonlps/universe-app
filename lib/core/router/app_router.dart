@@ -7,8 +7,10 @@ import '../../data/models/app_user.dart';
 import '../../data/models/course.dart';
 import '../../shared/chrome/bottom_nav.dart';
 import '../../shared/chrome/menu_drawer.dart';
-import '../../features/_placeholder/placeholder_screen.dart';
 import '../../features/auth/screens/splash_screen.dart';
+import '../../features/faqs/screens/duvidas_screen.dart';
+import '../../features/profile/screens/perfil_screen.dart';
+import '../../features/profile/screens/cadastrar_screen.dart';
 import '../../features/auth/screens/onboarding_screen.dart';
 import '../../features/auth/screens/login_screen.dart';
 import '../../features/auth/screens/register_screen.dart';
@@ -56,10 +58,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         routes: [
           GoRoute(path: '/home', builder: (c, s) => const HomeScreen()),
           GoRoute(path: '/cursos', builder: (c, s) => const CoursesScreen()),
-          GoRoute(path: '/duvidas', builder: (c, s) => const _Tab('Dúvidas', 'duvidas')),
-          GoRoute(path: '/perfil', builder: (c, s) => const _Tab('Perfil', 'perfil')),
+          GoRoute(path: '/duvidas', builder: (c, s) => const DuvidasScreen()),
+          GoRoute(path: '/perfil', builder: (c, s) => const PerfilScreen()),
         ],
       ),
+      GoRoute(path: '/cadastrar', builder: (c, s) => const CadastrarScreen()),
       GoRoute(path: '/ifsp', builder: (c, s) => const IfspScreen()),
       GoRoute(path: '/ifsp/:key', builder: (c, s) => IfspDetailScreen(detailKey: s.pathParameters['key']!)),
       GoRoute(path: '/cursos/detail', builder: (c, s) => CourseDetailScreen(course: s.extra is Course ? s.extra as Course : null)),
@@ -77,20 +80,6 @@ final routerProvider = Provider<GoRouter>((ref) {
     ],
   );
 });
-
-class _Tab extends ConsumerWidget {
-  final String title, tab;
-  const _Tab(this.title, this.tab);
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return PlaceholderScreen(
-      title: title, tab: tab,
-      onMenu: () => Scaffold.of(context).openDrawer(),
-      onBell: () {},
-      onTab: (k) => context.go('/$k'),
-    );
-  }
-}
 
 class _Shell extends ConsumerWidget {
   final Widget child;

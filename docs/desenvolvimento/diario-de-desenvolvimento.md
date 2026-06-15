@@ -327,3 +327,35 @@ Sequência: terminar telas no mock (4B/4C) → Plano de Dados (Firestore).
 ### Próximo passo
 Plano 4C — Dúvidas (FAQ) e Perfil (com curso/edição). Depois, a fase de dados
 (Firestore + tempo real).
+
+---
+
+## 2026-06-11 — Plano 4C concluído: Dúvidas e Perfil (telas de conteúdo fechadas)
+
+### O que foi construído
+- **Dúvidas (FAQ):** busca, filtro por categoria, lista de **accordion** (um aberto
+  por vez, inicia tudo fechado) e card "Encaminhe sua dúvida" (categoria + mensagem).
+- **Perfil:** hero com nome/e-mail (auth) e estatísticas (curso/matrícula do
+  `currentProfileProvider`); **alternador de tema claro/escuro** ligado ao
+  `themeModeProvider` (dark mode agora exposto e funcional em todo o app);
+  grupos de ações; sair da conta.
+- **Editar perfil (Cadastrar):** curso (dropdown) + matrícula **persistidos** via
+  `ProfileRepository`; ao salvar, invalida o `currentProfileProvider` (o Perfil
+  reflete na volta). Com tratamento de erro.
+- **Design system:** `Accordion` e `AppToggle` adicionados (com testes).
+- Router: Dúvidas e Perfil reais; `/cadastrar` top-level. Placeholder de aba
+  removido (todas as 4 abas agora são telas reais).
+
+### Correções da revisão
+Tratamento de erro ao salvar perfil; FAQ inicia fechado e reseta na busca; arquivo
+placeholder órfão removido; teste do AppToggle.
+
+### Verificação
+- `flutter analyze`: sem erros. `flutter test`: **27/27**.
+
+### Estado
+Todas as **telas de conteúdo do app estão completas no mock** (auth + 4 abas +
+IFSP + cursos + benefícios + estágio/concursos + depoimentos + dúvidas + perfil).
+Próximo: **fase de Dados & Admin & Conteúdo** (Firestore + tempo real, painel
+admin para cadastrar vagas e editar conteúdo rico, glossário/wikilinks,
+persistência real) — a ser desenhada via brainstorming.
