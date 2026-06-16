@@ -27,12 +27,13 @@ class IfspDetail {
 
   Map<String, dynamic> toMap() => {
         'icon': icon, 'title': title, 'body': body,
-        'rows': rows.map((r) => [r.$1, r.$2]).toList(),
+        // Firestore não suporta array de arrays → cada linha vira um mapa {label, value}.
+        'rows': rows.map((r) => {'label': r.$1, 'value': r.$2}).toList(),
       };
 
   factory IfspDetail.fromMap(String key, Map<String, dynamic> m) => IfspDetail(
         key: key, icon: m['icon'] ?? 'doc', title: m['title'] ?? '', body: m['body'],
         rows: ((m['rows'] ?? const []) as List)
-            .map((r) => (r[0] as String, r[1] as String))
+            .map((r) => ((r as Map)['label'] as String? ?? '', r['value'] as String? ?? ''))
             .toList());
 }

@@ -3,8 +3,21 @@ import 'package:universe_app/data/models/internship.dart';
 import 'package:universe_app/data/models/contest.dart';
 import 'package:universe_app/data/models/benefit.dart';
 import 'package:universe_app/data/models/course.dart';
+import 'package:universe_app/data/models/ifsp_info.dart';
 
 void main() {
+  test('IfspDetail.rows serializa como lista de mapas (Firestore não aceita array de array)', () {
+    const d = IfspDetail(key: 'horario', icon: 'clock', title: 'Horário', rows: [('Seg a Sex', '08h às 22h'), ('Sábado', '08h às 12h')]);
+    final map = d.toMap();
+    // rows deve ser List<Map>, não List<List>
+    expect(map['rows'], isA<List>());
+    expect((map['rows'] as List).first, isA<Map>());
+    final back = IfspDetail.fromMap('horario', map);
+    expect(back.rows.length, 2);
+    expect(back.rows.first.$1, 'Seg a Sex');
+    expect(back.rows.first.$2, '08h às 22h');
+  });
+
   test('Internship round-trip toMap/fromMap', () {
     final e = Internship(
       id: 'e1', role: 'Dev', companyName: 'Org', area: 'TI', duration: '12m',
