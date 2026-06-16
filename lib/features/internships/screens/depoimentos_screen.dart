@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/providers/repository_provider.dart';
-import '../../../core/providers/testimonials_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/models/testimonial.dart';
 import '../../../shared/chrome/app_headers.dart';
@@ -11,6 +10,7 @@ import '../../../shared/chrome/page_shell.dart';
 import '../../../shared/widgets/app_button.dart';
 import '../../../shared/widgets/app_card.dart';
 import '../../../shared/widgets/app_field.dart';
+import '../../../shared/widgets/async_view.dart';
 import '../../../shared/widgets/stars.dart';
 import '../../../shared/widgets/user_avatar.dart';
 
@@ -25,10 +25,11 @@ class _DepoimentosScreenState extends ConsumerState<DepoimentosScreen> {
   String _org = '', _text = '';
   int _stars = 5;
 
-  void _submit() {
+  Future<void> _submit() async {
     final user = ref.read(authStateProvider).valueOrNull;
-    final t = Testimonial(name: user?.name ?? 'Estudante', course: 'IFSP', org: _org, stars: _stars, text: _text);
-    ref.read(userTestimonialsProvider.notifier).update((list) => [t, ...list]);
+    final t = Testimonial(name: user?.name ?? 'Estudante', course: 'IFSP', org: _org, stars: _stars, text: _text, authorUid: user?.id);
+    await ref.read(universeRepositoryProvider).addTestimonial(t);
+    if (!mounted) return;
     setState(() { _adding = false; _org = ''; _text = ''; _stars = 5; });
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Depoimento publicado!')));
   }
@@ -36,7 +37,7 @@ class _DepoimentosScreenState extends ConsumerState<DepoimentosScreen> {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
-    final all = [...ref.watch(userTestimonialsProvider), ...ref.watch(universeRepositoryProvider).testimonials()];
+    final allAsync = ref.watch(testimonialsProvider);
     return PageShell(
       bodyPadding: EdgeInsets.zero,
       header: GreenHero(title: 'Depoimentos', subtitle: 'Quem já estagiou conta como foi', icon: 'star', onBack: () => context.pop()),
@@ -73,22 +74,30 @@ class _DepoimentosScreenState extends ConsumerState<DepoimentosScreen> {
               ]),
             ])),
           const SizedBox(height: 16),
-          for (final t in all) Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: AppCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Row(children: [
-                UserAvatar(t.name, size: 40),
-                const SizedBox(width: 11),
-                Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(t.name, style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: c.ink)),
-                  Text('${t.course} · ${t.org}', style: TextStyle(fontSize: 11, color: c.ink3)),
+          AsyncListView<Testimonial>(
+            value: allAsync,
+            onRetry: () => ref.invalidate(testimonialsProvider),
+            emptyTitle: 'Nenhum depoimento ainda',
+            emptyBody: 'Seja o primeiro a compartilhar sua experiência.',
+            data: (all) => Column(children: [
+              for (final t in all) Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: AppCard(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Row(children: [
+                    UserAvatar(t.name, size: 40),
+                    const SizedBox(width: 11),
+                    Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Text(t.name, style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, color: c.ink)),
+                      Text('${t.course} · ${t.org}', style: TextStyle(fontSize: 11, color: c.ink3)),
+                    ])),
+                  ]),
+                  const SizedBox(height: 9),
+                  Stars(t.stars),
+                  const SizedBox(height: 9),
+                  Text('"${t.text}"', style: TextStyle(fontSize: 12.5, height: 1.5, color: c.ink2)),
                 ])),
-              ]),
-              const SizedBox(height: 9),
-              Stars(t.stars),
-              const SizedBox(height: 9),
-              Text('"${t.text}"', style: TextStyle(fontSize: 12.5, height: 1.5, color: c.ink2)),
-            ])),
+              ),
+            ]),
           ),
         ]),
       ),

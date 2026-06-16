@@ -7,6 +7,7 @@ import '../../../data/models/benefit.dart';
 import '../../../shared/chrome/app_headers.dart';
 import '../../../shared/chrome/page_shell.dart';
 import '../../../shared/widgets/app_card.dart';
+import '../../../shared/widgets/async_view.dart';
 import '../../../shared/widgets/icon_tile.dart';
 
 class BenefitsScreen extends ConsumerWidget {
@@ -17,7 +18,7 @@ class BenefitsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final c = context.c;
     final isGov = kind == BenefitKind.gov;
-    final items = ref.watch(universeRepositoryProvider).benefits(kind);
+    final itemsAsync = ref.watch(benefitsProvider(kind));
     final intro = isGov
         ? 'Conheça os principais benefícios oferecidos pelo governo a estudantes. Toque para ver como solicitar.'
         : 'O IFSP oferece auxílios e bolsas para apoiar sua permanência e desenvolvimento acadêmico.';
@@ -35,30 +36,37 @@ class BenefitsScreen extends ConsumerWidget {
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(intro, style: TextStyle(fontSize: 13, height: 1.55, color: c.ink2)),
           const SizedBox(height: 16),
-          for (final b in items) Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: AppCard(
-              onTap: () => context.push('/beneficios/detail', extra: (benefit: b, isGov: isGov)),
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Row(children: [
-                  IconTile(b.icon, size: 46),
-                  const SizedBox(width: 13),
-                  Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(b.title, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: c.ink)),
-                    const SizedBox(height: 4),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(color: c.green050, borderRadius: BorderRadius.circular(999)),
-                      child: Text(b.tag, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: c.green700)),
-                    ),
-                  ])),
-                  Icon(appIcon('chevR'), size: 18, color: c.ink3),
-                ]),
-                const SizedBox(height: 10),
-                Text(b.description, maxLines: 2, overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 12.5, height: 1.5, color: c.ink2)),
-              ]),
-            ),
+          AsyncListView<Benefit>(
+            value: itemsAsync,
+            onRetry: () => ref.invalidate(benefitsProvider(kind)),
+            emptyTitle: 'Nenhum benefício disponível',
+            data: (items) => Column(children: [
+              for (final b in items) Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: AppCard(
+                  onTap: () => context.push('/beneficios/detail', extra: (benefit: b, isGov: isGov)),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Row(children: [
+                      IconTile(b.icon, size: 46),
+                      const SizedBox(width: 13),
+                      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Text(b.title, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: c.ink)),
+                        const SizedBox(height: 4),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(color: c.green050, borderRadius: BorderRadius.circular(999)),
+                          child: Text(b.tag, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: c.green700)),
+                        ),
+                      ])),
+                      Icon(appIcon('chevR'), size: 18, color: c.ink3),
+                    ]),
+                    const SizedBox(height: 10),
+                    Text(b.description, maxLines: 2, overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 12.5, height: 1.5, color: c.ink2)),
+                  ]),
+                ),
+              ),
+            ]),
           ),
           const SizedBox(height: 4),
           // RF012 — o app não cria/gere benefícios

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/providers/repository_provider.dart';
-import '../../../core/providers/testimonials_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/courses.dart';
 import '../../../data/models/contest.dart';
@@ -12,6 +11,7 @@ import '../../../shared/chrome/app_headers.dart';
 import '../../../shared/chrome/page_shell.dart';
 import '../../../shared/widgets/app_card.dart';
 import '../../../shared/widgets/app_chip.dart';
+import '../../../shared/widgets/async_view.dart';
 import '../../../shared/widgets/empty_state.dart';
 import '../../../shared/widgets/icon_tile.dart';
 import '../../../shared/widgets/section_title.dart';
@@ -33,10 +33,9 @@ class _EstagioScreenState extends ConsumerState<EstagioScreen> {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
-    final repo = ref.watch(universeRepositoryProvider);
-    final vagas = repo.internships(courseFilter: _course);
-    final concursos = repo.contests();
-    final depo = [...ref.watch(userTestimonialsProvider), ...repo.testimonials()];
+    final vagasAsync = ref.watch(internshipsProvider(_course));
+    final concursosAsync = ref.watch(contestsProvider);
+    final depoAsync = ref.watch(testimonialsProvider);
 
     return PageShell(
       bodyPadding: EdgeInsets.zero,
@@ -87,34 +86,56 @@ class _EstagioScreenState extends ConsumerState<EstagioScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            if (vagas.isEmpty)
-              EmptyState(icon: 'briefcase', title: 'Nenhuma vaga para este curso', body: 'Tente outro curso.', action: 'Ver todos', onAction: () => setState(() => _course = 'Todos'))
-            else
-              for (final v in vagas) Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: _VagaCard(v: v, onTap: () => context.push('/estagio/vaga', extra: v)),
-              ),
-            if (depo.isNotEmpty) ...[
-              const SizedBox(height: 14),
-              SectionTitle('Depoimentos', action: 'Ver todos', onAction: () => context.push('/estagio/depoimentos')),
-              SizedBox(
-                height: 176,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: depo.length,
-                  separatorBuilder: (context, i) => const SizedBox(width: 12),
-                  itemBuilder: (context, i) => SizedBox(width: 250, child: _DepoCard(t: depo[i])),
-                ),
-              ),
-            ],
+            AsyncListView<Internship>(
+              value: vagasAsync,
+              onRetry: () => ref.invalidate(internshipsProvider(_course)),
+              emptyTitle: 'Nenhuma vaga para este curso',
+              emptyBody: 'Tente outro curso.',
+              data: (vagas) {
+                if (vagas.isEmpty) {
+                  return EmptyState(icon: 'briefcase', title: 'Nenhuma vaga para este curso', body: 'Tente outro curso.', action: 'Ver todos', onAction: () => setState(() => _course = 'Todos'));
+                }
+                return Column(children: [
+                  for (final v in vagas) Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: _VagaCard(v: v, onTap: () => context.push('/estagio/vaga', extra: v)),
+                  ),
+                ]);
+              },
+            ),
+            depoAsync.when(
+              loading: () => const SizedBox.shrink(),
+              error: (e, _) => const SizedBox.shrink(),
+              data: (depo) {
+                if (depo.isEmpty) return const SizedBox.shrink();
+                return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  const SizedBox(height: 14),
+                  SectionTitle('Depoimentos', action: 'Ver todos', onAction: () => context.push('/estagio/depoimentos')),
+                  SizedBox(
+                    height: 176,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: depo.length,
+                      separatorBuilder: (context, i) => const SizedBox(width: 12),
+                      itemBuilder: (context, i) => SizedBox(width: 250, child: _DepoCard(t: depo[i])),
+                    ),
+                  ),
+                ]);
+              },
+            ),
           ] else ...[
-            if (concursos.isEmpty)
-              const EmptyState(icon: 'doc', title: 'Nenhum concurso aberto', body: 'No momento não há concursos com inscrições abertas.')
-            else
-              for (final ct in concursos) Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: _ConcursoCard(ct: ct, onTap: () => context.push('/estagio/concurso', extra: ct)),
-              ),
+            AsyncListView<Contest>(
+              value: concursosAsync,
+              onRetry: () => ref.invalidate(contestsProvider),
+              emptyTitle: 'Nenhum concurso aberto',
+              emptyBody: 'No momento não há concursos com inscrições abertas.',
+              data: (concursos) => Column(children: [
+                for (final ct in concursos) Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: _ConcursoCard(ct: ct, onTap: () => context.push('/estagio/concurso', extra: ct)),
+                ),
+              ]),
+            ),
           ],
         ]),
       ),
