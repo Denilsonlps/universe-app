@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../data/repositories/seed.dart';
 import '../../../core/providers/profile_provider.dart';
 import '../../../core/providers/theme_provider.dart';
 import '../../../core/theme/app_colors.dart';
@@ -124,6 +126,21 @@ class _PerfilScreenState extends ConsumerState<PerfilScreen> {
             rowItem('institution', 'Sobre o IFSP Pirituba', () => context.push('/ifsp')),
             rowItem('doc', 'Termos e privacidade', () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Em breve'))), last: true),
           ])),
+          if (kDebugMode) ...[
+            const SizedBox(height: 14),
+            AppCard(padding: EdgeInsets.zero, child: Column(children: [
+              rowItem('settings', 'Popular dados de exemplo (dev)', () async {
+                final messenger = ScaffoldMessenger.of(context);
+                messenger.showSnackBar(const SnackBar(content: Text('Populando Firestore…')));
+                try {
+                  await seedFirestore();
+                  messenger.showSnackBar(const SnackBar(content: Text('Dados populados!')));
+                } catch (e) {
+                  messenger.showSnackBar(SnackBar(content: Text('Falha ao popular: $e')));
+                }
+              }, last: true),
+            ])),
+          ],
           const SizedBox(height: 14),
           InkWell(
             borderRadius: BorderRadius.circular(14),
