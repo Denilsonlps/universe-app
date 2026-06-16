@@ -103,24 +103,34 @@ class _EstagioScreenState extends ConsumerState<EstagioScreen> {
                 ]);
               },
             ),
+            // Seção sempre visível (mesmo vazia) — é o caminho para publicar um depoimento.
+            const SizedBox(height: 14),
+            SectionTitle('Depoimentos', action: 'Ver todos', onAction: () => context.push('/estagio/depoimentos')),
             depoAsync.when(
-              loading: () => const SizedBox.shrink(),
+              loading: () => const SizedBox(height: 80, child: Center(child: CircularProgressIndicator())),
               error: (e, _) => const SizedBox.shrink(),
               data: (depo) {
-                if (depo.isEmpty) return const SizedBox.shrink();
-                return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  const SizedBox(height: 14),
-                  SectionTitle('Depoimentos', action: 'Ver todos', onAction: () => context.push('/estagio/depoimentos')),
-                  SizedBox(
-                    height: 176,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: depo.length,
-                      separatorBuilder: (context, i) => const SizedBox(width: 12),
-                      itemBuilder: (context, i) => SizedBox(width: 250, child: _DepoCard(t: depo[i])),
-                    ),
+                if (depo.isEmpty) {
+                  return AppCard(
+                    onTap: () => context.push('/estagio/depoimentos'),
+                    child: Row(children: [
+                      IconTile('star', size: 42, iconSize: 20),
+                      const SizedBox(width: 12),
+                      Expanded(child: Text('Seja o primeiro a compartilhar sua experiência de estágio.',
+                          style: TextStyle(fontSize: 13, color: c.ink2, height: 1.4))),
+                      Icon(appIcon('chevR'), size: 18, color: c.ink3),
+                    ]),
+                  );
+                }
+                return SizedBox(
+                  height: 176,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: depo.length,
+                    separatorBuilder: (context, i) => const SizedBox(width: 12),
+                    itemBuilder: (context, i) => SizedBox(width: 250, child: _DepoCard(t: depo[i])),
                   ),
-                ]);
+                );
               },
             ),
           ] else ...[

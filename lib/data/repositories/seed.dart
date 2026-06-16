@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'fake_universe_repository.dart';
 
 /// Sobe o conteúdo do FakeUniverseRepository para o Firestore (idempotente).
@@ -6,6 +7,7 @@ import 'fake_universe_repository.dart';
 Future<void> seedFirestore() async {
   final db = FirebaseFirestore.instance;
   final fake = FakeUniverseRepository();
+  final uid = FirebaseAuth.instance.currentUser?.uid;
   final batch = db.batch();
 
   for (var i = 0; i < fake.allCourses.length; i++) {
@@ -28,6 +30,10 @@ Future<void> seedFirestore() async {
   }
   for (final info in fake.allIfspInfo) {
     batch.set(db.collection('ifspInfo').doc(info.key), info.toMap());
+  }
+  // Depoimentos de exemplo: authorUid = admin logado (satisfaz a regra de criação).
+  for (var i = 0; i < fake.allTestimonials.length; i++) {
+    batch.set(db.collection('testimonials').doc('t$i'), {...fake.allTestimonials[i].toMap(), 'authorUid': uid});
   }
   await batch.commit();
 }
