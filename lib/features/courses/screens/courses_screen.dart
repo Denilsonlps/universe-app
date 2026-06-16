@@ -9,6 +9,7 @@ import '../../../shared/chrome/page_shell.dart';
 import '../../../shared/widgets/app_card.dart';
 import '../../../shared/widgets/app_chip.dart';
 import '../../../shared/widgets/app_field.dart';
+import '../../../shared/widgets/async_view.dart';
 import '../../../shared/widgets/empty_state.dart';
 import '../../../shared/widgets/icon_tile.dart';
 
@@ -27,10 +28,7 @@ class _CoursesScreenState extends ConsumerState<CoursesScreen> {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
-    final all = ref.watch(universeRepositoryProvider).courses();
-    final list = all.where((e) =>
-        (_cat == 'Todos' || e.category == _cat) &&
-        e.name.toLowerCase().contains(_q.toLowerCase())).toList();
+    final coursesAsync = ref.watch(coursesProvider);
 
     return PageShell(
       bodyPadding: const EdgeInsets.all(16),
@@ -55,13 +53,26 @@ class _CoursesScreenState extends ConsumerState<CoursesScreen> {
           ),
         ),
         const SizedBox(height: 16),
-        if (list.isEmpty)
-          EmptyState(icon: 'search', title: 'Nenhum curso encontrado', body: 'Tente outro termo ou categoria.', action: 'Limpar filtros', onAction: () => setState(() { _cat = 'Todos'; _q = ''; }))
-        else
-          for (final course in list) Padding(
-            padding: const EdgeInsets.only(bottom: 11),
-            child: _CourseCard(course: course, onTap: () => context.push('/cursos/detail', extra: course)),
-          ),
+        AsyncListView<Course>(
+          value: coursesAsync,
+          onRetry: () => ref.invalidate(coursesProvider),
+          emptyTitle: 'Nenhum curso encontrado',
+          emptyBody: 'Tente outro termo ou categoria.',
+          data: (all) {
+            final list = all.where((e) =>
+                (_cat == 'Todos' || e.category == _cat) &&
+                e.name.toLowerCase().contains(_q.toLowerCase())).toList();
+            if (list.isEmpty) {
+              return EmptyState(icon: 'search', title: 'Nenhum curso encontrado', body: 'Tente outro termo ou categoria.', action: 'Limpar filtros', onAction: () => setState(() { _cat = 'Todos'; _q = ''; }));
+            }
+            return Column(children: [
+              for (final course in list) Padding(
+                padding: const EdgeInsets.only(bottom: 11),
+                child: _CourseCard(course: course, onTap: () => context.push('/cursos/detail', extra: course)),
+              ),
+            ]);
+          },
+        ),
       ]),
     );
   }

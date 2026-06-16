@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/app_user.dart';
 import 'auth_repository.dart';
@@ -32,6 +33,11 @@ class FirebaseAuthRepository implements AuthRepository {
       final cred = await _auth.createUserWithEmailAndPassword(email: email.trim(), password: password);
       await cred.user!.updateDisplayName(name.trim());
       await cred.user!.reload();
+      await FirebaseFirestore.instance.collection('users').doc(cred.user!.uid).set({
+        'name': name.trim(),
+        'email': email.trim(),
+        'role': 'student',
+      }, SetOptions(merge: true));
       return _map(_auth.currentUser)!;
     } on FirebaseAuthException catch (e) {
       throw AuthException(_msg(e.code));

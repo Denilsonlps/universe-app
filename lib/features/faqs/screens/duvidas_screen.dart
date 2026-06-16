@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/providers/repository_provider.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../data/models/faq.dart';
 import '../../../shared/chrome/bottom_nav.dart';
 import '../../../shared/chrome/page_shell.dart';
 import '../../../shared/widgets/accordion.dart';
@@ -10,6 +11,7 @@ import '../../../shared/widgets/app_button.dart';
 import '../../../shared/widgets/app_card.dart';
 import '../../../shared/widgets/app_chip.dart';
 import '../../../shared/widgets/app_field.dart';
+import '../../../shared/widgets/async_view.dart';
 import '../../../shared/widgets/empty_state.dart';
 import '../../../shared/widgets/icon_tile.dart';
 
@@ -31,10 +33,7 @@ class _DuvidasScreenState extends ConsumerState<DuvidasScreen> {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
-    final all = ref.watch(universeRepositoryProvider).faqs();
-    final list = all.where((f) =>
-        (_cat == 'Todas' || f.category == _cat) &&
-        f.question.toLowerCase().contains(_q.toLowerCase())).toList();
+    final faqsAsync = ref.watch(faqsProvider);
 
     return PageShell(
       bodyPadding: const EdgeInsets.all(16),
@@ -59,13 +58,26 @@ class _DuvidasScreenState extends ConsumerState<DuvidasScreen> {
           ),
         ),
         const SizedBox(height: 16),
-        if (list.isEmpty)
-          const EmptyState(icon: 'question', title: 'Nenhuma dúvida encontrada', body: 'Não achamos resultados. Encaminhe sua pergunta abaixo.')
-        else
-          for (var i = 0; i < list.length; i++) Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: Accordion(question: list[i].question, answer: list[i].answer, open: _openIdx == i, onToggle: () => setState(() => _openIdx = _openIdx == i ? -1 : i)),
-          ),
+        AsyncListView<Faq>(
+          value: faqsAsync,
+          onRetry: () => ref.invalidate(faqsProvider),
+          emptyTitle: 'Nenhuma dúvida encontrada',
+          emptyBody: 'Não achamos resultados. Encaminhe sua pergunta abaixo.',
+          data: (all) {
+            final list = all.where((f) =>
+                (_cat == 'Todas' || f.category == _cat) &&
+                f.question.toLowerCase().contains(_q.toLowerCase())).toList();
+            if (list.isEmpty) {
+              return const EmptyState(icon: 'question', title: 'Nenhuma dúvida encontrada', body: 'Não achamos resultados. Encaminhe sua pergunta abaixo.');
+            }
+            return Column(children: [
+              for (var i = 0; i < list.length; i++) Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Accordion(question: list[i].question, answer: list[i].answer, open: _openIdx == i, onToggle: () => setState(() => _openIdx = _openIdx == i ? -1 : i)),
+              ),
+            ]);
+          },
+        ),
         const SizedBox(height: 16),
         // Encaminhe sua dúvida
         AppCard(

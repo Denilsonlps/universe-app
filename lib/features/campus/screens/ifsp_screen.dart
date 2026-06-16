@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/providers/repository_provider.dart';
+import '../../../data/models/ifsp_info.dart';
 import '../../../shared/chrome/app_headers.dart';
 import '../../../shared/chrome/page_shell.dart';
+import '../../../shared/widgets/async_view.dart';
 import '../../../shared/widgets/list_row.dart';
 import '../../../shared/widgets/section_title.dart';
 
@@ -11,7 +13,7 @@ class IfspScreen extends ConsumerWidget {
   const IfspScreen({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final info = ref.watch(universeRepositoryProvider).ifspInfo();
+    final infoAsync = ref.watch(ifspInfoProvider);
     const stats = [('1909', 'Fundado'), ('10+', 'Cursos'), ('1.2k', 'Alunos')];
     return PageShell(
       bodyPadding: EdgeInsets.zero,
@@ -38,9 +40,16 @@ class IfspScreen extends ConsumerWidget {
         padding: const EdgeInsets.all(16),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const SectionTitle('Sobre o campus'),
-          for (final it in info) Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: ListRow(icon: it.icon, title: it.title, subtitle: it.subtitle, onTap: () => context.push('/ifsp/${it.key}')),
+          AsyncListView<IfspInfo>(
+            value: infoAsync,
+            onRetry: () => ref.invalidate(ifspInfoProvider),
+            emptyTitle: 'Nenhuma informação disponível',
+            data: (info) => Column(children: [
+              for (final it in info) Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: ListRow(icon: it.icon, title: it.title, subtitle: it.subtitle, onTap: () => context.push('/ifsp/${it.key}')),
+              ),
+            ]),
           ),
         ]),
       ),
