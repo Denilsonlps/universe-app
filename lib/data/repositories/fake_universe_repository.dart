@@ -7,97 +7,94 @@ import '../models/faq.dart';
 import '../models/ifsp_info.dart';
 import 'universe_repository.dart';
 
-class MockUniverseRepository implements UniverseRepository {
+class FakeUniverseRepository implements UniverseRepository {
+  final List<Testimonial> _extraTestimonials = [];
+
   // ── Courses ──────────────────────────────────────────────────────────────
-  @override
-  List<Course> courses() => const [
-        Course(
-          name: 'Análise e Desenvolvimento de Sistemas',
-          category: 'Graduação',
-          type: 'Tecnólogo',
-          duration: '3 anos',
-          period: 'Noturno',
-          icon: 'doc',
-        ),
-        Course(
-          name: 'Gestão Pública',
-          category: 'Graduação',
-          type: 'Tecnólogo',
-          duration: '2,5 anos',
-          period: 'Noturno',
-          icon: 'institution',
-        ),
-        Course(
-          name: 'Letras — Português / Inglês',
-          category: 'Graduação',
-          type: 'Licenciatura',
-          duration: '4 anos',
-          period: 'Noturno',
-          icon: 'book',
-        ),
-        Course(
-          name: 'Engenharia de Produção',
-          category: 'Graduação',
-          type: 'Bacharelado',
-          duration: '5 anos',
-          period: 'Integral',
-          icon: 'settings',
-        ),
-        Course(
-          name: 'Administração',
-          category: 'Técnico',
-          type: 'Integrado ao Médio',
-          duration: '3 anos',
-          period: 'Matutino',
-          icon: 'briefcase',
-        ),
-        Course(
-          name: 'Redes de Computadores',
-          category: 'Técnico',
-          type: 'Concomitante',
-          duration: '2 anos',
-          period: 'Vespertino',
-          icon: 'globe',
-        ),
-        Course(
-          name: 'Logística',
-          category: 'Técnico',
-          type: 'Subsequente',
-          duration: '1,5 ano',
-          period: 'Noturno',
-          icon: 'bus',
-        ),
-        Course(
-          name: 'PROEJA — Administração',
-          category: 'Técnico',
-          type: 'EJA Integrado',
-          duration: '3 anos',
-          period: 'Noturno',
-          icon: 'flag',
-        ),
-        Course(
-          name: 'Gestão de Projetos',
-          category: 'Pós-graduação',
-          type: 'Especialização',
-          duration: '1,5 ano',
-          period: 'Noturno',
-          icon: 'award',
-        ),
-        Course(
-          name: 'Humanidades',
-          category: 'Pós-graduação',
-          type: 'Especialização',
-          duration: '1,5 ano',
-          period: 'Noturno',
-          icon: 'book',
-        ),
-      ];
+  static const _courses = [
+    Course(
+      name: 'Análise e Desenvolvimento de Sistemas',
+      category: 'Graduação',
+      type: 'Tecnólogo',
+      duration: '3 anos',
+      period: 'Noturno',
+      icon: 'doc',
+    ),
+    Course(
+      name: 'Gestão Pública',
+      category: 'Graduação',
+      type: 'Tecnólogo',
+      duration: '2,5 anos',
+      period: 'Noturno',
+      icon: 'institution',
+    ),
+    Course(
+      name: 'Letras — Português / Inglês',
+      category: 'Graduação',
+      type: 'Licenciatura',
+      duration: '4 anos',
+      period: 'Noturno',
+      icon: 'book',
+    ),
+    Course(
+      name: 'Engenharia de Produção',
+      category: 'Graduação',
+      type: 'Bacharelado',
+      duration: '5 anos',
+      period: 'Integral',
+      icon: 'settings',
+    ),
+    Course(
+      name: 'Administração',
+      category: 'Técnico',
+      type: 'Integrado ao Médio',
+      duration: '3 anos',
+      period: 'Matutino',
+      icon: 'briefcase',
+    ),
+    Course(
+      name: 'Redes de Computadores',
+      category: 'Técnico',
+      type: 'Concomitante',
+      duration: '2 anos',
+      period: 'Vespertino',
+      icon: 'globe',
+    ),
+    Course(
+      name: 'Logística',
+      category: 'Técnico',
+      type: 'Subsequente',
+      duration: '1,5 ano',
+      period: 'Noturno',
+      icon: 'bus',
+    ),
+    Course(
+      name: 'PROEJA — Administração',
+      category: 'Técnico',
+      type: 'EJA Integrado',
+      duration: '3 anos',
+      period: 'Noturno',
+      icon: 'flag',
+    ),
+    Course(
+      name: 'Gestão de Projetos',
+      category: 'Pós-graduação',
+      type: 'Especialização',
+      duration: '1,5 ano',
+      period: 'Noturno',
+      icon: 'award',
+    ),
+    Course(
+      name: 'Humanidades',
+      category: 'Pós-graduação',
+      type: 'Especialização',
+      duration: '1,5 ano',
+      period: 'Noturno',
+      icon: 'book',
+    ),
+  ];
 
   // ── Benefits ─────────────────────────────────────────────────────────────
-  @override
-  List<Benefit> benefits(BenefitKind kind) =>
-      kind == BenefitKind.gov ? _benGov : _benInst;
-
   static const _benGov = [
     Benefit(
       icon: 'card',
@@ -209,178 +206,169 @@ class MockUniverseRepository implements UniverseRepository {
   ];
 
   // ── Testimonials ──────────────────────────────────────────────────────────
-  @override
-  List<Testimonial> testimonials() => const [
-        Testimonial(
-          name: 'Lucas Pereira',
-          course: 'ADS',
-          org: 'Prefeitura de SP',
-          stars: 5,
-          text:
-              'Estagiar no setor de TI da Prefeitura foi um divisor de águas. Aprendi na prática o que via em sala e fui efetivado depois de um ano.',
-        ),
-        Testimonial(
-          name: 'Mariana Costa',
-          course: 'Logística',
-          org: 'Correios',
-          stars: 4,
-          text:
-              'O estágio nos Correios me deu visão real de operações. A bolsa ajudou muito e a equipe era super acolhedora com quem está começando.',
-        ),
-        Testimonial(
-          name: 'Rafael Souza',
-          course: 'Administração',
-          org: 'Banco do Brasil',
-          stars: 5,
-          text:
-              'Como Jovem Aprendiz, consegui conciliar estudo e trabalho. Recomendo demais para quem quer começar cedo no mercado.',
-        ),
-      ];
+  static const _testimonials = [
+    Testimonial(
+      name: 'Lucas Pereira',
+      course: 'ADS',
+      org: 'Prefeitura de SP',
+      stars: 5,
+      text:
+          'Estagiar no setor de TI da Prefeitura foi um divisor de águas. Aprendi na prática o que via em sala e fui efetivado depois de um ano.',
+    ),
+    Testimonial(
+      name: 'Mariana Costa',
+      course: 'Logística',
+      org: 'Correios',
+      stars: 4,
+      text:
+          'O estágio nos Correios me deu visão real de operações. A bolsa ajudou muito e a equipe era super acolhedora com quem está começando.',
+    ),
+    Testimonial(
+      name: 'Rafael Souza',
+      course: 'Administração',
+      org: 'Banco do Brasil',
+      stars: 5,
+      text:
+          'Como Jovem Aprendiz, consegui conciliar estudo e trabalho. Recomendo demais para quem quer começar cedo no mercado.',
+    ),
+  ];
 
   // ── FAQs ──────────────────────────────────────────────────────────────────
-  @override
-  List<Faq> faqs() => const [
-        Faq(
-          category: 'Campus',
-          question: 'Como é viver em Pirituba?',
-          answer:
-              'Pirituba é uma região tranquila da Zona Noroeste de São Paulo, bem servida por transporte público (CPTM Linha 7-Rubi e diversas linhas de ônibus), comércio local e áreas verdes como o Parque da Cidade.',
-        ),
-        Faq(
-          category: 'Campus',
-          question: 'O campus possui república estudantil?',
-          answer:
-              'O campus não oferece moradia própria, mas o serviço social orienta sobre repúblicas e auxílio-moradia. Veja a seção Moradia para opções próximas e dicas.',
-        ),
-        Faq(
-          category: 'Campus',
-          question: 'O campus possui acessibilidade para PcD?',
-          answer:
-              'Sim. O campus conta com rampas, elevador, piso tátil, banheiros adaptados e o NAPNE — núcleo de apoio às pessoas com necessidades específicas.',
-        ),
-        Faq(
-          category: 'Enem',
-          question: 'Como utilizo minha nota do Enem no IF?',
-          answer:
-              'Parte das vagas das graduações é ofertada via SiSU, usando a nota do Enem. Acompanhe os editais no site e fique atento às datas de inscrição do SiSU.',
-        ),
-        Faq(
-          category: 'Enem',
-          question: 'O IFSP oferece bolsa para quem entra pelo Enem?',
-          answer:
-              'Sim. Após a matrícula, você pode concorrer aos auxílios do PAP e demais programas de assistência estudantil, independentemente da forma de ingresso.',
-        ),
-        Faq(
-          category: 'Gerais',
-          question: 'Como faço para trancar a matrícula?',
-          answer:
-              'O trancamento é solicitado pela Secretaria, dentro do calendário acadêmico. Procure a CRE do campus ou abra um chamado no sistema acadêmico.',
-        ),
-      ];
+  static const _faqs = [
+    Faq(
+      category: 'Campus',
+      question: 'Como é viver em Pirituba?',
+      answer:
+          'Pirituba é uma região tranquila da Zona Noroeste de São Paulo, bem servida por transporte público (CPTM Linha 7-Rubi e diversas linhas de ônibus), comércio local e áreas verdes como o Parque da Cidade.',
+    ),
+    Faq(
+      category: 'Campus',
+      question: 'O campus possui república estudantil?',
+      answer:
+          'O campus não oferece moradia própria, mas o serviço social orienta sobre repúblicas e auxílio-moradia. Veja a seção Moradia para opções próximas e dicas.',
+    ),
+    Faq(
+      category: 'Campus',
+      question: 'O campus possui acessibilidade para PcD?',
+      answer:
+          'Sim. O campus conta com rampas, elevador, piso tátil, banheiros adaptados e o NAPNE — núcleo de apoio às pessoas com necessidades específicas.',
+    ),
+    Faq(
+      category: 'Enem',
+      question: 'Como utilizo minha nota do Enem no IF?',
+      answer:
+          'Parte das vagas das graduações é ofertada via SiSU, usando a nota do Enem. Acompanhe os editais no site e fique atento às datas de inscrição do SiSU.',
+    ),
+    Faq(
+      category: 'Enem',
+      question: 'O IFSP oferece bolsa para quem entra pelo Enem?',
+      answer:
+          'Sim. Após a matrícula, você pode concorrer aos auxílios do PAP e demais programas de assistência estudantil, independentemente da forma de ingresso.',
+    ),
+    Faq(
+      category: 'Gerais',
+      question: 'Como faço para trancar a matrícula?',
+      answer:
+          'O trancamento é solicitado pela Secretaria, dentro do calendário acadêmico. Procure a CRE do campus ou abra um chamado no sistema acadêmico.',
+    ),
+  ];
 
-  // ── IFSP Info ─────────────────────────────────────────────────────────────
-  @override
-  List<IfspInfo> ifspInfo() => const [
-        IfspInfo(
-          key: 'historia',
-          icon: 'book',
-          title: 'História',
-          subtitle: 'Fundado em 1909, mais de um século de educação pública',
-        ),
-        IfspInfo(
-          key: 'endereco',
-          icon: 'pin',
-          title: 'Endereço',
-          subtitle: 'Av. Mutinga, 951 — Pirituba, São Paulo/SP',
-        ),
-        IfspInfo(
-          key: 'horario',
-          icon: 'clock',
-          title: 'Horário de funcionamento',
-          subtitle: 'Seg a Sex · 08h às 22h',
-        ),
-        IfspInfo(
-          key: 'estrutura',
-          icon: 'institution',
-          title: 'Estrutura',
-          subtitle: 'Laboratórios, biblioteca, quadra e auditório',
-        ),
-        IfspInfo(
-          key: 'contatos',
-          icon: 'phone',
-          title: 'Contatos',
-          subtitle: '(11) 3596-7700 · cmp@ifsp.edu.br',
-        ),
-        IfspInfo(
-          key: 'site',
-          icon: 'globe',
-          title: 'Site oficial',
-          subtitle: 'ptb.ifsp.edu.br',
-        ),
-      ];
-
-  @override
-  IfspDetail? ifspDetail(String key) => _details[key];
-
-  static final Map<String, IfspDetail> _details = {
-    'historia': const IfspDetail(
+  // ── IFSP Info (com detail embutido) ───────────────────────────────────────
+  static const _ifspInfo = [
+    IfspInfo(
       key: 'historia',
       icon: 'book',
       title: 'História',
-      body:
-          'A Rede Federal de Educação nasceu em 1909, com as Escolas de Aprendizes Artífices. O IFSP é herdeiro dessa tradição centenária de ensino público, gratuito e de qualidade.\n\nO Campus Pirituba integra essa rede na Zona Noroeste de São Paulo, oferecendo cursos técnicos, de graduação e de pós-graduação, com forte ligação à comunidade local por meio de projetos de ensino, pesquisa e extensão.',
+      subtitle: 'Fundado em 1909, mais de um século de educação pública',
+      detail: IfspDetail(
+        key: 'historia',
+        icon: 'book',
+        title: 'História',
+        body:
+            'A Rede Federal de Educação nasceu em 1909, com as Escolas de Aprendizes Artífices. O IFSP é herdeiro dessa tradição centenária de ensino público, gratuito e de qualidade.\n\nO Campus Pirituba integra essa rede na Zona Noroeste de São Paulo, oferecendo cursos técnicos, de graduação e de pós-graduação, com forte ligação à comunidade local por meio de projetos de ensino, pesquisa e extensão.',
+      ),
     ),
-    'endereco': const IfspDetail(
+    IfspInfo(
       key: 'endereco',
       icon: 'pin',
       title: 'Endereço',
-      body: 'Av. Mutinga, 951 — Pirituba\nSão Paulo / SP · CEP 02610-002',
+      subtitle: 'Av. Mutinga, 951 — Pirituba, São Paulo/SP',
+      detail: IfspDetail(
+        key: 'endereco',
+        icon: 'pin',
+        title: 'Endereço',
+        body: 'Av. Mutinga, 951 — Pirituba\nSão Paulo / SP · CEP 02610-002',
+      ),
     ),
-    'horario': const IfspDetail(
+    IfspInfo(
       key: 'horario',
       icon: 'clock',
       title: 'Horário de funcionamento',
-      body: 'A secretaria acadêmica atende das 09h às 20h em dias úteis.',
-      rows: [
-        ('Segunda a Sexta', '08h às 22h'),
-        ('Sábado', '08h às 12h'),
-        ('Domingo e feriados', 'Fechado'),
-      ],
+      subtitle: 'Seg a Sex · 08h às 22h',
+      detail: IfspDetail(
+        key: 'horario',
+        icon: 'clock',
+        title: 'Horário de funcionamento',
+        body: 'A secretaria acadêmica atende das 09h às 20h em dias úteis.',
+        rows: [
+          ('Segunda a Sexta', '08h às 22h'),
+          ('Sábado', '08h às 12h'),
+          ('Domingo e feriados', 'Fechado'),
+        ],
+      ),
     ),
-    'estrutura': const IfspDetail(
+    IfspInfo(
       key: 'estrutura',
       icon: 'institution',
       title: 'Estrutura',
-      rows: [
-        ('Laboratórios de informática', 'doc'),
-        ('Biblioteca', 'book'),
-        ('Quadra poliesportiva', 'star'),
-        ('Auditório', 'institution'),
-        ('Laboratórios técnicos', 'settings'),
-        ('Acessibilidade (NAPNE)', 'shield'),
-      ],
+      subtitle: 'Laboratórios, biblioteca, quadra e auditório',
+      detail: IfspDetail(
+        key: 'estrutura',
+        icon: 'institution',
+        title: 'Estrutura',
+        rows: [
+          ('Laboratórios de informática', 'doc'),
+          ('Biblioteca', 'book'),
+          ('Quadra poliesportiva', 'star'),
+          ('Auditório', 'institution'),
+          ('Laboratórios técnicos', 'settings'),
+          ('Acessibilidade (NAPNE)', 'shield'),
+        ],
+      ),
     ),
-    'contatos': const IfspDetail(
+    IfspInfo(
       key: 'contatos',
       icon: 'phone',
       title: 'Contatos',
-      rows: [
-        ('Telefone', '(11) 3596-7700'),
-        ('E-mail', 'cmp@ifsp.edu.br'),
-        ('Endereço', 'Av. Mutinga, 951 — Pirituba'),
-      ],
+      subtitle: '(11) 3596-7700 · cmp@ifsp.edu.br',
+      detail: IfspDetail(
+        key: 'contatos',
+        icon: 'phone',
+        title: 'Contatos',
+        rows: [
+          ('Telefone', '(11) 3596-7700'),
+          ('E-mail', 'cmp@ifsp.edu.br'),
+          ('Endereço', 'Av. Mutinga, 951 — Pirituba'),
+        ],
+      ),
     ),
-    'site': const IfspDetail(
+    IfspInfo(
       key: 'site',
       icon: 'globe',
       title: 'Site oficial',
-      rows: [
-        ('Portal do campus', 'ptb.ifsp.edu.br'),
-        ('Notícias e editais', 'ptb.ifsp.edu.br/noticias'),
-        ('Sistema acadêmico (SUAP)', 'suap.ifsp.edu.br'),
-      ],
+      subtitle: 'ptb.ifsp.edu.br',
+      detail: IfspDetail(
+        key: 'site',
+        icon: 'globe',
+        title: 'Site oficial',
+        rows: [
+          ('Portal do campus', 'ptb.ifsp.edu.br'),
+          ('Notícias e editais', 'ptb.ifsp.edu.br/noticias'),
+          ('Sistema acadêmico (SUAP)', 'suap.ifsp.edu.br'),
+        ],
+      ),
     ),
-  };
+  ];
 
   // ── Internships ───────────────────────────────────────────────────────────
   static final List<Internship> _internships = [
@@ -598,36 +586,52 @@ class MockUniverseRepository implements UniverseRepository {
     ),
   ];
 
-  // ── Query methods ─────────────────────────────────────────────────────────
+  // ── Stream methods ────────────────────────────────────────────────────────
   @override
-  List<Internship> internships({
-    String courseFilter = 'Todos',
-    DateTime? now,
-  }) {
-    final ref = now ?? DateTime.now();
-    return _internships
-        .where((e) => e.visibleAt(ref))
-        .where((e) => courseFilter == 'Todos' || e.course == courseFilter)
-        .toList();
-  }
-
-  /// Retorna a vaga pelo id, independentemente da visibilidade (para deep-links).
-  @override
-  Internship? internship(String id) {
-    final m = _internships.where((e) => e.id == id);
-    return m.isEmpty ? null : m.first;
-  }
+  Stream<List<Course>> watchCourses() => Stream.value(_courses);
 
   @override
-  List<Contest> contests({DateTime? now}) {
-    final ref = now ?? DateTime.now();
-    return _contests.where((c) => c.visibleAt(ref)).toList();
+  Stream<List<Benefit>> watchBenefits(BenefitKind kind) =>
+      Stream.value(kind == BenefitKind.gov ? _benGov : _benInst);
+
+  @override
+  Stream<List<Internship>> watchInternships({String courseFilter = 'Todos'}) {
+    final now = DateTime.now();
+    return Stream.value(
+      _internships
+          .where((e) => e.visibleAt(now))
+          .where((e) => courseFilter == 'Todos' || e.course == courseFilter)
+          .toList(),
+    );
   }
 
-  /// Retorna o concurso pelo id, independentemente da visibilidade (para deep-links).
   @override
-  Contest? contest(String id) {
-    final m = _contests.where((c) => c.id == id);
-    return m.isEmpty ? null : m.first;
+  Stream<List<Contest>> watchContests() {
+    final now = DateTime.now();
+    return Stream.value(_contests.where((c) => c.visibleAt(now)).toList());
   }
+
+  @override
+  Stream<List<Testimonial>> watchTestimonials() =>
+      Stream.value([..._extraTestimonials, ..._testimonials]);
+
+  @override
+  Stream<List<Faq>> watchFaqs() => Stream.value(_faqs);
+
+  @override
+  Stream<List<IfspInfo>> watchIfspInfo() => Stream.value(_ifspInfo);
+
+  @override
+  Future<void> addTestimonial(Testimonial t) async =>
+      _extraTestimonials.insert(0, t);
+
+  // Getters para o seeder lerem todo o conteúdo bruto:
+  List<Course> get allCourses => _courses;
+  List<Benefit> get allBenGov => _benGov;
+  List<Benefit> get allBenInst => _benInst;
+  List<Internship> get allInternships => _internships;
+  List<Contest> get allContests => _contests;
+  List<Testimonial> get allTestimonials => _testimonials;
+  List<Faq> get allFaqs => _faqs;
+  List<IfspInfo> get allIfspInfo => _ifspInfo;
 }
