@@ -359,3 +359,43 @@ IFSP + cursos + benefícios + estágio/concursos + depoimentos + dúvidas + perf
 Próximo: **fase de Dados & Admin & Conteúdo** (Firestore + tempo real, painel
 admin para cadastrar vagas e editar conteúdo rico, glossário/wikilinks,
 persistência real) — a ser desenhada via brainstorming.
+
+---
+
+## 2026-06-11 — SP1 concluído: Fundação Firestore (tempo real)
+
+Fase **Dados & Admin** decomposta em 3 sub-projetos (SP1 Firestore → SP2 Admin →
+SP3 Conteúdo rico). Brainstorming e spec aprovados; SP1 implementado.
+
+### O que foi construído (código)
+- **(De)serialização** de todos os modelos (`fromMap`/`toMap`, datas em epoch-ms),
+  + `AppNotification`; `Testimonial` ganhou `authorUid`/`createdAt`; `IfspInfo`
+  passou a embutir o detalhe (`detail`). Teste de round-trip.
+- **`UniverseRepository` por streams** (`watch…`), com `FakeUniverseRepository`
+  (renomeado do mock; seed/testes) e **`FirestoreUniverseRepository`** (snapshots
+  em tempo real). As regras RF031/RF034/RF036 continuam aplicadas no repositório.
+- **Stream providers** (Riverpod) e Firestore como padrão.
+- **Todas as telas refatoradas** para assíncrono via o helper **`AsyncListView`**
+  (loading/erro/vazio/dados + "tentar novamente").
+- **Depoimentos persistidos** no Firestore (some o provider de sessão); doc
+  `users/{uid}` criado com `role: 'student'` no registro.
+- **Seeder** dev idempotente (sobe o conteúdo do Fake) + **`firestore.rules`**
+  (aluno lê / admin escreve; perfil só do próprio; depoimento criado pelo autor).
+
+### Decisões
+- **Tudo via `Stream`** (um só padrão de UI; cache offline cobre estáticos).
+- Datas como epoch-ms (int) no Firestore — simples e consistente.
+- Admin via campo `role` em `users/{uid}` (sem Cloud Functions).
+
+### Verificação
+- `flutter analyze`: sem erros. `flutter test`: **31/31** (inclui teste de tela
+  consumindo o repositório via stream com o Fake). Revisão final aprovada.
+
+### Pendência operacional (console Firebase)
+Para os dados reais aparecerem no app: habilitar o Cloud Firestore, **publicar as
+regras** (`firestore.rules`), rodar o **seed** uma vez e marcar o usuário do Setor
+de Estágios como `role: 'admin'`. Sem isso, o app compila e os testes passam (usam
+o Fake), mas as telas ficam vazias/carregando.
+
+### Próximo passo
+SP2 — Papel Admin + Painel (cadastro de vagas/concursos pela UI).
