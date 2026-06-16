@@ -34,4 +34,24 @@ class Internship {
     if (since == null) return true; // sem data → mantém visível
     return now.difference(since).inDays <= 30;
   }
+
+  Map<String, dynamic> toMap() => {
+        'role': role, 'companyName': companyName, 'area': area, 'duration': duration,
+        'jobDescription': jobDescription, 'requirements': requirements, 'niceToHave': niceToHave,
+        'companyDescription': companyDescription, 'benefits': benefits, 'grant': grant,
+        'course': course, 'mode': mode, 'link': link, 'tag': tag, 'open': open,
+        'closedAt': closedAt?.millisecondsSinceEpoch,
+      };
+
+  factory Internship.fromMap(String id, Map<String, dynamic> m) => Internship(
+        id: id, role: m['role'] ?? '', companyName: m['companyName'] ?? '', area: m['area'] ?? '',
+        duration: m['duration'] ?? '', jobDescription: m['jobDescription'] ?? '',
+        requirements: List<String>.from(m['requirements'] ?? const []),
+        niceToHave: List<String>.from(m['niceToHave'] ?? const []),
+        companyDescription: m['companyDescription'] ?? '',
+        benefits: List<String>.from(m['benefits'] ?? const []),
+        grant: m['grant'] ?? '', course: m['course'] ?? 'Todos', mode: m['mode'] ?? '',
+        link: m['link'], tag: m['tag'], open: m['open'] ?? true,
+        closedAt: m['closedAt'] == null ? null : DateTime.fromMillisecondsSinceEpoch(m['closedAt'] as int),
+      );
 }
