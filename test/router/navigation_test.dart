@@ -3,15 +3,20 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:universe_app/core/providers/auth_provider.dart';
+import 'package:universe_app/core/providers/repository_provider.dart';
 import 'package:universe_app/core/router/app_router.dart';
 import 'package:universe_app/core/theme/app_theme.dart';
 import 'package:universe_app/data/auth/fake_auth_repository.dart';
+import 'package:universe_app/data/repositories/fake_universe_repository.dart';
 import 'package:universe_app/shared/chrome/bottom_nav.dart';
 
 Future<ProviderContainer> _loggedIn() async {
   final fake = FakeAuthRepository();
   await fake.register(name: 'Ana Beatriz', email: 'ana@aluno.ifsp.edu.br', password: 'Senha@123');
-  return ProviderContainer(overrides: [authRepositoryProvider.overrideWithValue(fake)]);
+  return ProviderContainer(overrides: [
+    authRepositoryProvider.overrideWithValue(fake),
+    universeRepositoryProvider.overrideWith((ref) => FakeUniverseRepository()),
+  ]);
 }
 
 void main() {
@@ -31,6 +36,8 @@ void main() {
     await t.pumpAndSettle();
     // CoursesScreen tem o campo de busca com hint único:
     expect(find.text('Buscar curso…'), findsOneWidget);
+    // exercita o caminho de dados: um curso do FakeUniverseRepository é renderizado
+    expect(find.text('Análise e Desenvolvimento de Sistemas'), findsOneWidget);
   });
 
   testWidgets('abre o drawer pelo botão de menu', (t) async {

@@ -28,6 +28,10 @@ import '../../features/internships/screens/estagio_screen.dart';
 import '../../features/internships/screens/vaga_detail_screen.dart';
 import '../../features/internships/screens/contest_detail_screen.dart';
 import '../../features/internships/screens/depoimentos_screen.dart';
+import '../../features/admin/screens/admin_panel_screen.dart';
+import '../../features/admin/screens/vaga_form_screen.dart';
+import '../../features/admin/screens/concurso_form_screen.dart';
+import '../providers/profile_provider.dart';
 
 const _authRoutes = {'/onboarding', '/login', '/register'};
 
@@ -77,6 +81,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/estagio/vaga', builder: (c, s) => VagaDetailScreen(vaga: s.extra is Internship ? s.extra as Internship : null)),
       GoRoute(path: '/estagio/concurso', builder: (c, s) => ConcursoDetailScreen(contest: s.extra is Contest ? s.extra as Contest : null)),
       GoRoute(path: '/estagio/depoimentos', builder: (c, s) => const DepoimentosScreen()),
+      GoRoute(path: '/admin', builder: (c, s) => const AdminPanelScreen()),
+      GoRoute(path: '/admin/vaga', builder: (c, s) => VagaFormScreen(vaga: s.extra is Internship ? s.extra as Internship : null)),
+      GoRoute(path: '/admin/concurso', builder: (c, s) => ConcursoFormScreen(contest: s.extra is Contest ? s.extra as Contest : null)),
     ],
   );
 });
@@ -87,16 +94,18 @@ class _Shell extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(authStateProvider).valueOrNull;
+    final isAdmin = ref.watch(isAdminProvider);
     return Scaffold(
       backgroundColor: context.c.bg,
       drawer: MenuDrawer(
         userName: user?.name ?? 'Estudante',
         userEmail: user?.email ?? '',
+        isAdmin: isAdmin,
         onNavigate: (route) {
           Navigator.pop(context);
           if (navTabs.any((t) => '/${t.key}' == route)) {
             context.go(route);
-          } else if (route == '/ifsp' || route == '/beneficios/gov' || route == '/beneficios/inst' || route == '/estagio') {
+          } else if (route == '/ifsp' || route == '/beneficios/gov' || route == '/beneficios/inst' || route == '/estagio' || route == '/admin') {
             context.push(route);
           } else {
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Em breve')));
