@@ -399,3 +399,40 @@ o Fake), mas as telas ficam vazias/carregando.
 
 ### Próximo passo
 SP2 — Papel Admin + Painel (cadastro de vagas/concursos pela UI).
+
+---
+
+## 2026-06-11 — SP2 concluído: Painel Admin (vagas & concursos)
+
+### O que foi construído
+O Setor de Estágios (admin) agora **cadastra, edita, encerra e exclui vagas e
+concursos pela própria UI** — sem o console.
+
+- **Papel admin:** `StudentProfile` ganhou `role` (só-leitura no cliente; `toMap`
+  não grava, para não sobrescrever). `isAdminProvider` deriva o papel.
+- **Repositório (escrita):** `upsertInternship/Contest`, `deleteInternship/Contest`,
+  `watchAllInternships/Contests` (sem o filtro RF034/RF036 — admin vê tudo) e
+  `newId`. Implementado no Firestore e no Fake. Providers `allInternshipsProvider`/
+  `allContestsProvider`.
+- **Painel `/admin`:** abas Vagas | Concursos, listas com editar (toque) e excluir
+  (com confirmação), FAB "＋" por aba.
+- **Formulários:** vaga (10 campos RF033 + curso/modalidade/tag/link + editor de
+  listas para pré-requisitos/diferenciais/benefícios + alternador aberta/encerrada
+  que grava `closedAt`); concurso (com date picker do prazo). Validação dos
+  obrigatórios.
+- **Gating:** o botão escudo (tela Estágio) e o item "Painel do Setor de Estágios"
+  (menu) só aparecem para admin (`isAdminProvider`). Segurança real garantida pelas
+  regras do Firestore (SP1).
+
+### Decisões/correções
+- `role` só-leitura no perfil (não sobrescreve ao salvar curso).
+- Listas do `FakeUniverseRepository` passaram a ser de instância (evita vazamento
+  de estado entre testes — achado da revisão final).
+
+### Verificação
+- `flutter analyze`: sem erros. `flutter test`: **37/37** (inclui CRUD do
+  repositório e gating de admin). Revisão final aprovada.
+
+### Próximo passo
+SP3 — Conteúdo rico editável (modelo de blocos: o que é, etapas, vídeo/imagem,
+última atualização) + glossário/wikilinks (`[[PIBIC]]`).
