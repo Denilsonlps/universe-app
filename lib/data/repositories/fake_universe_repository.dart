@@ -625,6 +625,30 @@ class FakeUniverseRepository implements UniverseRepository {
   Future<void> addTestimonial(Testimonial t) async =>
       _extraTestimonials.insert(0, t);
 
+  // ── Admin write ───────────────────────────────────────────────────────────
+  var _idSeq = 1000;
+
+  @override
+  Stream<List<Internship>> watchAllInternships() => Stream.value(List.of(_internships));
+  @override
+  Stream<List<Contest>> watchAllContests() => Stream.value(List.of(_contests));
+  @override
+  Future<void> upsertInternship(Internship v) async {
+    final i = _internships.indexWhere((e) => e.id == v.id);
+    if (i >= 0) { _internships[i] = v; } else { _internships.add(v); }
+  }
+  @override
+  Future<void> deleteInternship(String id) async => _internships.removeWhere((e) => e.id == id);
+  @override
+  Future<void> upsertContest(Contest c) async {
+    final i = _contests.indexWhere((e) => e.id == c.id);
+    if (i >= 0) { _contests[i] = c; } else { _contests.add(c); }
+  }
+  @override
+  Future<void> deleteContest(String id) async => _contests.removeWhere((e) => e.id == id);
+  @override
+  String newId(String collection) => '${collection}_${_idSeq++}';
+
   // Getters para o seeder lerem todo o conteúdo bruto:
   List<Course> get allCourses => _courses;
   List<Benefit> get allBenGov => _benGov;

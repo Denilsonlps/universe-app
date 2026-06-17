@@ -19,4 +19,15 @@ abstract interface class UniverseRepository {
   Stream<List<IfspInfo>> watchIfspInfo();
 
   Future<void> addTestimonial(Testimonial t);
+
+  // Leitura admin (sem filtro de visibilidade)
+  Stream<List<Internship>> watchAllInternships();
+  Stream<List<Contest>> watchAllContests();
+  // Escrita (admin)
+  Future<void> upsertInternship(Internship vaga);
+  Future<void> deleteInternship(String id);
+  Future<void> upsertContest(Contest c);
+  Future<void> deleteContest(String id);
+  /// Gera um novo id para uma coleção ('internships' | 'contests').
+  String newId(String collection);
 }

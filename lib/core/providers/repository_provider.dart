@@ -20,3 +20,5 @@ final contestsProvider = StreamProvider<List<Contest>>((ref) => ref.watch(univer
 final testimonialsProvider = StreamProvider<List<Testimonial>>((ref) => ref.watch(universeRepositoryProvider).watchTestimonials());
 final faqsProvider = StreamProvider<List<Faq>>((ref) => ref.watch(universeRepositoryProvider).watchFaqs());
 final ifspInfoProvider = StreamProvider<List<IfspInfo>>((ref) => ref.watch(universeRepositoryProvider).watchIfspInfo());
+final allInternshipsProvider = StreamProvider<List<Internship>>((ref) => ref.watch(universeRepositoryProvider).watchAllInternships());
+final allContestsProvider = StreamProvider<List<Contest>>((ref) => ref.watch(universeRepositoryProvider).watchAllContests());
