@@ -371,7 +371,9 @@ class FakeUniverseRepository implements UniverseRepository {
   ];
 
   // ── Internships ───────────────────────────────────────────────────────────
-  static final List<Internship> _internships = [
+  // Instância (não static): cada repositório tem cópia mutável própria,
+  // evitando vazamento de estado entre testes.
+  final List<Internship> _internships = [
     const Internship(
       id: 'e1',
       role: 'Estágio em Desenvolvimento Web',
@@ -535,7 +537,7 @@ class FakeUniverseRepository implements UniverseRepository {
   ];
 
   // ── Contests ──────────────────────────────────────────────────────────────
-  static final List<Contest> _contests = [
+  final List<Contest> _contests = [
     Contest(
       id: 'c1',
       role: 'Técnico Administrativo em Educação',
