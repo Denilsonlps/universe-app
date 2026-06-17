@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/providers/repository_provider.dart';
+import '../../../core/providers/profile_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/courses.dart';
 import '../../../data/models/contest.dart';
@@ -33,6 +34,7 @@ class _EstagioScreenState extends ConsumerState<EstagioScreen> {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final isAdmin = ref.watch(isAdminProvider);
     final vagasAsync = ref.watch(internshipsProvider(_course));
     final concursosAsync = ref.watch(contestsProvider);
     final depoAsync = ref.watch(testimonialsProvider);
@@ -42,15 +44,15 @@ class _EstagioScreenState extends ConsumerState<EstagioScreen> {
       header: GreenHero(
         title: 'Estágio e Concursos', subtitle: 'Vagas, editais e oportunidades', icon: 'briefcase',
         onBack: () => context.pop(),
-        action: InkWell(
+        action: isAdmin ? InkWell(
           borderRadius: BorderRadius.circular(11),
-          onTap: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Painel do Setor de Estágios (em breve)'))),
+          onTap: () => context.push('/admin'),
           child: Container(
             width: 38, height: 38, alignment: Alignment.center,
             decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.14), borderRadius: BorderRadius.circular(11)),
             child: Icon(appIcon('shield'), size: 20, color: Colors.white),
           ),
-        ),
+        ) : null,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),

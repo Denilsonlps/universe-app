@@ -14,3 +14,8 @@ final currentProfileProvider = FutureProvider<StudentProfile?>((ref) async {
   if (user == null) return null;
   return ref.read(profileRepositoryProvider).get(user.id);
 });
+
+/// True se o usuário atual tem papel admin (Setor de Estágios).
+final isAdminProvider = Provider<bool>((ref) {
+  return ref.watch(currentProfileProvider).valueOrNull?.role == 'admin';
+});

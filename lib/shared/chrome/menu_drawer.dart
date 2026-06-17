@@ -22,9 +22,10 @@ const drawerItems = [
 
 class MenuDrawer extends StatelessWidget {
   final String userName, userEmail;
+  final bool isAdmin;
   final ValueChanged<String> onNavigate;
   final VoidCallback onLogout;
-  const MenuDrawer({super.key, required this.userName, required this.userEmail, required this.onNavigate, required this.onLogout});
+  const MenuDrawer({super.key, required this.userName, required this.userEmail, this.isAdmin = false, required this.onNavigate, required this.onLogout});
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +64,13 @@ class MenuDrawer extends StatelessWidget {
                   title: Text(m.label, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: c.ink)),
                   trailing: Icon(appIcon('chevR'), size: 16, color: c.ink3),
                   onTap: () => onNavigate(m.route),
+                ),
+              if (isAdmin)
+                ListTile(
+                  leading: Icon(appIcon('shield'), color: c.green700),
+                  title: Text('Painel do Setor de Estágios', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: c.ink)),
+                  trailing: Icon(appIcon('chevR'), size: 16, color: c.ink3),
+                  onTap: () => onNavigate('/admin'),
                 ),
               Divider(color: c.line),
               ListTile(

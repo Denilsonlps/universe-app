@@ -52,4 +52,28 @@ class FirestoreUniverseRepository implements UniverseRepository {
 
   @override
   Future<void> addTestimonial(Testimonial t) => _db.collection('testimonials').add(t.toMap());
+
+  @override
+  Stream<List<Internship>> watchAllInternships() =>
+      _db.collection('internships').snapshots().map((s) => _map(s, Internship.fromMap));
+
+  @override
+  Stream<List<Contest>> watchAllContests() =>
+      _db.collection('contests').snapshots().map((s) => _map(s, Contest.fromMap));
+
+  @override
+  Future<void> upsertInternship(Internship v) =>
+      _db.collection('internships').doc(v.id).set(v.toMap());
+
+  @override
+  Future<void> deleteInternship(String id) => _db.collection('internships').doc(id).delete();
+
+  @override
+  Future<void> upsertContest(Contest c) => _db.collection('contests').doc(c.id).set(c.toMap());
+
+  @override
+  Future<void> deleteContest(String id) => _db.collection('contests').doc(id).delete();
+
+  @override
+  String newId(String collection) => _db.collection(collection).doc().id;
 }
