@@ -86,9 +86,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   Center(
                     child: Wrap(crossAxisAlignment: WrapCrossAlignment.center, children: [
                       Text('Não tem uma conta? ', style: TextStyle(fontSize: 13.5, color: c.ink2)),
-                      GestureDetector(
-                        onTap: () => context.go('/register'),
-                        child: Text('Cadastre-se', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w800, color: c.green700)),
+                      MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: GestureDetector(
+                          onTap: () => context.go('/register'),
+                          child: Text('Cadastre-se', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w800, color: c.green700, decoration: TextDecoration.underline, decorationColor: c.green700)),
+                        ),
                       ),
                     ]),
                   ),
