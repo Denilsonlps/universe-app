@@ -436,3 +436,59 @@ concursos pela própria UI** — sem o console.
 ### Próximo passo
 SP3 — Conteúdo rico editável (modelo de blocos: o que é, etapas, vídeo/imagem,
 última atualização) + glossário/wikilinks (`[[PIBIC]]`).
+
+---
+
+## 2026-06-18 — SP3a concluído: Conteúdo rico (leitura) + glossário/wikilinks
+
+### O que foi construído
+As páginas de benefícios deixaram de ser cartões com texto curto + link e passaram
+a ser **conteúdo rico no estilo gov.br** — o app agora *explica* o benefício, não
+apenas redireciona.
+
+- **Modelo de conteúdo:** `ContentDoc{id, kind(gov/inst), icon, title, tag, summary,
+  updatedAt, sections}` com `ContentSection` **selada** (Dart 3) em 7 tipos:
+  `rich` (texto), `steps` (passo a passo numerado), `docs` (checklist), `media`
+  (imagem/vídeo), `callout` (aviso info/warn), `faq` (acordeão) e `sources` (canais
+  oficiais). `fromMap`/`toMap` com despacho por `type`; tipos desconhecidos são
+  ignorados (tolerância a evolução futura do schema).
+- **Glossário + wikilinks:** constante `glossary` (18 termos: Cadastro Único, ID
+  Jovem, PIBIC, PIBITI, CRAS, NIS, SiSU, Enem, NAPNE…). O widget `WikiText` faz
+  parse de `[[chave]]` e `[[chave|exibição]]`: termos com página abrem outro
+  `ContentDoc`; termos com definição abrem uma **ficha** (`TermSheet`, bottom sheet).
+- **Renderização:** `ContentSectionView` (um `switch` exaustivo na hierarquia selada,
+  reaproveitando o design system — Card, Accordion, IconTile) + `ContentDocScreen`
+  (`/conteudo/:id`) com herói verde, "Atualizado em dd/mm/aaaa" e as seções.
+  `MediaView` mostra imagem via `CachedNetworkImage` e vídeo como thumbnail que abre
+  o link no navegador (sem player embutido — escopo do SP3a é leitura).
+- **Migração dos Benefícios:** a aba Benefícios (gov/inst) lista `contentDocs` por
+  tipo e abre o `ContentDocScreen`. O modelo `Benefit`, a `BenefitDetailScreen`,
+  `benefitsProvider`/`watchBenefits` e o seed de `benefits` foram **removidos**; o
+  enum legado `BenefitKind` foi consolidado em `ContentKind`. O disclaimer **RF012**
+  ("o app só informa") foi mantido.
+- **Repositório/seed:** `watchContentDocs(kind)`/`watchContentDoc(id)` no Firestore e
+  no Fake; providers `contentDocsProvider`/`contentDocProvider`. O Fake traz os **8
+  documentos** transcritos fielmente do protótipo (`data-content.jsx`), com todos os
+  `[[wikilinks]]`. O seeder agora popula a coleção `contentDocs`.
+
+### Decisões/correções
+- **`BenefitKind` → `ContentKind`:** como o modelo `Benefit` saiu e o enum só servia
+  aos benefícios, consolidou-se um único enum (evita nome legado solto). Ajustado em
+  todos os usos (verificado por `grep`).
+- **Wikilink via `WidgetSpan`+`GestureDetector`** (em vez de `TapGestureRecognizer`):
+  dispensa gerência manual do ciclo de vida dos recognizers.
+- **Mídia (SP3a = leitura):** vídeos usam link de exemplo (YouTube) e imagens ficam
+  como placeholder; o **upload ao Storage pelo admin** é o SP3b.
+- Cast tolerante de `updatedAt` (`num`→`int`) no `fromMap`; `onOpenDoc` opcional no
+  `TermSheet`; `parseVideoUrl` resolvido uma única vez (achados das revisões).
+
+### Verificação
+- `flutter analyze`: **sem erros**. `flutter test`: **42/42** (round-trip do
+  `ContentDoc` por tipo, parser do `WikiText`, e os 8 docs do Fake: 4 gov + 4 inst).
+- Execução subagent-driven: 7 tarefas, cada uma com revisão de spec + qualidade.
+- **Pendência operacional do usuário:** rodar novamente o "Popular dados (dev)" no
+  Perfil (admin) para criar a coleção `contentDocs` no Firestore.
+
+### Próximo passo
+SP3b — Editor de conteúdo no painel admin (criar/editar `ContentDoc` e suas seções,
+com upload de imagem ao Firebase Storage).
