@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/providers/onboarding_provider.dart';
 import '../../../shared/widgets/icon_tile.dart';
 
 class _Slide {
@@ -17,14 +19,19 @@ const _slides = [
       'Acompanhe vagas, editais e tire suas dúvidas direto com o campus. Sua vida acadêmica organizada.'),
 ];
 
-class OnboardingScreen extends StatefulWidget {
+class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
   @override
-  State<OnboardingScreen> createState() => _OnboardingScreenState();
+  ConsumerState<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen> {
+class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   int _i = 0;
+
+  void _finish() {
+    ref.read(onboardingSeenProvider.notifier).markSeen();
+    context.go('/login');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +50,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(0, 8, 22, 0),
                 child: last ? const SizedBox(height: 20) : TextButton(
-                  onPressed: () => context.go('/login'),
+                  onPressed: _finish,
                   child: Text('Pular', style: TextStyle(color: Colors.white.withValues(alpha: 0.75), fontWeight: FontWeight.w700)),
                 ),
               ),
@@ -84,7 +91,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 const SizedBox(height: 28),
                 _WhiteButton(
                   label: last ? 'Começar' : 'Próximo',
-                  onTap: () => last ? context.go('/login') : setState(() => _i++),
+                  onTap: () => last ? _finish() : setState(() => _i++),
                 ),
               ]),
             ),
