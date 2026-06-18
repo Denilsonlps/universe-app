@@ -5,6 +5,7 @@ import '../providers/auth_provider.dart';
 import '../theme/app_colors.dart';
 import '../../data/models/app_user.dart';
 import '../../data/models/course.dart';
+import '../../data/models/content_doc.dart';
 import '../../shared/chrome/bottom_nav.dart';
 import '../../shared/chrome/menu_drawer.dart';
 import '../../features/auth/screens/splash_screen.dart';
@@ -19,11 +20,10 @@ import '../../features/courses/screens/courses_screen.dart';
 import '../../features/courses/screens/course_detail_screen.dart';
 import '../../features/campus/screens/ifsp_screen.dart';
 import '../../features/campus/screens/ifsp_detail_screen.dart';
-import '../../data/models/benefit.dart';
 import '../../data/models/internship.dart';
 import '../../data/models/contest.dart';
 import '../../features/benefits/screens/benefits_screen.dart';
-import '../../features/benefits/screens/benefit_detail_screen.dart';
+import '../../features/content/screens/content_doc_screen.dart';
 import '../../features/internships/screens/estagio_screen.dart';
 import '../../features/internships/screens/vaga_detail_screen.dart';
 import '../../features/internships/screens/contest_detail_screen.dart';
@@ -33,6 +33,7 @@ import '../../features/admin/screens/vaga_form_screen.dart';
 import '../../features/admin/screens/concurso_form_screen.dart';
 import '../providers/profile_provider.dart';
 import '../providers/onboarding_provider.dart';
+import '../providers/repository_provider.dart';
 import 'transitions.dart';
 
 const _authRoutes = {'/onboarding', '/login', '/register'};
@@ -79,12 +80,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/ifsp', pageBuilder: (c, s) => fadeSlide(s, const IfspScreen())),
       GoRoute(path: '/ifsp/:key', pageBuilder: (c, s) => fadeSlide(s, IfspDetailScreen(detailKey: s.pathParameters['key']!))),
       GoRoute(path: '/cursos/detail', pageBuilder: (c, s) => fadeSlide(s, CourseDetailScreen(course: s.extra is Course ? s.extra as Course : null))),
-      GoRoute(path: '/beneficios/gov', pageBuilder: (c, s) => fadeSlide(s, const BenefitsScreen(kind: BenefitKind.gov))),
-      GoRoute(path: '/beneficios/inst', pageBuilder: (c, s) => fadeSlide(s, const BenefitsScreen(kind: BenefitKind.inst))),
-      GoRoute(path: '/beneficios/detail', pageBuilder: (c, s) {
-        final x = s.extra;
-        if (x is ({Benefit benefit, bool isGov})) return fadeSlide(s, BenefitDetailScreen(benefit: x.benefit, isGov: x.isGov));
-        return fadeSlide(s, const BenefitDetailScreen(benefit: null, isGov: true));
+      GoRoute(path: '/beneficios/gov', pageBuilder: (c, s) => fadeSlide(s, const BenefitsScreen(kind: ContentKind.gov))),
+      GoRoute(path: '/beneficios/inst', pageBuilder: (c, s) => fadeSlide(s, const BenefitsScreen(kind: ContentKind.inst))),
+      GoRoute(path: '/conteudo/:id', pageBuilder: (c, s) {
+        final extra = s.extra;
+        if (extra is ContentDoc) return fadeSlide(s, ContentDocScreen(doc: extra));
+        return fadeSlide(s, _ContentDocById(id: s.pathParameters['id']!));
       }),
       GoRoute(path: '/estagio', pageBuilder: (c, s) => fadeSlide(s, EstagioScreen(initialCourse: s.extra is String ? s.extra as String : 'Todos'))),
       GoRoute(path: '/estagio/vaga', pageBuilder: (c, s) => fadeSlide(s, VagaDetailScreen(vaga: s.extra is Internship ? s.extra as Internship : null))),
@@ -123,6 +124,19 @@ class _Shell extends ConsumerWidget {
         onLogout: () { Navigator.pop(context); ref.read(authRepositoryProvider).signOut(); },
       ),
       body: child,
+    );
+  }
+}
+
+class _ContentDocById extends ConsumerWidget {
+  final String id;
+  const _ContentDocById({required this.id});
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ref.watch(contentDocProvider(id)).when(
+      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (e, _) => const ContentDocScreen(doc: null),
+      data: (d) => ContentDocScreen(doc: d),
     );
   }
 }

@@ -1,5 +1,4 @@
 import '../models/course.dart';
-import '../models/benefit.dart';
 import '../models/internship.dart';
 import '../models/contest.dart';
 import '../models/testimonial.dart';
@@ -92,117 +91,6 @@ class FakeUniverseRepository implements UniverseRepository {
       duration: '1,5 ano',
       period: 'Noturno',
       icon: 'book',
-    ),
-  ];
-
-  // ── Benefits ─────────────────────────────────────────────────────────────
-  static const _benGov = [
-    Benefit(
-      icon: 'card',
-      title: 'Cadastro Único',
-      tag: 'Federal',
-      description:
-          'Porta de entrada para programas sociais do governo federal. Permite acesso a tarifas sociais, ID Jovem e isenções.',
-      steps: [
-        'Reúna documentos de todos do domicílio',
-        'Procure um posto do CRAS da sua região',
-        'Mantenha o cadastro atualizado a cada 2 anos',
-      ],
-      url: 'https://www.gov.br/pt-br/servicos/inscrever-se-no-cadastro-unico-para-programas-sociais-do-governo-federal',
-    ),
-    Benefit(
-      icon: 'user',
-      title: 'ID Jovem',
-      tag: '15–29 anos',
-      description:
-          'Garante meia-entrada em eventos e vagas gratuitas/com desconto no transporte interestadual para jovens de baixa renda.',
-      steps: [
-        'Tenha o Cadastro Único ativo',
-        'Acesse o app ID Jovem',
-        'Gere a carteira digital',
-      ],
-      url: 'https://www.gov.br/pt-br/servicos/obter-a-carteira-de-identidade-jovem',
-    ),
-    Benefit(
-      icon: 'bus',
-      title: 'Transporte',
-      tag: 'Estadual',
-      description:
-          'Bilhete Único Escolar e gratuidade no transporte público para estudantes matriculados na rede.',
-      steps: [
-        'Comprovante de matrícula atualizado',
-        'Solicite o bilhete na SPTrans',
-        'Recarregue mensalmente',
-      ],
-      url: 'https://www.sptrans.com.br/',
-    ),
-    Benefit(
-      icon: 'doc',
-      title: 'Isenções',
-      tag: 'Taxas',
-      description:
-          'Isenção de taxas em concursos, vestibulares e no Enem para estudantes de baixa renda.',
-      steps: [
-        'Verifique o período de solicitação no edital',
-        'Informe seu nº do NIS',
-        'Acompanhe o deferimento',
-      ],
-      url: 'https://www.gov.br/inep/pt-br/areas-de-atuacao/avaliacao-e-exames-educacionais/enem',
-    ),
-  ];
-
-  static const _benInst = [
-    Benefit(
-      icon: 'benefits',
-      title: 'PAP',
-      tag: 'Auxílio',
-      description:
-          'Programa de Auxílio Permanência — apoio financeiro para estudantes em vulnerabilidade socioeconômica.',
-      steps: [
-        'Inscreva-se no edital de assistência',
-        'Anexe documentação socioeconômica',
-        'Aguarde a análise do serviço social',
-      ],
-      url: 'https://ptb.ifsp.edu.br/',
-    ),
-    Benefit(
-      icon: 'award',
-      title: 'Monitoria',
-      tag: 'Bolsa',
-      description:
-          'Atue como monitor de uma disciplina, apoie colegas e receba bolsa mensal.',
-      steps: [
-        'Tenha bom desempenho na disciplina',
-        'Inscreva-se no edital de monitoria',
-        'Passe pela seleção do docente',
-      ],
-      url: 'https://ptb.ifsp.edu.br/',
-    ),
-    Benefit(
-      icon: 'book',
-      title: 'Iniciação Científica',
-      tag: 'Pesquisa',
-      description:
-          'Desenvolva pesquisa orientada por um docente com bolsa PIBIC/PIBITI.',
-      steps: [
-        'Procure um orientador',
-        'Submeta o projeto ao edital',
-        'Apresente no congresso de IC',
-      ],
-      url: 'https://ptb.ifsp.edu.br/',
-    ),
-    Benefit(
-      icon: 'globe',
-      title: 'Projeto de Extensão',
-      tag: 'Comunidade',
-      description:
-          'Participe de ações que conectam o campus à comunidade, com bolsa de extensão.',
-      steps: [
-        'Escolha um projeto ativo',
-        'Inscreva-se com o coordenador',
-        'Cumpra a carga horária',
-      ],
-      url: 'https://ptb.ifsp.edu.br/',
     ),
   ];
 
@@ -936,10 +824,6 @@ class FakeUniverseRepository implements UniverseRepository {
   Stream<List<Course>> watchCourses() => Stream.value(_courses);
 
   @override
-  Stream<List<Benefit>> watchBenefits(BenefitKind kind) =>
-      Stream.value(kind == BenefitKind.gov ? _benGov : _benInst);
-
-  @override
   Stream<List<Internship>> watchInternships({String courseFilter = 'Todos'}) {
     final now = DateTime.now();
     return Stream.value(
@@ -1006,8 +890,6 @@ class FakeUniverseRepository implements UniverseRepository {
 
   // Getters para o seeder lerem todo o conteúdo bruto:
   List<Course> get allCourses => _courses;
-  List<Benefit> get allBenGov => _benGov;
-  List<Benefit> get allBenInst => _benInst;
   List<Internship> get allInternships => _internships;
   List<Contest> get allContests => _contests;
   List<Testimonial> get allTestimonials => _testimonials;

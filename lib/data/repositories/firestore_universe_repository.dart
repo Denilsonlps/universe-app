@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/course.dart';
-import '../models/benefit.dart';
 import '../models/internship.dart';
 import '../models/contest.dart';
 import '../models/testimonial.dart';
@@ -19,11 +18,6 @@ class FirestoreUniverseRepository implements UniverseRepository {
   @override
   Stream<List<Course>> watchCourses() =>
       _db.collection('courses').snapshots().map((s) => _map(s, Course.fromMap));
-
-  @override
-  Stream<List<Benefit>> watchBenefits(BenefitKind kind) => _db.collection('benefits')
-      .where('kind', isEqualTo: kind == BenefitKind.gov ? 'gov' : 'inst')
-      .snapshots().map((s) => _map(s, Benefit.fromMap));
 
   @override
   Stream<List<Internship>> watchInternships({String courseFilter = 'Todos'}) =>

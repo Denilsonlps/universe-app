@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:universe_app/data/models/internship.dart';
 import 'package:universe_app/data/models/contest.dart';
-import 'package:universe_app/data/models/benefit.dart';
 import 'package:universe_app/data/models/course.dart';
 import 'package:universe_app/data/models/ifsp_info.dart';
 
@@ -40,12 +39,7 @@ void main() {
     expect(back.role, 'Analista');
   });
 
-  test('Benefit e Course round-trip', () {
-    const b = Benefit(icon: 'card', title: 'ID Jovem', tag: 'Federal', description: 'd', steps: ['s1'], url: 'https://x');
-    final bb = Benefit.fromMap('id', b.toMap());
-    expect(bb.title, 'ID Jovem');
-    expect(bb.steps, ['s1']);
-    expect(bb.url, 'https://x');
+  test('Course round-trip', () {
     const co = Course(name: 'ADS', category: 'Graduação', type: 'Tecnólogo', duration: '3 anos', period: 'Noturno', icon: 'doc');
     expect(Course.fromMap('id', co.toMap()).name, 'ADS');
   });
