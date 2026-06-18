@@ -34,8 +34,7 @@ class MediaView extends StatelessWidget {
         placeholder: (ctx, url) => Container(height: 190, color: c.bg2),
         errorWidget: (ctx, url, err) => _placeholder(c, false),
       );
-    } else if (mediaType == 'video' && parseVideoUrl(videoUrl) != null) {
-      final v = parseVideoUrl(videoUrl)!;
+    } else if (mediaType == 'video' && parseVideoUrl(videoUrl) case final v?) {
       inner = GestureDetector(
         onTap: () { final uri = Uri.tryParse(v.watch); if (uri != null) launchUrl(uri, mode: LaunchMode.externalApplication); },
         child: Stack(alignment: Alignment.center, children: [

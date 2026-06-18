@@ -5,7 +5,7 @@ import '../widgets/app_button.dart';
 import '../widgets/icon_tile.dart';
 
 /// Mostra a ficha de definição de um termo do glossário (bottom sheet).
-Future<void> showTermSheet(BuildContext context, String termKey, {required void Function(String docId) onOpenDoc}) {
+Future<void> showTermSheet(BuildContext context, String termKey, {void Function(String docId)? onOpenDoc}) {
   final g = glossary[termKey];
   if (g == null) return Future.value();
   final c = context.c;
@@ -28,7 +28,7 @@ Future<void> showTermSheet(BuildContext context, String termKey, {required void 
         if (g.docId != null) ...[
           const SizedBox(height: 18),
           AppButton('Ver página completa', full: true, icon: 'chevR',
-            onTap: () { Navigator.pop(ctx); onOpenDoc(g.docId!); }),
+            onTap: () { Navigator.pop(ctx); onOpenDoc?.call(g.docId!); }),
         ],
       ]),
     ),
