@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/providers/onboarding_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/auth/auth_repository.dart';
 import '../../../shared/widgets/app_button.dart';
@@ -28,8 +29,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     });
     if (_emailErr != null || _pwErr != null) return;
     setState(() => _loading = true);
+    final auth = ref.read(authRepositoryProvider);
+    final onb = ref.read(onboardingSeenProvider.notifier);
     try {
-      await ref.read(authRepositoryProvider).signIn(email: _email, password: _pw);
+      await auth.signIn(email: _email, password: _pw);
+      onb.markSeen(); // quem autentica já passou da apresentação inicial
     } on AuthException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
