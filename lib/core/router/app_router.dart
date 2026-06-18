@@ -32,6 +32,7 @@ import '../../features/admin/screens/admin_panel_screen.dart';
 import '../../features/admin/screens/vaga_form_screen.dart';
 import '../../features/admin/screens/concurso_form_screen.dart';
 import '../providers/profile_provider.dart';
+import '../providers/onboarding_provider.dart';
 
 const _authRoutes = {'/onboarding', '/login', '/register'};
 
@@ -40,15 +41,22 @@ final routerProvider = Provider<GoRouter>((ref) {
   ref.onDispose(authListenable.dispose);
   ref.listen(authStateProvider, (_, next) => authListenable.value = next, fireImmediately: true);
 
+  final onbListenable = ValueNotifier<bool>(false);
+  ref.onDispose(onbListenable.dispose);
+  ref.listen(onboardingSeenProvider, (_, next) => onbListenable.value = next, fireImmediately: true);
+
   return GoRouter(
     initialLocation: '/splash',
-    refreshListenable: authListenable,
+    refreshListenable: Listenable.merge([authListenable, onbListenable]),
     redirect: (context, state) {
       final auth = authListenable.value;
       if (auth.isLoading) return '/splash';
       final loggedIn = auth.valueOrNull != null;
       final loc = state.matchedLocation;
-      if (!loggedIn) return _authRoutes.contains(loc) ? null : '/onboarding';
+      if (!loggedIn) {
+        if (_authRoutes.contains(loc)) return null;
+        return onbListenable.value ? '/login' : '/onboarding';
+      }
       if (loc == '/splash' || _authRoutes.contains(loc)) return '/home';
       return null;
     },
