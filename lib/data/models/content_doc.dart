@@ -101,7 +101,7 @@ class ContentDoc {
         id: id,
         kind: m['kind'] == 'inst' ? ContentKind.inst : ContentKind.gov,
         icon: m['icon'] ?? 'doc', title: m['title'] ?? '', tag: m['tag'] ?? '', summary: m['summary'] ?? '',
-        updatedAt: DateTime.fromMillisecondsSinceEpoch((m['updatedAt'] ?? 0) as int),
+        updatedAt: DateTime.fromMillisecondsSinceEpoch((m['updatedAt'] as num? ?? 0).toInt()),
         sections: ((m['sections'] ?? const []) as List)
             .map((e) => ContentSection.fromMap(Map<String, dynamic>.from(e)))
             .whereType<ContentSection>()
