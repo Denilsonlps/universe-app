@@ -7,6 +7,7 @@ import '../../data/models/contest.dart';
 import '../../data/models/testimonial.dart';
 import '../../data/models/faq.dart';
 import '../../data/models/ifsp_info.dart';
+import '../../data/models/content_doc.dart';
 import '../../data/repositories/universe_repository.dart';
 import '../../data/repositories/firestore_universe_repository.dart';
 
@@ -22,3 +23,5 @@ final faqsProvider = StreamProvider<List<Faq>>((ref) => ref.watch(universeReposi
 final ifspInfoProvider = StreamProvider<List<IfspInfo>>((ref) => ref.watch(universeRepositoryProvider).watchIfspInfo());
 final allInternshipsProvider = StreamProvider<List<Internship>>((ref) => ref.watch(universeRepositoryProvider).watchAllInternships());
 final allContestsProvider = StreamProvider<List<Contest>>((ref) => ref.watch(universeRepositoryProvider).watchAllContests());
+final contentDocsProvider = StreamProvider.family<List<ContentDoc>, ContentKind>((ref, k) => ref.watch(universeRepositoryProvider).watchContentDocs(k));
+final contentDocProvider = StreamProvider.family<ContentDoc?, String>((ref, id) => ref.watch(universeRepositoryProvider).watchContentDoc(id));

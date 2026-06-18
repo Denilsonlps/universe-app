@@ -6,6 +6,7 @@ import '../models/contest.dart';
 import '../models/testimonial.dart';
 import '../models/faq.dart';
 import '../models/ifsp_info.dart';
+import '../models/content_doc.dart';
 import 'universe_repository.dart';
 
 class FirestoreUniverseRepository implements UniverseRepository {
@@ -49,6 +50,14 @@ class FirestoreUniverseRepository implements UniverseRepository {
 
   @override
   Stream<List<IfspInfo>> watchIfspInfo() => _db.collection('ifspInfo').snapshots().map((s) => _map(s, IfspInfo.fromMap));
+
+  @override
+  Stream<List<ContentDoc>> watchContentDocs(ContentKind kind) => _db.collection('contentDocs')
+      .where('kind', isEqualTo: kind.name).snapshots().map((s) => _map(s, ContentDoc.fromMap));
+
+  @override
+  Stream<ContentDoc?> watchContentDoc(String id) =>
+      _db.collection('contentDocs').doc(id).snapshots().map((d) => d.exists ? ContentDoc.fromMap(d.id, d.data()!) : null);
 
   @override
   Future<void> addTestimonial(Testimonial t) => _db.collection('testimonials').add(t.toMap());

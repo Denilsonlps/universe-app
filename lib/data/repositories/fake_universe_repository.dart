@@ -5,6 +5,7 @@ import '../models/contest.dart';
 import '../models/testimonial.dart';
 import '../models/faq.dart';
 import '../models/ifsp_info.dart';
+import '../models/content_doc.dart';
 import 'universe_repository.dart';
 
 class FakeUniverseRepository implements UniverseRepository {
@@ -588,6 +589,348 @@ class FakeUniverseRepository implements UniverseRepository {
     ),
   ];
 
+  // ── Content Docs ──────────────────────────────────────────────────────────
+  final List<ContentDoc> _contentDocs = [
+    ContentDoc(
+      id: 'gov-cadunico',
+      kind: ContentKind.gov,
+      icon: 'card',
+      title: 'Cadastro Único',
+      tag: 'Federal',
+      summary: 'A porta de entrada para os programas sociais do governo federal.',
+      updatedAt: DateTime(2026, 6, 10),
+      sections: [
+        RichSection(
+          heading: 'O que é',
+          body: 'O [[Cadastro Único|CadÚnico]] é o registro que identifica famílias de baixa renda para os programas sociais do governo federal. É a partir dele que você acessa benefícios como o [[ID Jovem]], tarifas sociais de energia e o pedido de [[Isenções|isenção de taxas]] em concursos e no [[Enem]].\n\nAo entrar no Cadastro Único, você recebe um [[NIS]] — o número que identifica você em todos esses programas.',
+        ),
+        const CalloutSection(
+          variant: 'info',
+          body: 'Não custa nada para se inscrever. O Cadastro Único é gratuito e feito presencialmente no [[CRAS]].',
+        ),
+        RichSection(
+          heading: 'Quem pode se inscrever',
+          body: 'Famílias com renda mensal de até meio salário mínimo por pessoa, ou de até três salários mínimos no total. Estudantes que moram sozinhos também podem fazer o seu próprio cadastro.',
+        ),
+        StepsSection(
+          heading: 'Como solicitar',
+          items: [
+            'Reúna documentos de todas as pessoas que moram com você (CPF ou título de eleitor do responsável).',
+            'Procure o [[CRAS]] mais próximo da sua casa e leve um comprovante de residência.',
+            'Um atendente fará a entrevista e registrará os dados da família.',
+            'Guarde o seu [[NIS]] — você vai usá-lo em todos os benefícios.',
+            'Atualize o cadastro a cada 2 anos ou sempre que algo mudar (endereço, renda, pessoas na casa).',
+          ],
+        ),
+        MediaSection(
+          mediaType: 'video',
+          heading: 'Tutorial em vídeo',
+          caption: 'Como fazer o Cadastro Único passo a passo (3 min)',
+          videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        ),
+        FaqSection(
+          heading: 'Dúvidas frequentes',
+          items: [
+            (q: 'Preciso ir ao CRAS pessoalmente?', a: 'Sim. A inscrição inicial é presencial, mas atualizações simples podem ser feitas pelo app Cadastro Único.'),
+            (q: 'Quanto tempo demora?', a: 'O registro é feito na hora da entrevista. O NIS pode levar alguns dias para ser ativado.'),
+          ],
+        ),
+        SourcesSection(
+          heading: 'Canais oficiais',
+          items: [
+            (label: 'gov.br — Cadastro Único', url: 'gov.br/cadastrounico'),
+            (label: 'App Cadastro Único', url: 'play.google.com · App Store'),
+          ],
+        ),
+      ],
+    ),
+    ContentDoc(
+      id: 'gov-idjovem',
+      kind: ContentKind.gov,
+      icon: 'user',
+      title: 'ID Jovem',
+      tag: '15–29 anos',
+      summary: 'Meia-entrada e transporte interestadual gratuito ou com desconto para jovens de baixa renda.',
+      updatedAt: DateTime(2026, 6, 5),
+      sections: [
+        RichSection(
+          heading: 'O que é',
+          body: 'A Identidade Jovem ([[ID Jovem]]) é um documento digital gratuito que garante direitos a jovens de 15 a 29 anos inscritos no [[Cadastro Único]] com renda familiar de até dois salários mínimos.',
+        ),
+        RichSection(
+          heading: 'Quais são os direitos',
+          body: 'Meia-entrada em eventos artísticos, culturais e esportivos; e vagas gratuitas ou com 50% de desconto no transporte interestadual (ônibus, trem e barco entre estados).',
+        ),
+        DocsSection(
+          heading: 'O que você precisa',
+          items: [
+            'Ter entre 15 e 29 anos',
+            '[[Cadastro Único]] ativo e atualizado',
+            'Renda familiar de até 2 salários mínimos',
+          ],
+        ),
+        StepsSection(
+          heading: 'Como emitir',
+          items: [
+            'Garanta que seu [[Cadastro Único]] está atualizado.',
+            'Baixe o aplicativo ID Jovem ou acesse o site oficial.',
+            'Informe seu [[NIS]] e dados pessoais.',
+            'Pronto: a carteira digital fica disponível no app para apresentar quando precisar.',
+          ],
+        ),
+        MediaSection(
+          mediaType: 'image',
+          heading: 'Como fica a carteira',
+          caption: 'Exemplo da carteira digital do ID Jovem',
+        ),
+        const CalloutSection(
+          variant: 'warn',
+          body: 'Para usar no transporte interestadual, solicite a vaga com antecedência — o número de lugares com gratuidade é limitado por viagem.',
+        ),
+        SourcesSection(
+          heading: 'Canais oficiais',
+          items: [
+            (label: 'gov.br — ID Jovem', url: 'gov.br/cidadania/id-jovem'),
+          ],
+        ),
+      ],
+    ),
+    ContentDoc(
+      id: 'gov-transporte',
+      kind: ContentKind.gov,
+      icon: 'bus',
+      title: 'Transporte estudantil',
+      tag: 'Estadual',
+      summary: 'Bilhete Único Escolar e gratuidade no transporte público para estudantes matriculados.',
+      updatedAt: DateTime(2026, 5, 28),
+      sections: [
+        RichSection(
+          heading: 'O que é',
+          body: 'O [[Bilhete Único]] Escolar dá desconto ou gratuidade no transporte público de São Paulo para estudantes regularmente matriculados. Em conjunto com o [[ID Jovem]], amplia o acesso à mobilidade para quem estuda.',
+        ),
+        StepsSection(
+          heading: 'Como solicitar',
+          items: [
+            'Tenha em mãos um comprovante de matrícula atualizado do campus.',
+            'Faça o cadastro no site da SPTrans com foto e documento.',
+            'Acompanhe a aprovação e retire o cartão no posto indicado.',
+            'Recarregue mensalmente para manter o benefício ativo.',
+          ],
+        ),
+        const CalloutSection(
+          variant: 'info',
+          body: 'Precisa do comprovante de matrícula? Solicite na secretaria do campus — veja os contatos na seção IFSP Pirituba.',
+        ),
+        SourcesSection(
+          heading: 'Canais oficiais',
+          items: [
+            (label: 'SPTrans — Bilhete Único Escolar', url: 'sptrans.com.br'),
+          ],
+        ),
+      ],
+    ),
+    ContentDoc(
+      id: 'gov-isencoes',
+      kind: ContentKind.gov,
+      icon: 'doc',
+      title: 'Isenção de taxas',
+      tag: 'Concursos e Enem',
+      summary: 'Isenção da taxa de inscrição em concursos, vestibulares e no Enem.',
+      updatedAt: DateTime(2026, 6, 1),
+      sections: [
+        RichSection(
+          heading: 'O que é',
+          body: 'Estudantes de baixa renda podem pedir [[Isenções|isenção]] da taxa de inscrição no [[Enem]], em concursos públicos e em vestibulares. O critério mais comum é estar inscrito no [[Cadastro Único]] e informar o [[NIS]].',
+        ),
+        StepsSection(
+          heading: 'Como solicitar',
+          items: [
+            'Fique atento ao período de pedido de isenção — costuma ser antes das inscrições.',
+            'No formulário, marque a opção de isenção e informe seu [[NIS]].',
+            'Envie os documentos pedidos, se houver.',
+            'Acompanhe o resultado (deferido ou indeferido) e, se negado, veja se há recurso.',
+          ],
+        ),
+        const CalloutSection(
+          variant: 'warn',
+          body: 'O prazo da isenção quase sempre é mais curto que o das inscrições. Não deixe para a última hora.',
+        ),
+        FaqSection(
+          heading: 'Dúvidas frequentes',
+          items: [
+            (q: 'Se a isenção for negada, ainda posso me inscrever?', a: 'Sim, mas você terá que pagar a taxa dentro do prazo normal de inscrição.'),
+          ],
+        ),
+        SourcesSection(
+          heading: 'Canais oficiais',
+          items: [
+            (label: 'Página oficial do Enem', url: 'gov.br/inep/enem'),
+          ],
+        ),
+      ],
+    ),
+    ContentDoc(
+      id: 'inst-pap',
+      kind: ContentKind.inst,
+      icon: 'benefits',
+      title: 'PAP — Auxílio Permanência',
+      tag: 'Auxílio',
+      summary: 'Apoio financeiro para estudantes em situação de vulnerabilidade socioeconômica.',
+      updatedAt: DateTime(2026, 6, 12),
+      sections: [
+        RichSection(
+          heading: 'O que é',
+          body: 'O Programa de Auxílio Permanência ([[PAP]]) é uma das principais ações de assistência estudantil do IFSP. Oferece apoio financeiro para que estudantes em vulnerabilidade consigam se manter no curso, incluindo auxílio-moradia, alimentação e transporte.',
+        ),
+        DocsSection(
+          heading: 'Documentos para a inscrição',
+          items: [
+            'Documento de identidade e CPF',
+            'Comprovante de renda de todos da família',
+            'Comprovante de residência',
+            'Comprovante de matrícula',
+          ],
+        ),
+        StepsSection(
+          heading: 'Como solicitar',
+          items: [
+            'Acompanhe a abertura do edital de assistência estudantil no campus.',
+            'Preencha a inscrição no sistema acadêmico (SUAP).',
+            'Anexe a documentação socioeconômica solicitada.',
+            'Aguarde a análise do serviço social do campus.',
+            'Se aprovado, o auxílio é pago mensalmente conforme o edital.',
+          ],
+        ),
+        MediaSection(
+          mediaType: 'video',
+          heading: 'Tutorial em vídeo',
+          caption: 'Como se inscrever no PAP pelo SUAP (5 min)',
+          videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+        ),
+        const CalloutSection(
+          variant: 'info',
+          body: 'Dúvidas sobre documentação? Procure o serviço social do campus — atendimento humano e confidencial.',
+        ),
+        SourcesSection(
+          heading: 'Canais oficiais',
+          items: [
+            (label: 'Assistência Estudantil — IFSP', url: 'ptb.ifsp.edu.br/assistencia'),
+          ],
+        ),
+      ],
+    ),
+    ContentDoc(
+      id: 'inst-monitoria',
+      kind: ContentKind.inst,
+      icon: 'award',
+      title: 'Monitoria',
+      tag: 'Bolsa',
+      summary: 'Apoie colegas em uma disciplina e receba bolsa mensal.',
+      updatedAt: DateTime(2026, 5, 20),
+      sections: [
+        RichSection(
+          heading: 'O que é',
+          body: 'Na [[Monitoria]], você atua como monitor de uma disciplina em que tem bom desempenho, ajudando colegas e o docente, e recebe uma bolsa mensal. É uma ótima primeira experiência acadêmica — e conta como atividade complementar.',
+        ),
+        StepsSection(
+          heading: 'Como participar',
+          items: [
+            'Tenha bom desempenho na disciplina desejada.',
+            'Inscreva-se quando o edital de monitoria for publicado.',
+            'Passe pela seleção feita pelo docente responsável.',
+            'Cumpra a carga horária combinada e receba a bolsa.',
+          ],
+        ),
+        FaqSection(
+          heading: 'Dúvidas frequentes',
+          items: [
+            (q: 'Monitoria atrapalha os estudos?', a: 'Não. A carga horária é planejada para caber na sua rotina, geralmente algumas horas por semana.'),
+          ],
+        ),
+        SourcesSection(
+          heading: 'Canais oficiais',
+          items: [
+            (label: 'Editais de ensino — IFSP', url: 'ptb.ifsp.edu.br/editais'),
+          ],
+        ),
+      ],
+    ),
+    ContentDoc(
+      id: 'inst-ic',
+      kind: ContentKind.inst,
+      icon: 'book',
+      title: 'Iniciação Científica',
+      tag: 'Pesquisa',
+      summary: 'Desenvolva pesquisa orientada por um docente, com bolsa PIBIC ou PIBITI.',
+      updatedAt: DateTime(2026, 6, 8),
+      sections: [
+        RichSection(
+          heading: 'O que é',
+          body: 'A [[Iniciação Científica]] permite que você desenvolva um projeto de pesquisa orientado por um docente, com bolsa mensal. As duas principais modalidades são o [[PIBIC]] (pesquisa científica) e o [[PIBITI]] (inovação e tecnologia).',
+        ),
+        RichSection(
+          heading: 'PIBIC e PIBITI: qual a diferença?',
+          body: 'O [[PIBIC]] é voltado à pesquisa científica em qualquer área do conhecimento. O [[PIBITI]] foca em desenvolvimento tecnológico e inovação — protótipos, software, processos. Ambos pagam bolsa e valem como experiência acadêmica.',
+        ),
+        StepsSection(
+          heading: 'Como participar',
+          items: [
+            'Procure um docente da sua área para ser seu orientador.',
+            'Juntos, escrevam um projeto de pesquisa.',
+            'Submetam o projeto ao edital de [[PIBIC]] ou [[PIBITI]].',
+            'Se aprovado, desenvolva a pesquisa e receba a bolsa.',
+            'Apresente os resultados no congresso de Iniciação Científica.',
+          ],
+        ),
+        MediaSection(
+          mediaType: 'image',
+          heading: 'Linha do tempo da pesquisa',
+          caption: 'Do projeto ao congresso: como funciona um ano de IC',
+        ),
+        SourcesSection(
+          heading: 'Canais oficiais',
+          items: [
+            (label: 'Pesquisa e Inovação — IFSP', url: 'ptb.ifsp.edu.br/pesquisa'),
+          ],
+        ),
+      ],
+    ),
+    ContentDoc(
+      id: 'inst-extensao',
+      kind: ContentKind.inst,
+      icon: 'globe',
+      title: 'Projeto de Extensão',
+      tag: 'Comunidade',
+      summary: 'Conecte o campus à comunidade em ações sociais, culturais e educativas — com bolsa.',
+      updatedAt: DateTime(2026, 5, 15),
+      sections: [
+        RichSection(
+          heading: 'O que é',
+          body: 'A [[Extensão]] são projetos que levam o conhecimento do campus para fora dele, atendendo a comunidade. Você pode participar como bolsista ou voluntário e desenvolver habilidades que o mercado valoriza.',
+        ),
+        StepsSection(
+          heading: 'Como participar',
+          items: [
+            'Veja os projetos de extensão ativos no campus.',
+            'Converse com o coordenador do projeto que te interessa.',
+            'Inscreva-se no edital de extensão.',
+            'Cumpra a carga horária e participe das ações.',
+          ],
+        ),
+        const CalloutSection(
+          variant: 'info',
+          body: 'Extensão conta como atividade complementar e enriquece muito o currículo.',
+        ),
+        SourcesSection(
+          heading: 'Canais oficiais',
+          items: [
+            (label: 'Extensão — IFSP', url: 'ptb.ifsp.edu.br/extensao'),
+          ],
+        ),
+      ],
+    ),
+  ];
+
   // ── Stream methods ────────────────────────────────────────────────────────
   @override
   Stream<List<Course>> watchCourses() => Stream.value(_courses);
@@ -622,6 +965,16 @@ class FakeUniverseRepository implements UniverseRepository {
 
   @override
   Stream<List<IfspInfo>> watchIfspInfo() => Stream.value(_ifspInfo);
+
+  @override
+  Stream<List<ContentDoc>> watchContentDocs(ContentKind kind) =>
+      Stream.value(_contentDocs.where((d) => d.kind == kind).toList());
+
+  @override
+  Stream<ContentDoc?> watchContentDoc(String id) {
+    final m = _contentDocs.where((d) => d.id == id);
+    return Stream.value(m.isEmpty ? null : m.first);
+  }
 
   @override
   Future<void> addTestimonial(Testimonial t) async =>
@@ -660,4 +1013,5 @@ class FakeUniverseRepository implements UniverseRepository {
   List<Testimonial> get allTestimonials => _testimonials;
   List<Faq> get allFaqs => _faqs;
   List<IfspInfo> get allIfspInfo => _ifspInfo;
+  List<ContentDoc> get allContentDocs => _contentDocs;
 }
