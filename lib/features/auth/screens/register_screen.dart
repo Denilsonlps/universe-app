@@ -34,10 +34,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   Future<void> _submit() async {
     setState(() => _loading = true);
+    final authRepo = ref.read(authRepositoryProvider);
+    final profileRepo = ref.read(profileRepositoryProvider);
+    final course = _course;
     try {
-      final user = await ref.read(authRepositoryProvider).register(name: _name, email: _email, password: _pw);
-      if (_course != null) {
-        await ref.read(profileRepositoryProvider).save(StudentProfile(uid: user.id, course: _course));
+      final user = await authRepo.register(name: _name, email: _email, password: _pw);
+      if (course != null) {
+        await profileRepo.save(StudentProfile(uid: user.id, course: course));
       }
     } on AuthException catch (e) {
       if (mounted) {
