@@ -33,6 +33,7 @@ import '../../features/admin/screens/vaga_form_screen.dart';
 import '../../features/admin/screens/concurso_form_screen.dart';
 import '../providers/profile_provider.dart';
 import '../providers/onboarding_provider.dart';
+import 'transitions.dart';
 
 const _authRoutes = {'/onboarding', '/login', '/register'};
 
@@ -74,24 +75,24 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(path: '/perfil', builder: (c, s) => const PerfilScreen()),
         ],
       ),
-      GoRoute(path: '/cadastrar', builder: (c, s) => const CadastrarScreen()),
-      GoRoute(path: '/ifsp', builder: (c, s) => const IfspScreen()),
-      GoRoute(path: '/ifsp/:key', builder: (c, s) => IfspDetailScreen(detailKey: s.pathParameters['key']!)),
-      GoRoute(path: '/cursos/detail', builder: (c, s) => CourseDetailScreen(course: s.extra is Course ? s.extra as Course : null)),
-      GoRoute(path: '/beneficios/gov', builder: (c, s) => const BenefitsScreen(kind: BenefitKind.gov)),
-      GoRoute(path: '/beneficios/inst', builder: (c, s) => const BenefitsScreen(kind: BenefitKind.inst)),
-      GoRoute(path: '/beneficios/detail', builder: (c, s) {
+      GoRoute(path: '/cadastrar', pageBuilder: (c, s) => fadeSlide(s, const CadastrarScreen())),
+      GoRoute(path: '/ifsp', pageBuilder: (c, s) => fadeSlide(s, const IfspScreen())),
+      GoRoute(path: '/ifsp/:key', pageBuilder: (c, s) => fadeSlide(s, IfspDetailScreen(detailKey: s.pathParameters['key']!))),
+      GoRoute(path: '/cursos/detail', pageBuilder: (c, s) => fadeSlide(s, CourseDetailScreen(course: s.extra is Course ? s.extra as Course : null))),
+      GoRoute(path: '/beneficios/gov', pageBuilder: (c, s) => fadeSlide(s, const BenefitsScreen(kind: BenefitKind.gov))),
+      GoRoute(path: '/beneficios/inst', pageBuilder: (c, s) => fadeSlide(s, const BenefitsScreen(kind: BenefitKind.inst))),
+      GoRoute(path: '/beneficios/detail', pageBuilder: (c, s) {
         final x = s.extra;
-        if (x is ({Benefit benefit, bool isGov})) return BenefitDetailScreen(benefit: x.benefit, isGov: x.isGov);
-        return const BenefitDetailScreen(benefit: null, isGov: true);
+        if (x is ({Benefit benefit, bool isGov})) return fadeSlide(s, BenefitDetailScreen(benefit: x.benefit, isGov: x.isGov));
+        return fadeSlide(s, const BenefitDetailScreen(benefit: null, isGov: true));
       }),
-      GoRoute(path: '/estagio', builder: (c, s) => EstagioScreen(initialCourse: s.extra is String ? s.extra as String : 'Todos')),
-      GoRoute(path: '/estagio/vaga', builder: (c, s) => VagaDetailScreen(vaga: s.extra is Internship ? s.extra as Internship : null)),
-      GoRoute(path: '/estagio/concurso', builder: (c, s) => ConcursoDetailScreen(contest: s.extra is Contest ? s.extra as Contest : null)),
-      GoRoute(path: '/estagio/depoimentos', builder: (c, s) => const DepoimentosScreen()),
-      GoRoute(path: '/admin', builder: (c, s) => const AdminPanelScreen()),
-      GoRoute(path: '/admin/vaga', builder: (c, s) => VagaFormScreen(vaga: s.extra is Internship ? s.extra as Internship : null)),
-      GoRoute(path: '/admin/concurso', builder: (c, s) => ConcursoFormScreen(contest: s.extra is Contest ? s.extra as Contest : null)),
+      GoRoute(path: '/estagio', pageBuilder: (c, s) => fadeSlide(s, EstagioScreen(initialCourse: s.extra is String ? s.extra as String : 'Todos'))),
+      GoRoute(path: '/estagio/vaga', pageBuilder: (c, s) => fadeSlide(s, VagaDetailScreen(vaga: s.extra is Internship ? s.extra as Internship : null))),
+      GoRoute(path: '/estagio/concurso', pageBuilder: (c, s) => fadeSlide(s, ConcursoDetailScreen(contest: s.extra is Contest ? s.extra as Contest : null))),
+      GoRoute(path: '/estagio/depoimentos', pageBuilder: (c, s) => fadeSlide(s, const DepoimentosScreen())),
+      GoRoute(path: '/admin', pageBuilder: (c, s) => fadeSlide(s, const AdminPanelScreen())),
+      GoRoute(path: '/admin/vaga', pageBuilder: (c, s) => fadeSlide(s, VagaFormScreen(vaga: s.extra is Internship ? s.extra as Internship : null))),
+      GoRoute(path: '/admin/concurso', pageBuilder: (c, s) => fadeSlide(s, ConcursoFormScreen(contest: s.extra is Contest ? s.extra as Contest : null))),
     ],
   );
 });
