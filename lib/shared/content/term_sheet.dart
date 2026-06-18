@@ -7,7 +7,8 @@ import '../widgets/icon_tile.dart';
 /// Mostra a ficha de definição de um termo do glossário (bottom sheet).
 Future<void> showTermSheet(BuildContext context, String termKey, {void Function(String docId)? onOpenDoc}) {
   final g = glossary[termKey];
-  if (g == null) return Future.value();
+  // Sem definição não há ficha a mostrar (entradas só-`docId` navegam direto).
+  if (g == null || g.def == null) return Future.value();
   final c = context.c;
   return showModalBottomSheet<void>(
     context: context,
