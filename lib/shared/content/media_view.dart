@@ -27,6 +27,7 @@ class MediaView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final v = mediaType == 'video' ? parseVideoUrl(videoUrl) : null;
     Widget inner;
     if (mediaType == 'image' && imageUrl != null && imageUrl!.isNotEmpty) {
       inner = CachedNetworkImage(
@@ -34,7 +35,7 @@ class MediaView extends StatelessWidget {
         placeholder: (ctx, url) => Container(height: 190, color: c.bg2),
         errorWidget: (ctx, url, err) => _placeholder(c, false),
       );
-    } else if (mediaType == 'video' && parseVideoUrl(videoUrl) case final v?) {
+    } else if (v != null) {
       inner = GestureDetector(
         onTap: () { final uri = Uri.tryParse(v.watch); if (uri != null) launchUrl(uri, mode: LaunchMode.externalApplication); },
         child: Stack(alignment: Alignment.center, children: [
