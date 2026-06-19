@@ -23,3 +23,4 @@ final allInternshipsProvider = StreamProvider<List<Internship>>((ref) => ref.wat
 final allContestsProvider = StreamProvider<List<Contest>>((ref) => ref.watch(universeRepositoryProvider).watchAllContests());
 final contentDocsProvider = StreamProvider.family<List<ContentDoc>, ContentKind>((ref, k) => ref.watch(universeRepositoryProvider).watchContentDocs(k));
 final contentDocProvider = StreamProvider.family<ContentDoc?, String>((ref, id) => ref.watch(universeRepositoryProvider).watchContentDoc(id));
+final allContentDocsProvider = StreamProvider<List<ContentDoc>>((ref) => ref.watch(universeRepositoryProvider).watchAllContentDocs());
