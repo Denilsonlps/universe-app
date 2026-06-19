@@ -73,7 +73,7 @@ class ContentSectionView extends StatelessWidget {
       case MediaSection():
         return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           heading(s.heading),
-          MediaView(mediaType: s.mediaType, imageUrl: s.imageUrl, videoUrl: s.videoUrl, caption: s.caption),
+          MediaView(mediaType: s.mediaType, imageUrl: s.imageUrl, videoUrl: s.videoUrl, caption: s.caption, fit: s.fit),
         ]);
       case CalloutSection():
         final warn = s.variant == 'warn';

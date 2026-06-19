@@ -16,6 +16,7 @@ class Internship {
   final String mode;     // presencial/híbrido
   final String? link;
   final String? tag;     // ex.: 'Novo'
+  final String? imageUrl; // imagem/banner opcional da vaga
   final bool open;       // RF034: disponível ou não
   final DateTime? closedAt; // quando foi encerrada (RF034)
 
@@ -24,7 +25,7 @@ class Internship {
     required this.duration, required this.jobDescription, required this.requirements,
     required this.niceToHave, required this.companyDescription, required this.benefits,
     required this.grant, required this.course, required this.mode,
-    this.link, this.tag, this.open = true, this.closedAt,
+    this.link, this.tag, this.imageUrl, this.open = true, this.closedAt,
   });
 
   /// RF034: vaga encerrada permanece visível por até 30 dias após `closedAt`.
@@ -39,7 +40,7 @@ class Internship {
         'role': role, 'companyName': companyName, 'area': area, 'duration': duration,
         'jobDescription': jobDescription, 'requirements': requirements, 'niceToHave': niceToHave,
         'companyDescription': companyDescription, 'benefits': benefits, 'grant': grant,
-        'course': course, 'mode': mode, 'link': link, 'tag': tag, 'open': open,
+        'course': course, 'mode': mode, 'link': link, 'tag': tag, 'imageUrl': imageUrl, 'open': open,
         'closedAt': closedAt?.millisecondsSinceEpoch,
       };
 
@@ -51,7 +52,7 @@ class Internship {
         companyDescription: m['companyDescription'] ?? '',
         benefits: List<String>.from(m['benefits'] ?? const []),
         grant: m['grant'] ?? '', course: m['course'] ?? 'Todos', mode: m['mode'] ?? '',
-        link: m['link'], tag: m['tag'], open: m['open'] ?? true,
+        link: m['link'], tag: m['tag'], imageUrl: m['imageUrl'], open: m['open'] ?? true,
         closedAt: m['closedAt'] == null ? null : DateTime.fromMillisecondsSinceEpoch(m['closedAt'] as int),
       );
 }

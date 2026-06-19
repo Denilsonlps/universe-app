@@ -14,7 +14,7 @@ sealed class ContentSection {
       case 'docs':
         return DocsSection(heading: m['heading'], items: List<String>.from(m['items'] ?? const []));
       case 'media':
-        return MediaSection(heading: m['heading'], caption: m['caption'], mediaType: m['mediaType'] ?? 'image', imageUrl: m['imageUrl'], videoUrl: m['videoUrl']);
+        return MediaSection(heading: m['heading'], caption: m['caption'], mediaType: m['mediaType'] ?? 'image', imageUrl: m['imageUrl'], videoUrl: m['videoUrl'], fit: m['fit'] ?? 'cover');
       case 'callout':
         return CalloutSection(variant: m['variant'] ?? 'info', body: m['body'] ?? '');
       case 'faq':
@@ -54,9 +54,10 @@ class DocsSection extends ContentSection {
 class MediaSection extends ContentSection {
   final String? heading, caption, imageUrl, videoUrl;
   final String mediaType; // 'image' | 'video'
-  const MediaSection({this.heading, this.caption, required this.mediaType, this.imageUrl, this.videoUrl});
+  final String fit; // 'cover' (corta p/ preencher) | 'contain' (imagem inteira)
+  const MediaSection({this.heading, this.caption, required this.mediaType, this.imageUrl, this.videoUrl, this.fit = 'cover'});
   @override
-  Map<String, dynamic> toMap() => {'type': 'media', 'heading': heading, 'caption': caption, 'mediaType': mediaType, 'imageUrl': imageUrl, 'videoUrl': videoUrl};
+  Map<String, dynamic> toMap() => {'type': 'media', 'heading': heading, 'caption': caption, 'mediaType': mediaType, 'imageUrl': imageUrl, 'videoUrl': videoUrl, 'fit': fit};
 }
 
 class CalloutSection extends ContentSection {

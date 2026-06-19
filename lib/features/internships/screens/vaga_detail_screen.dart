@@ -4,6 +4,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../data/models/internship.dart';
 import '../../../shared/chrome/app_headers.dart';
 import '../../../shared/chrome/page_shell.dart';
+import '../../../shared/content/content_image.dart';
 import '../../../shared/widgets/app_button.dart';
 import '../../../shared/widgets/app_card.dart';
 import '../../../shared/widgets/empty_state.dart';
@@ -56,6 +57,16 @@ class VagaDetailScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          if (e.imageUrl != null && e.imageUrl!.isNotEmpty) ...[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(14),
+              child: Container(
+                color: c.bg2, width: double.infinity, constraints: const BoxConstraints(minHeight: 170),
+                child: ContentImage(e.imageUrl!, height: 170, width: double.infinity),
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
           if (closed) ...[
             Container(
               padding: const EdgeInsets.all(14),

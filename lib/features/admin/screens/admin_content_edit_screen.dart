@@ -30,7 +30,7 @@ Map<String, dynamic> _newSection(String type) => switch (type) {
   'rich' => {'type': 'rich', 'heading': 'Novo título', 'body': 'Escreva aqui. Use [[termos]] para links internos.'},
   'steps' => {'type': 'steps', 'heading': 'Como solicitar', 'items': ['Primeiro passo', 'Segundo passo']},
   'docs' => {'type': 'docs', 'heading': 'Documentos necessários', 'items': ['Documento 1']},
-  'media' => {'type': 'media', 'mediaType': 'image', 'heading': 'Vídeo ou imagem', 'caption': ''},
+  'media' => {'type': 'media', 'mediaType': 'image', 'heading': 'Vídeo ou imagem', 'caption': '', 'fit': 'cover'},
   'callout' => {'type': 'callout', 'variant': 'info', 'body': 'Aviso importante.'},
   'faq' => {'type': 'faq', 'heading': 'Dúvidas frequentes', 'items': [{'q': 'Pergunta?', 'a': 'Resposta.'}]},
   'sources' => {'type': 'sources', 'heading': 'Canais oficiais', 'items': [{'label': 'Site oficial', 'url': 'gov.br'}]},
@@ -165,7 +165,22 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
             const SizedBox(height: 13),
             Text('Ícone', style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: c.ink2)),
             const SizedBox(height: 9),
-            IconPicker(selected: _icon, onSelect: (n) => _mut(() => _icon = n)),
+            GestureDetector(
+              onTap: () async {
+                final n = await showIconPickerSheet(context, _icon);
+                if (n != null) _mut(() => _icon = n);
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+                decoration: BoxDecoration(color: c.card, borderRadius: BorderRadius.circular(13), border: Border.all(color: c.line, width: 1.5)),
+                child: Row(children: [
+                  IconTile(_icon, size: 40),
+                  const SizedBox(width: 12),
+                  Expanded(child: Text('Tocar para escolher o ícone', style: TextStyle(fontSize: 13.5, color: c.ink2, fontWeight: FontWeight.w500))),
+                  Icon(appIcon('chevD'), size: 20, color: c.ink3),
+                ]),
+              ),
+            ),
           ])),
           const SizedBox(height: 14),
           // Seções
@@ -251,7 +266,27 @@ class _SectionEditor extends StatelessWidget {
       children.add(MediaUploader(
         mediaType: (section['mediaType'] ?? 'image') as String,
         imageUrl: section['imageUrl'] as String?, videoUrl: section['videoUrl'] as String?,
+        fit: (section['fit'] ?? 'cover') as String,
         onChange: ({required mediaType, imageUrl, videoUrl}) { section['mediaType'] = mediaType; section['imageUrl'] = imageUrl; section['videoUrl'] = videoUrl; onChanged(); }));
+      if ((section['mediaType'] ?? 'image') == 'image') {
+        children.add(const SizedBox(height: 10));
+        children.add(Text('Exibição da imagem', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: c.ink3)));
+        children.add(const SizedBox(height: 6));
+        children.add(Row(children: [
+          for (final f in const [('cover', 'Preencher'), ('contain', 'Imagem inteira')])
+            Expanded(child: Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: GestureDetector(
+                onTap: () { section['fit'] = f.$1; onChanged(); },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 9), alignment: Alignment.center,
+                  decoration: BoxDecoration(color: (section['fit'] ?? 'cover') == f.$1 ? c.green800 : c.bg2, borderRadius: BorderRadius.circular(10)),
+                  child: Text(f.$2, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: (section['fit'] ?? 'cover') == f.$1 ? Colors.white : c.ink2)),
+                ),
+              ),
+            )),
+        ]));
+      }
       children.add(const SizedBox(height: 10));
       children.add(AppField(hint: 'Legenda (opcional)', value: (section['caption'] ?? '') as String,
         onChanged: (v) { section['caption'] = v; onChanged(); }));

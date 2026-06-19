@@ -23,7 +23,8 @@ import 'content_image.dart';
 class MediaView extends StatelessWidget {
   final String mediaType; // 'image' | 'video'
   final String? imageUrl, videoUrl, caption;
-  const MediaView({super.key, required this.mediaType, this.imageUrl, this.videoUrl, this.caption});
+  final String fit; // 'cover' | 'contain'
+  const MediaView({super.key, required this.mediaType, this.imageUrl, this.videoUrl, this.caption, this.fit = 'cover'});
 
   @override
   Widget build(BuildContext context) {
@@ -31,10 +32,16 @@ class MediaView extends StatelessWidget {
     final v = mediaType == 'video' ? parseVideoUrl(videoUrl) : null;
     Widget inner;
     if (mediaType == 'image' && imageUrl != null && imageUrl!.isNotEmpty) {
-      inner = ContentImage(
-        imageUrl!, height: 190, width: double.infinity,
-        placeholder: () => Container(height: 190, color: c.bg2),
-        error: () => _placeholder(c, false),
+      inner = Container(
+        color: c.bg2,
+        constraints: const BoxConstraints(minHeight: 190),
+        width: double.infinity,
+        child: ContentImage(
+          imageUrl!, height: 190, width: double.infinity,
+          fit: fit == 'contain' ? BoxFit.contain : BoxFit.cover,
+          placeholder: () => Container(height: 190, color: c.bg2),
+          error: () => _placeholder(c, false),
+        ),
       );
     } else if (v != null) {
       inner = GestureDetector(

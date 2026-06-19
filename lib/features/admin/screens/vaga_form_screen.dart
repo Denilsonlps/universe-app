@@ -6,6 +6,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../data/models/internship.dart';
 import '../../../shared/chrome/app_headers.dart';
 import '../../../shared/chrome/page_shell.dart';
+import '../../../shared/content/image_picker_field.dart';
 import '../../../shared/widgets/app_button.dart';
 import '../../../shared/widgets/app_field.dart';
 import '../../../shared/widgets/app_toggle.dart';
@@ -29,6 +30,7 @@ class _VagaFormScreenState extends ConsumerState<VagaFormScreen> {
   late String _duration = _v?.duration ?? '';
   late String _link = _v?.link ?? '';
   late String _tag = _v?.tag ?? '';
+  late String? _imageUrl = _v?.imageUrl;
   late String _course = _v?.course ?? 'ADS';
   late String _mode = _v?.mode ?? 'Presencial';
   late bool _open = _v?.open ?? true;
@@ -56,7 +58,7 @@ class _VagaFormScreenState extends ConsumerState<VagaFormScreen> {
       requirements: _reqs, niceToHave: _nice, companyDescription: _companyDesc.trim(),
       benefits: _benefits, grant: _grant.trim(), course: _course, mode: _mode,
       link: _link.trim().isEmpty ? null : _link.trim(),
-      tag: _tag.trim().isEmpty ? null : _tag.trim(), open: _open, closedAt: closedAt,
+      tag: _tag.trim().isEmpty ? null : _tag.trim(), imageUrl: _imageUrl, open: _open, closedAt: closedAt,
     );
     try {
       await repo.upsertInternship(vaga);
@@ -105,6 +107,9 @@ class _VagaFormScreenState extends ConsumerState<VagaFormScreen> {
           AppField(label: 'Tag (opcional, ex.: Novo)', value: _tag, onChanged: (v) => setState(() => _tag = v)),
           const SizedBox(height: 12),
           AppField(label: 'Link (opcional)', icon: 'globe', value: _link, onChanged: (v) => setState(() => _link = v)),
+          const SizedBox(height: 18),
+          const SectionTitle('Imagem (opcional)'),
+          ImagePickerField(imageUrl: _imageUrl, onChanged: (url) => setState(() => _imageUrl = url)),
           const SizedBox(height: 18),
           _ListEditor(title: 'Pré-requisitos', items: _reqs, onChanged: (l) => setState(() => _reqs = l)),
           _ListEditor(title: 'Diferenciais', items: _nice, onChanged: (l) => setState(() => _nice = l)),
