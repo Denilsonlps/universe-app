@@ -16,6 +16,17 @@ const appIcons = <String, IconData>{
   'star': Icons.star, 'home': Icons.home_outlined, 'logout': Icons.logout, 'check': Icons.check,
   'chevR': Icons.chevron_right, 'chevL': Icons.chevron_left, 'chevD': Icons.keyboard_arrow_down,
   'checkCircle': Icons.check_circle, 'plus': Icons.add, 'send': Icons.send,
+  // Extras para o seletor de ícone das páginas de conteúdo
+  'heart': Icons.favorite_outline, 'wallet': Icons.account_balance_wallet_outlined,
+  'calendar': Icons.calendar_today_outlined, 'people': Icons.groups_outlined,
+  'laptop': Icons.computer_outlined, 'health': Icons.health_and_safety_outlined,
+  'food': Icons.restaurant_outlined, 'sports': Icons.sports_soccer_outlined,
+  'music': Icons.music_note_outlined, 'wifi': Icons.wifi, 'lock': Icons.lock_outline,
+  'gift': Icons.card_giftcard_outlined, 'science': Icons.science_outlined,
+  'camera': Icons.photo_camera_outlined, 'chat': Icons.chat_bubble_outline,
+  'money': Icons.payments_outlined, 'ticket': Icons.confirmation_number_outlined,
+  'lightbulb': Icons.lightbulb_outline, 'rocket': Icons.rocket_launch_outlined,
+  'map': Icons.map_outlined, 'handshake': Icons.handshake_outlined,
 };
 
 IconData appIcon(String name) => appIcons[name] ?? Icons.circle_outlined;

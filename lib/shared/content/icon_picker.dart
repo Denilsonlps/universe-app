@@ -6,6 +6,9 @@ import '../widgets/icon_tile.dart';
 const contentIconChoices = <String>[
   'card', 'user', 'bus', 'doc', 'benefits', 'award', 'book', 'globe',
   'institution', 'briefcase', 'flag', 'star', 'shield', 'phone', 'mail', 'cap', 'house', 'settings',
+  'heart', 'wallet', 'calendar', 'people', 'laptop', 'health', 'food', 'sports',
+  'music', 'wifi', 'lock', 'gift', 'science', 'camera', 'chat', 'money', 'ticket',
+  'lightbulb', 'rocket', 'map', 'handshake',
 ];
 
 /// Grid de ícones selecionável (sem digitar nomes).

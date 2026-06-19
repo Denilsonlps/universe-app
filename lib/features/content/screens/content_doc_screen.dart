@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/providers/repository_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/models/content_doc.dart';
 import '../../../shared/chrome/app_headers.dart';
@@ -9,12 +11,12 @@ import '../../../shared/content/term_sheet.dart';
 import '../../../shared/widgets/empty_state.dart';
 import '../../../shared/widgets/icon_tile.dart';
 
-class ContentDocScreen extends StatelessWidget {
+class ContentDocScreen extends ConsumerWidget {
   final ContentDoc? doc;
   const ContentDocScreen({super.key, required this.doc});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final c = context.c;
     final d = doc;
     if (d == null) {
@@ -27,6 +29,12 @@ class ContentDocScreen extends StatelessWidget {
 
     void openDoc(String id) => context.push('/conteudo/$id');
     void openTerm(String key) => showTermSheet(context, key, onOpenDoc: openDoc);
+
+    // Resolve `[[Título de outra página]]` para o id da página correspondente,
+    // permitindo wikilinks entre páginas criadas pelo admin (além do glossário).
+    final all = ref.watch(allContentDocsProvider).valueOrNull ?? const <ContentDoc>[];
+    final byTitle = {for (final p in all) p.title.toLowerCase().trim(): p.id};
+    String? resolveDoc(String key) => byTitle[key.toLowerCase().trim()];
 
     final updated =
         '${d.updatedAt.day.toString().padLeft(2, '0')}/${d.updatedAt.month.toString().padLeft(2, '0')}/${d.updatedAt.year}';
@@ -49,7 +57,7 @@ class ContentDocScreen extends StatelessWidget {
           for (final s in d.sections)
             Padding(
               padding: const EdgeInsets.only(bottom: 24),
-              child: ContentSectionView(section: s, onOpenDoc: openDoc, onOpenTerm: openTerm),
+              child: ContentSectionView(section: s, onOpenDoc: openDoc, onOpenTerm: openTerm, resolveDoc: resolveDoc),
             ),
         ]),
       ),

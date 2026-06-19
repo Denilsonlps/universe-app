@@ -92,6 +92,13 @@ class _MediaUploaderState extends ConsumerState<MediaUploader> {
         const SizedBox(height: 6),
         Text('Formatos aceitos: PNG, JPEG ou SVG.', style: TextStyle(fontSize: 11.5, color: c.ink3)),
         if (_error != null) Padding(padding: const EdgeInsets.only(top: 7), child: Text(_error!, style: TextStyle(fontSize: 11.5, color: c.error, fontWeight: FontWeight.w600))),
+        const SizedBox(height: 11),
+        AppField(
+          label: 'ou cole o link de uma imagem',
+          icon: 'globe',
+          value: widget.imageUrl ?? '',
+          onChanged: (v) => widget.onChange(mediaType: 'image', imageUrl: v.trim().isEmpty ? null : v.trim(), videoUrl: null),
+        ),
       ] else
         AppField(
           label: 'Link do vídeo (YouTube/Vimeo)', icon: 'globe',

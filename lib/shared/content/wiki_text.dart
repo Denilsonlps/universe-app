@@ -27,13 +27,30 @@ List<WikiToken> parseWikiTokens(String text) {
   return out;
 }
 
-/// Renderiza texto com `[[chave]]`/`[[chave|exibição]]` como links do glossário.
+/// Renderiza texto com `[[chave]]`/`[[chave|exibição]]` como links.
+///
+/// Uma chave vira link se: (1) existir no [glossary] (abre ficha ou página); ou
+/// (2) [resolveDoc] devolver um id de página para ela (ex.: o título de outra
+/// página de conteúdo criada pelo admin). Caso contrário, vira texto normal.
 class WikiText extends StatelessWidget {
   final String text;
   final void Function(String docId) onOpenDoc;
   final void Function(String termKey) onOpenTerm;
+  final String? Function(String key)? resolveDoc;
   final TextStyle? style;
-  const WikiText(this.text, {super.key, required this.onOpenDoc, required this.onOpenTerm, this.style});
+  const WikiText(this.text, {super.key, required this.onOpenDoc, required this.onOpenTerm, this.resolveDoc, this.style});
+
+  /// Ação ao tocar na chave, ou null se ela não resolver para nada.
+  VoidCallback? _tapFor(String key) {
+    final g = glossary[key];
+    if (g != null) {
+      if (g.def != null) return () => onOpenTerm(key);
+      if (g.docId != null) return () => onOpenDoc(g.docId!);
+    }
+    final id = resolveDoc?.call(key);
+    if (id != null) return () => onOpenDoc(id);
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,18 +59,11 @@ class WikiText extends StatelessWidget {
     final linkStyle = base.copyWith(color: c.green700, fontWeight: FontWeight.w700, decoration: TextDecoration.underline, decorationColor: c.green100);
     return Text.rich(TextSpan(children: [
       for (final tk in parseWikiTokens(text))
-        if (tk.linkKey != null && glossary.containsKey(tk.linkKey))
+        if (tk.linkKey != null && _tapFor(tk.linkKey!) != null)
           WidgetSpan(
             alignment: PlaceholderAlignment.baseline,
             baseline: TextBaseline.alphabetic,
-            child: GestureDetector(
-              onTap: () {
-                final g = glossary[tk.linkKey]!;
-                if (g.def != null) { onOpenTerm(tk.linkKey!); }
-                else if (g.docId != null) { onOpenDoc(g.docId!); }
-              },
-              child: Text(tk.text, style: linkStyle),
-            ),
+            child: GestureDetector(onTap: _tapFor(tk.linkKey!), child: Text(tk.text, style: linkStyle)),
           )
         else
           TextSpan(text: tk.text, style: base),
@@ -66,13 +76,14 @@ class WikiParagraphs extends StatelessWidget {
   final String text;
   final void Function(String docId) onOpenDoc;
   final void Function(String termKey) onOpenTerm;
-  const WikiParagraphs(this.text, {super.key, required this.onOpenDoc, required this.onOpenTerm});
+  final String? Function(String key)? resolveDoc;
+  const WikiParagraphs(this.text, {super.key, required this.onOpenDoc, required this.onOpenTerm, this.resolveDoc});
   @override
   Widget build(BuildContext context) {
     final paras = text.split('\n\n');
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       for (var i = 0; i < paras.length; i++)
-        Padding(padding: EdgeInsets.only(top: i == 0 ? 0 : 11), child: WikiText(paras[i], onOpenDoc: onOpenDoc, onOpenTerm: onOpenTerm)),
+        Padding(padding: EdgeInsets.only(top: i == 0 ? 0 : 11), child: WikiText(paras[i], onOpenDoc: onOpenDoc, onOpenTerm: onOpenTerm, resolveDoc: resolveDoc)),
     ]);
   }
 }

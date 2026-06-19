@@ -13,7 +13,8 @@ class ContentSectionView extends StatelessWidget {
   final ContentSection section;
   final void Function(String docId) onOpenDoc;
   final void Function(String termKey) onOpenTerm;
-  const ContentSectionView({super.key, required this.section, required this.onOpenDoc, required this.onOpenTerm});
+  final String? Function(String key)? resolveDoc;
+  const ContentSectionView({super.key, required this.section, required this.onOpenDoc, required this.onOpenTerm, this.resolveDoc});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +28,7 @@ class ContentSectionView extends StatelessWidget {
       case RichSection():
         return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           heading(s.heading),
-          WikiParagraphs(s.body, onOpenDoc: onOpenDoc, onOpenTerm: onOpenTerm),
+          WikiParagraphs(s.body, onOpenDoc: onOpenDoc, onOpenTerm: onOpenTerm, resolveDoc: resolveDoc),
         ]);
       case StepsSection():
         return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -45,7 +46,7 @@ class ContentSectionView extends StatelessWidget {
                 ),
                 const SizedBox(width: 13),
                 Expanded(
-                  child: WikiText(s.items[i], onOpenDoc: onOpenDoc, onOpenTerm: onOpenTerm, style: TextStyle(fontSize: 13.5, height: 1.5, color: c.ink)),
+                  child: WikiText(s.items[i], onOpenDoc: onOpenDoc, onOpenTerm: onOpenTerm, resolveDoc: resolveDoc, style: TextStyle(fontSize: 13.5, height: 1.5, color: c.ink)),
                 ),
               ]),
             ),
@@ -62,7 +63,7 @@ class ContentSectionView extends StatelessWidget {
                     Icon(appIcon('checkCircle'), size: 18, color: c.green500),
                     const SizedBox(width: 11),
                     Expanded(
-                      child: WikiText(it, onOpenDoc: onOpenDoc, onOpenTerm: onOpenTerm, style: TextStyle(fontSize: 13.5, height: 1.45, color: c.ink)),
+                      child: WikiText(it, onOpenDoc: onOpenDoc, onOpenTerm: onOpenTerm, resolveDoc: resolveDoc, style: TextStyle(fontSize: 13.5, height: 1.45, color: c.ink)),
                     ),
                   ]),
                 ),
@@ -87,7 +88,7 @@ class ContentSectionView extends StatelessWidget {
             Icon(appIcon(warn ? 'bell' : 'shield'), size: 20, color: warn ? const Color(0xFFC98A0E) : c.green600),
             const SizedBox(width: 12),
             Expanded(
-              child: WikiText(s.body, onOpenDoc: onOpenDoc, onOpenTerm: onOpenTerm, style: TextStyle(fontSize: 12.5, height: 1.5, color: c.ink2, fontWeight: FontWeight.w500)),
+              child: WikiText(s.body, onOpenDoc: onOpenDoc, onOpenTerm: onOpenTerm, resolveDoc: resolveDoc, style: TextStyle(fontSize: 12.5, height: 1.5, color: c.ink2, fontWeight: FontWeight.w500)),
             ),
           ]),
         );
