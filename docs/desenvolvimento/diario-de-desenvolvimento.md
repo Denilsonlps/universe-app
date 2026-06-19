@@ -547,3 +547,38 @@ conteúdo só existia via seed; agora é gerenciado dentro do app.
 
 ### Próximo passo
 SP3c — Notícias (card do hub + feed na home + tela de notícia + editor admin).
+
+---
+
+## 2026-06-18 — Ajustes pós-teste do SP3b (mídia, ícones, vaga) + Storage no ar
+
+Após habilitar o Firebase Storage e testar o upload no navegador, surgiram ajustes
+de uso, todos aplicados na `main`:
+
+- **CORS do Storage:** o upload subia, mas o navegador era bloqueado ao **baixar** a
+  imagem (`No 'Access-Control-Allow-Origin'`). Causa: bucket sem CORS. Resolvido com
+  `cors.json` (GET liberado) aplicado via Cloud Shell
+  (`gsutil cors set cors.json gs://universe-app-ifsp.firebasestorage.app`). Passo
+  operacional, documentado.
+- **Suporte a SVG:** `CachedNetworkImage` não decodifica SVG. Criado `ContentImage`
+  (vetorial via `flutter_svg`, raster via cache) usado no editor e na tela do aluno.
+  Validação de formato no upload (PNG/JPEG/SVG) + dica visível. Removido o
+  redimensionamento do `image_picker` (re-encodava e quebrava o SVG).
+- **Imagem por link:** além do upload, é possível **colar a URL** de uma imagem.
+- **Exibição da imagem (corte):** toggle por imagem **Preencher** (corta, `cover`) vs
+  **Imagem inteira** (`contain`, sem corte) — campo `fit` em `MediaSection`.
+- **Seletor de ícone:** virou **menu suspenso** (bottom sheet) com ~39 ícones (antes
+  18, em grade fixa na tela).
+- **Wikilinks entre páginas:** `[[Título de outra página]]` agora resolve pelo título
+  de qualquer `ContentDoc` existente (além do glossário fixo) — `ContentDocScreen`
+  passou a `ConsumerWidget` e injeta um resolvedor no `WikiText`.
+- **Imagem na vaga de estágio:** `Internship.imageUrl` + campo no formulário admin +
+  exibição no topo da tela de detalhe. Componente `ImagePickerField` reutilizável
+  (upload + link + preview + validação) unifica o `MediaUploader` e a vaga.
+
+### Verificação
+- `flutter analyze`: sem erros. `flutter test`: **50/50**. Validado no navegador pelo
+  usuário (upload, SVG, corte, ícones, imagem na vaga).
+
+### Próximo passo
+SP3c — Notícias (card no hub admin + feed na home + tela de notícia + editor).
