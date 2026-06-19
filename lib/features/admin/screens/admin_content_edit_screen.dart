@@ -246,7 +246,7 @@ class _SectionEditor extends StatelessWidget {
         onChanged: (v) { section['caption'] = v; onChanged(); }));
     }
     if (type == 'faq') {
-      final items = (section['items'] as List).cast<Map>();
+      final items = List<Map>.from(section['items'] as List);
       for (var j = 0; j < items.length; j++) {
         children.add(const SizedBox(height: 10));
         children.add(AppField(hint: 'Pergunta', value: (items[j]['q'] ?? '') as String, onChanged: (v) { items[j]['q'] = v; onChanged(); }));
@@ -258,7 +258,7 @@ class _SectionEditor extends StatelessWidget {
         icon: Icon(appIcon('plus'), size: 16, color: c.green700), label: Text('Adicionar pergunta', style: TextStyle(color: c.green700, fontWeight: FontWeight.w700, fontSize: 12.5)))));
     }
     if (type == 'sources') {
-      final items = (section['items'] as List).cast<Map>();
+      final items = List<Map>.from(section['items'] as List);
       for (var j = 0; j < items.length; j++) {
         children.add(const SizedBox(height: 10));
         children.add(AppField(hint: 'Nome', value: (items[j]['label'] ?? '') as String, onChanged: (v) { items[j]['label'] = v; onChanged(); }));
