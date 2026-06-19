@@ -888,6 +888,16 @@ class FakeUniverseRepository implements UniverseRepository {
   @override
   String newId(String collection) => '${collection}_${_idSeq++}';
 
+  @override
+  Stream<List<ContentDoc>> watchAllContentDocs() => Stream.value(List.of(_contentDocs));
+  @override
+  Future<void> upsertContentDoc(ContentDoc d) async {
+    final i = _contentDocs.indexWhere((e) => e.id == d.id);
+    if (i >= 0) { _contentDocs[i] = d; } else { _contentDocs.add(d); }
+  }
+  @override
+  Future<void> deleteContentDoc(String id) async => _contentDocs.removeWhere((e) => e.id == id);
+
   // Getters para o seeder lerem todo o conteúdo bruto:
   List<Course> get allCourses => _courses;
   List<Internship> get allInternships => _internships;

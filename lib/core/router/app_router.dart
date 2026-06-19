@@ -29,6 +29,9 @@ import '../../features/internships/screens/vaga_detail_screen.dart';
 import '../../features/internships/screens/contest_detail_screen.dart';
 import '../../features/internships/screens/depoimentos_screen.dart';
 import '../../features/admin/screens/admin_panel_screen.dart';
+import '../../features/admin/screens/admin_hub_screen.dart';
+import '../../features/admin/screens/admin_content_list_screen.dart';
+import '../../features/admin/screens/admin_content_edit_screen.dart';
 import '../../features/admin/screens/vaga_form_screen.dart';
 import '../../features/admin/screens/concurso_form_screen.dart';
 import '../providers/profile_provider.dart';
@@ -91,7 +94,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/estagio/vaga', pageBuilder: (c, s) => fadeSlide(s, VagaDetailScreen(vaga: s.extra is Internship ? s.extra as Internship : null))),
       GoRoute(path: '/estagio/concurso', pageBuilder: (c, s) => fadeSlide(s, ConcursoDetailScreen(contest: s.extra is Contest ? s.extra as Contest : null))),
       GoRoute(path: '/estagio/depoimentos', pageBuilder: (c, s) => fadeSlide(s, const DepoimentosScreen())),
-      GoRoute(path: '/admin', pageBuilder: (c, s) => fadeSlide(s, const AdminPanelScreen())),
+      GoRoute(path: '/admin', pageBuilder: (c, s) => fadeSlide(s, const AdminHubScreen())),
+      GoRoute(path: '/admin/vagas', pageBuilder: (c, s) => fadeSlide(s, const AdminPanelScreen())),
+      GoRoute(path: '/admin/conteudo', pageBuilder: (c, s) => fadeSlide(s, const AdminContentListScreen())),
+      GoRoute(path: '/admin/conteudo/editar', pageBuilder: (c, s) => fadeSlide(s, AdminContentEditScreen(doc: s.extra is ContentDoc ? s.extra as ContentDoc : null))),
       GoRoute(path: '/admin/vaga', pageBuilder: (c, s) => fadeSlide(s, VagaFormScreen(vaga: s.extra is Internship ? s.extra as Internship : null))),
       GoRoute(path: '/admin/concurso', pageBuilder: (c, s) => fadeSlide(s, ConcursoFormScreen(contest: s.extra is Contest ? s.extra as Contest : null))),
     ],

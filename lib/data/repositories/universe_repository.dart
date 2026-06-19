@@ -21,6 +21,10 @@ abstract interface class UniverseRepository {
   Stream<List<ContentDoc>> watchContentDocs(ContentKind kind);
   /// Um documento de conteúdo por id (null se não existir).
   Stream<ContentDoc?> watchContentDoc(String id);
+  /// Todos os documentos de conteúdo (sem filtro, para o admin).
+  Stream<List<ContentDoc>> watchAllContentDocs();
+  Future<void> upsertContentDoc(ContentDoc d);
+  Future<void> deleteContentDoc(String id);
 
   Future<void> addTestimonial(Testimonial t);
 

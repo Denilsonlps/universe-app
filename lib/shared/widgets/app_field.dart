@@ -6,13 +6,13 @@ class AppField extends StatefulWidget {
   final String? label, hint, icon, error;
   final String value;
   final ValueChanged<String> onChanged;
-  final bool obscure, valid;
+  final bool obscure, valid, multiline;
   final Widget? trailing;
   final TextInputType? keyboardType;
   const AppField({
     super.key, this.label, this.hint, this.icon, this.error,
     required this.value, required this.onChanged,
-    this.obscure = false, this.valid = false, this.trailing, this.keyboardType,
+    this.obscure = false, this.valid = false, this.multiline = false, this.trailing, this.keyboardType,
   });
 
   @override
@@ -45,13 +45,13 @@ class _AppFieldState extends State<AppField> {
           child: Text(widget.label!, style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: c.ink2)),
         ),
       Container(
-        height: 50,
-        padding: const EdgeInsets.symmetric(horizontal: 14),
+        constraints: BoxConstraints(minHeight: widget.multiline ? 92 : 50),
+        padding: EdgeInsets.symmetric(horizontal: 14, vertical: widget.multiline ? 12 : 0),
         decoration: BoxDecoration(
           color: c.card, borderRadius: BorderRadius.circular(13),
           border: Border.all(color: border, width: 1.5),
         ),
-        child: Row(children: [
+        child: Row(crossAxisAlignment: widget.multiline ? CrossAxisAlignment.start : CrossAxisAlignment.center, children: [
           if (widget.icon != null) ...[
             Icon(appIcon(widget.icon!), size: 19, color: _focus ? c.green600 : c.ink3),
             const SizedBox(width: 10),
@@ -63,7 +63,9 @@ class _AppFieldState extends State<AppField> {
                 controller: _ctrl,
                 onChanged: widget.onChanged,
                 obscureText: widget.obscure,
-                keyboardType: widget.keyboardType,
+                keyboardType: widget.multiline ? TextInputType.multiline : widget.keyboardType,
+                minLines: widget.multiline ? 3 : 1,
+                maxLines: widget.multiline ? null : 1,
                 style: TextStyle(fontSize: 15, color: c.ink, fontWeight: FontWeight.w500),
                 decoration: InputDecoration(
                   isCollapsed: true, border: InputBorder.none,
@@ -73,8 +75,7 @@ class _AppFieldState extends State<AppField> {
               ),
             ),
           ),
-          if (widget.valid && widget.trailing == null)
-            Icon(Icons.check, size: 18, color: c.green500),
+          if (widget.valid && widget.trailing == null) Icon(Icons.check, size: 18, color: c.green500),
           if (widget.trailing != null) widget.trailing!,
         ]),
       ),

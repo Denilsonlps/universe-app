@@ -79,4 +79,15 @@ class FirestoreUniverseRepository implements UniverseRepository {
 
   @override
   String newId(String collection) => _db.collection(collection).doc().id;
+
+  @override
+  Stream<List<ContentDoc>> watchAllContentDocs() =>
+      _db.collection('contentDocs').snapshots().map((s) => _map(s, ContentDoc.fromMap));
+
+  @override
+  Future<void> upsertContentDoc(ContentDoc d) =>
+      _db.collection('contentDocs').doc(d.id).set(d.toMap());
+
+  @override
+  Future<void> deleteContentDoc(String id) => _db.collection('contentDocs').doc(id).delete();
 }
