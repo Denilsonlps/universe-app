@@ -5,6 +5,7 @@ import '../models/testimonial.dart';
 import '../models/faq.dart';
 import '../models/ifsp_info.dart';
 import '../models/content_doc.dart';
+import '../models/news.dart';
 
 /// Acesso ao conteúdo do app (camada de dados) — tempo real via streams.
 abstract interface class UniverseRepository {
@@ -38,4 +39,9 @@ abstract interface class UniverseRepository {
   Future<void> deleteContest(String id);
   /// Gera um novo id para uma coleção ('internships' | 'contests').
   String newId(String collection);
+
+  Stream<List<News>> watchPublishedNews();
+  Stream<List<News>> watchAllNews();
+  Future<void> upsertNews(News n);
+  Future<void> deleteNews(String id);
 }

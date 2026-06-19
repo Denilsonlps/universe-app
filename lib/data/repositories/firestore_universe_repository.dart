@@ -6,6 +6,7 @@ import '../models/testimonial.dart';
 import '../models/faq.dart';
 import '../models/ifsp_info.dart';
 import '../models/content_doc.dart';
+import '../models/news.dart';
 import 'universe_repository.dart';
 
 class FirestoreUniverseRepository implements UniverseRepository {
@@ -90,4 +91,22 @@ class FirestoreUniverseRepository implements UniverseRepository {
 
   @override
   Future<void> deleteContentDoc(String id) => _db.collection('contentDocs').doc(id).delete();
+
+  @override
+  Stream<List<News>> watchPublishedNews() => _db.collection('news')
+      .where('published', isEqualTo: true).snapshots().map((s) {
+        final list = _map(s, News.fromMap);
+        list.sort((a, b) { if (a.pinned != b.pinned) return a.pinned ? -1 : 1; return b.date.compareTo(a.date); });
+        return list;
+      });
+  @override
+  Stream<List<News>> watchAllNews() => _db.collection('news').snapshots().map((s) {
+        final list = _map(s, News.fromMap);
+        list.sort((a, b) => b.date.compareTo(a.date));
+        return list;
+      });
+  @override
+  Future<void> upsertNews(News n) => _db.collection('news').doc(n.id).set(n.toMap());
+  @override
+  Future<void> deleteNews(String id) => _db.collection('news').doc(id).delete();
 }

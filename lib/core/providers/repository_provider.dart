@@ -8,6 +8,7 @@ import '../../data/models/testimonial.dart';
 import '../../data/models/faq.dart';
 import '../../data/models/ifsp_info.dart';
 import '../../data/models/content_doc.dart';
+import '../../data/models/news.dart';
 import '../../data/repositories/universe_repository.dart';
 import '../../data/repositories/firestore_universe_repository.dart';
 import '../../data/storage/storage_service.dart';
@@ -28,3 +29,5 @@ final allContestsProvider = StreamProvider<List<Contest>>((ref) => ref.watch(uni
 final contentDocsProvider = StreamProvider.family<List<ContentDoc>, ContentKind>((ref, k) => ref.watch(universeRepositoryProvider).watchContentDocs(k));
 final contentDocProvider = StreamProvider.family<ContentDoc?, String>((ref, id) => ref.watch(universeRepositoryProvider).watchContentDoc(id));
 final allContentDocsProvider = StreamProvider<List<ContentDoc>>((ref) => ref.watch(universeRepositoryProvider).watchAllContentDocs());
+final publishedNewsProvider = StreamProvider<List<News>>((ref) => ref.watch(universeRepositoryProvider).watchPublishedNews());
+final allNewsProvider = StreamProvider<List<News>>((ref) => ref.watch(universeRepositoryProvider).watchAllNews());
