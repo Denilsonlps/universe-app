@@ -492,3 +492,58 @@ apenas redireciona.
 ### Próximo passo
 SP3b — Editor de conteúdo no painel admin (criar/editar `ContentDoc` e suas seções,
 com upload de imagem ao Firebase Storage).
+
+---
+
+## 2026-06-18 — SP3b concluído: Editor de conteúdo no admin + upload ao Storage
+
+### O que foi construído
+O admin agora **cria, edita e exclui** as páginas de benefício (conteúdo rico) e
+suas seções pela própria UI, com **upload de imagem** ao Firebase Storage. Antes o
+conteúdo só existia via seed; agora é gerenciado dentro do app.
+
+- **Hub administrativo:** a rota `/admin` virou um **`AdminHubScreen`** com cards —
+  "Vagas e concursos" (→ `/admin/vagas`, o painel anterior) e "Páginas de conteúdo"
+  (→ `/admin/conteudo`). Prepara o terreno para Notícias (SP3c).
+- **Lista de páginas (`/admin/conteudo`):** agrupa Governamentais/Institucionais
+  (lê `allContentDocsProvider`), com botão "Nova página" e a dica de `[[wikilinks]]`.
+- **Editor (`/admin/conteudo/editar`):** edita um **rascunho local** das seções como
+  `List<Map>` (evita `copyWith` nas 7 classes seladas), convertendo para
+  `ContentSection` via `fromMap` só ao **Publicar** (define `updatedAt = agora`).
+  - Cabeçalho: título, tag, resumo e **seletor de ícone** visual (`IconPicker`).
+    Em nova página, também escolhe o tipo (gov/inst); o **id** é gerado por slug do
+    título (`gov-cadastro-unico`), fixo na edição para não quebrar wikilinks.
+  - Seções: **adicionar** (7 tipos), **reordenar** (↑/↓), **excluir**; campos por
+    tipo (texto, passo a passo, lista, mídia, destaque info/atenção, dúvidas, fontes).
+  - **Excluir página** (com confirmação) no modo edição.
+- **Upload de mídia (`MediaUploader`):** imagem → `image_picker` → bytes →
+  `StorageService.uploadContentImage` (Firebase Storage, `putData` — compatível com
+  web) → URL salva no doc, com progresso/erro; vídeo → link (sem upload), igual ao SP3a.
+- **Repositório:** `upsertContentDoc`/`deleteContentDoc`/`watchAllContentDocs`
+  (Firestore + Fake) + `allContentDocsProvider`. Util `slugify`/`generateDocId`
+  (anti-colisão). `StorageService` (Firebase + Fake) + `storageServiceProvider`.
+- **Regras:** novo `storage.rules` (`content_images/**`: leitura logada, escrita
+  admin) + `firebase.json` passou a registrar `firestore`/`storage`. Firestore
+  inalterado (o catch-all já gate-ia `contentDocs`).
+
+### Decisões/correções
+- **Rascunho como `List<Map>`** (abordagem JSON do protótipo) — bem mais simples que
+  `copyWith` nas seladas; conversão final via `fromMap`.
+- **Hub usa o header verde do app** (`GreenHero`/`PageHeader`), não o header escuro do
+  protótipo (divergência FlutterFlow→Flutter já registrada).
+- `Navigator.of(context).pop()` no editor (compatível com rota empilhada por
+  `context.push` e testável sem GoRouter); `List<Map>.from` explícito em faq/sources
+  (clareza, achado da revisão).
+- Nova dependência: **`image_picker`**.
+
+### Verificação
+- `flutter analyze`: **sem erros**. `flutter test`: **50/50** (repo upsert/delete,
+  slug/id incl. colisão, StorageService fake, smoke do editor: adicionar seção +
+  publicar com `updatedAt` de hoje).
+- Execução subagent-driven: tasks com revisão de spec + qualidade.
+- **Pendências operacionais do usuário:** (1) publicar as **regras de Storage** no
+  console Firebase (ou `firebase deploy --only storage`) — sem isso o upload falha;
+  (2) garantir que o Storage esteja habilitado no projeto.
+
+### Próximo passo
+SP3c — Notícias (card do hub + feed na home + tela de notícia + editor admin).
