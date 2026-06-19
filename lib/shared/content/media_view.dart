@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/theme/app_colors.dart';
 import '../widgets/icon_tile.dart';
+import 'content_image.dart';
 
 ({String watch, String? thumb})? parseVideoUrl(String? url) {
   if (url == null || url.trim().isEmpty) return null;
@@ -30,10 +31,10 @@ class MediaView extends StatelessWidget {
     final v = mediaType == 'video' ? parseVideoUrl(videoUrl) : null;
     Widget inner;
     if (mediaType == 'image' && imageUrl != null && imageUrl!.isNotEmpty) {
-      inner = CachedNetworkImage(
-        imageUrl: imageUrl!, height: 190, width: double.infinity, fit: BoxFit.cover,
-        placeholder: (ctx, url) => Container(height: 190, color: c.bg2),
-        errorWidget: (ctx, url, err) => _placeholder(c, false),
+      inner = ContentImage(
+        imageUrl!, height: 190, width: double.infinity,
+        placeholder: () => Container(height: 190, color: c.bg2),
+        error: () => _placeholder(c, false),
       );
     } else if (v != null) {
       inner = GestureDetector(

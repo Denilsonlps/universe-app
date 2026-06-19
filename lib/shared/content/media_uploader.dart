@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -6,6 +5,7 @@ import '../../core/providers/repository_provider.dart';
 import '../../core/theme/app_colors.dart';
 import '../widgets/app_field.dart';
 import '../widgets/icon_tile.dart';
+import 'content_image.dart';
 
 /// Editor de mídia de uma seção: imagem (upload) ou vídeo (link).
 class MediaUploader extends ConsumerStatefulWidget {
@@ -25,11 +25,17 @@ class _MediaUploaderState extends ConsumerState<MediaUploader> {
   Future<void> _pick() async {
     setState(() { _error = null; });
     try {
-      final x = await ImagePicker().pickImage(source: ImageSource.gallery, maxWidth: 1600, imageQuality: 85);
+      // Sem maxWidth/imageQuality: o redimensionamento re-encoda a imagem e quebra
+      // arquivos vetoriais (SVG). Mantemos os bytes originais.
+      final x = await ImagePicker().pickImage(source: ImageSource.gallery);
       if (x == null) return;
+      final ext = (x.name.contains('.') ? x.name.split('.').last : '').toLowerCase();
+      if (!acceptedImageExts.contains(ext)) {
+        setState(() => _error = 'Formato não suportado. Use PNG, JPEG ou SVG.');
+        return;
+      }
       setState(() => _uploading = true);
       final bytes = await x.readAsBytes();
-      final ext = x.name.contains('.') ? x.name.split('.').last : 'jpg';
       final url = await ref.read(storageServiceProvider).uploadContentImage(bytes, ext: ext);
       widget.onChange(mediaType: 'image', imageUrl: url, videoUrl: null);
     } catch (e) {
@@ -66,7 +72,7 @@ class _MediaUploaderState extends ConsumerState<MediaUploader> {
       const SizedBox(height: 11),
       if (isImage) ...[
         if (widget.imageUrl != null && widget.imageUrl!.isNotEmpty)
-          ClipRRect(borderRadius: BorderRadius.circular(12), child: CachedNetworkImage(imageUrl: widget.imageUrl!, height: 150, width: double.infinity, fit: BoxFit.cover)),
+          ClipRRect(borderRadius: BorderRadius.circular(12), child: ContentImage(widget.imageUrl!, height: 150, width: double.infinity)),
         const SizedBox(height: 9),
         GestureDetector(
           onTap: _uploading ? null : _pick,
@@ -83,6 +89,8 @@ class _MediaUploaderState extends ConsumerState<MediaUploader> {
                   ]),
           ),
         ),
+        const SizedBox(height: 6),
+        Text('Formatos aceitos: PNG, JPEG ou SVG.', style: TextStyle(fontSize: 11.5, color: c.ink3)),
         if (_error != null) Padding(padding: const EdgeInsets.only(top: 7), child: Text(_error!, style: TextStyle(fontSize: 11.5, color: c.error, fontWeight: FontWeight.w600))),
       ] else
         AppField(
