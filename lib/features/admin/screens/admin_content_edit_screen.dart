@@ -95,10 +95,17 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
       updatedAt: DateTime.now(),
       sections: _sections.map((m) => ContentSection.fromMap(Map<String, dynamic>.from(m))).whereType<ContentSection>().toList(),
     );
-    await repo.upsertContentDoc(doc);
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Conteúdo publicado!')));
-      Navigator.of(context).pop();
+    try {
+      await repo.upsertContentDoc(doc);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Conteúdo publicado!')));
+        Navigator.of(context).pop();
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Erro ao publicar. Tente novamente.')));
+        setState(() => _saving = false);
+      }
     }
   }
 
@@ -112,8 +119,12 @@ class _AdminContentEditScreenState extends ConsumerState<AdminContentEditScreen>
       ],
     ));
     if (ok == true) {
-      await ref.read(universeRepositoryProvider).deleteContentDoc(widget.doc!.id);
-      if (mounted) { ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Página excluída'))); Navigator.of(context).pop(); }
+      try {
+        await ref.read(universeRepositoryProvider).deleteContentDoc(widget.doc!.id);
+        if (mounted) { ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Página excluída'))); Navigator.of(context).pop(); }
+      } catch (_) {
+        if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Erro ao excluir. Tente novamente.')));
+      }
     }
   }
 
