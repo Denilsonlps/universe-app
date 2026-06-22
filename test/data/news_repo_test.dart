@@ -10,8 +10,12 @@ void main() {
     await repo.upsertNews(News(id: 'c', category: 'Geral', source: '', readTime: '', title: 'C', summary: '', body: '', date: DateTime(2026, 2, 1), published: true, pinned: true));
     await repo.upsertNews(News(id: 'd', category: 'Geral', source: '', readTime: '', title: 'D', summary: '', body: '', date: DateTime(2026, 5, 1), published: false));
 
-    final pub = await repo.watchPublishedNews().first;
-    expect(pub.map((n) => n.id).toList(), ['c', 'b', 'a']); // pinned 1º, depois data desc; rascunho 'd' fora
+    // Filtra aos ids deste teste (o Fake já vem com notícias do protótipo).
+    final pub = (await repo.watchPublishedNews().first)
+        .where((n) => const {'a', 'b', 'c', 'd'}.contains(n.id))
+        .map((n) => n.id)
+        .toList();
+    expect(pub, ['c', 'b', 'a']); // pinned 1º, depois data desc; rascunho 'd' fora
   });
 
   test('upsert/delete e watchAll', () async {

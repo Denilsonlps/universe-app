@@ -821,11 +821,11 @@ class FakeUniverseRepository implements UniverseRepository {
   ];
 
   // ── News ──────────────────────────────────────────────────────────────────
-  // Instância mutável; inicia vazia para que os testes partam de estado limpo.
-  // O seeder popula via allNews (getter abaixo).
-  final List<News> _news = [];
+  // Instância mutável própria (igual às demais listas do Fake), iniciada a partir
+  // das 3 notícias do protótipo. watch*/allNews leem desta mesma lista.
+  final List<News> _news = List.of(_seedNews);
 
-  // 3 notícias do protótipo — usadas pelo seeder (seed.dart).
+  // 3 notícias do protótipo — fonte das notícias iniciais (e do seeder).
   static final List<News> _seedNews = [
     News(
       id: 'n1', category: 'SiSU', source: 'MEC', readTime: '2 min',
@@ -962,6 +962,6 @@ class FakeUniverseRepository implements UniverseRepository {
   List<Faq> get allFaqs => _faqs;
   List<IfspInfo> get allIfspInfo => _ifspInfo;
   List<ContentDoc> get allContentDocs => _contentDocs;
-  // Getter para o seeder: retorna as 3 notícias do protótipo.
-  List<News> get allNews => _seedNews;
+  // Getter para o seeder: retorna as notícias atuais do Fake.
+  List<News> get allNews => _news;
 }
