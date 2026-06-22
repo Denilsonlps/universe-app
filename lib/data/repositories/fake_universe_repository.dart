@@ -5,6 +5,7 @@ import '../models/testimonial.dart';
 import '../models/faq.dart';
 import '../models/ifsp_info.dart';
 import '../models/content_doc.dart';
+import '../models/news.dart';
 import 'universe_repository.dart';
 
 class FakeUniverseRepository implements UniverseRepository {
@@ -819,6 +820,42 @@ class FakeUniverseRepository implements UniverseRepository {
     ),
   ];
 
+  // ── News ──────────────────────────────────────────────────────────────────
+  // Instância mutável própria (igual às demais listas do Fake), iniciada a partir
+  // das 3 notícias do protótipo. watch*/allNews leem desta mesma lista.
+  final List<News> _news = List.of(_seedNews);
+
+  // 3 notícias do protótipo — fonte das notícias iniciais (e do seeder).
+  static final List<News> _seedNews = [
+    News(
+      id: 'n1', category: 'SiSU', source: 'MEC', readTime: '2 min',
+      title: 'Sisu+ 2026: MEC libera consulta às vagas da etapa complementar',
+      summary: 'Nova etapa do SiSU permite consultar antecipadamente as vagas remanescentes para ingresso no 2º semestre.',
+      body: 'O Ministério da Educação liberou a consulta às vagas do [[Sisu+]], uma etapa complementar do [[SiSU]] criada para preencher vagas que ficaram remanescentes nas instituições públicas após as chamadas regulares.\n\nPela ferramenta do Portal de Acesso Único, é possível pesquisar cursos, instituições, municípios, turnos e modalidades de concorrência antes da abertura das inscrições — o que ajuda a planejar as escolhas com calma.\n\nO objetivo do programa é ampliar o acesso ao ensino superior público e reduzir o número de vagas que ficam ociosas ao longo do ano letivo.',
+      date: DateTime(2026, 6, 8), published: true, pinned: true,
+      facts: const [(label: 'Inscrições', value: '15 a 19 de junho'), (label: 'Resultado', value: '24 de junho'), (label: 'Ingresso', value: '2º semestre de 2026')],
+      sourceUrl: 'gov.br/mec',
+    ),
+    News(
+      id: 'n2', category: 'SiSU', source: 'G1', readTime: '2 min',
+      title: 'Universidades públicas oferecem mais de 1.700 vagas pelo Sisu+',
+      summary: 'Estados divulgam a oferta de vagas remanescentes; quem concorreu na etapa regular pode se inscrever.',
+      body: 'Com a abertura do [[Sisu+]], instituições públicas em diferentes estados divulgaram suas vagas remanescentes — em alguns estados, passando de 1.700 oportunidades em universidades e institutos.\n\nPodem se inscrever os estudantes que fizeram o [[Enem]] em uma das últimas três edições e que concorreram na etapa regular do [[SiSU]] 2026. O sistema considera automaticamente a edição do Enem com a melhor média ponderada para cada curso escolhido.\n\nNa inscrição, é possível escolher até duas opções de curso, definindo uma ordem de preferência.',
+      date: DateTime(2026, 6, 15), published: true,
+      facts: const [(label: 'Vagas (exemplo)', value: '+1.700 em um estado'), (label: 'Quem pode', value: 'Quem concorreu no SiSU regular'), (label: 'Opções', value: 'Até 2 cursos')],
+      sourceUrl: 'g1.globo.com',
+    ),
+    News(
+      id: 'n3', category: 'Campus', source: 'IFSP Pirituba', readTime: '1 min',
+      title: 'PAP: inscrições abertas para o auxílio permanência',
+      summary: 'Edital de assistência estudantil do campus está com inscrições abertas pelo SUAP.',
+      body: 'O campus abriu o edital do [[PAP]] — Programa de Auxílio Permanência. Estudantes em situação de vulnerabilidade podem solicitar apoio financeiro para moradia, alimentação e transporte.\n\nA inscrição é feita pelo sistema acadêmico (SUAP), com envio da documentação socioeconômica. Em caso de dúvida sobre os documentos, procure o serviço social do campus.',
+      date: DateTime(2026, 6, 11), published: true,
+      facts: const [(label: 'Onde', value: 'SUAP'), (label: 'Apoio', value: 'Moradia, alimentação, transporte')],
+      sourceUrl: 'ptb.ifsp.edu.br',
+    ),
+  ];
+
   // ── Stream methods ────────────────────────────────────────────────────────
   @override
   Stream<List<Course>> watchCourses() => Stream.value(_courses);
@@ -898,6 +935,25 @@ class FakeUniverseRepository implements UniverseRepository {
   @override
   Future<void> deleteContentDoc(String id) async => _contentDocs.removeWhere((e) => e.id == id);
 
+  @override
+  Stream<List<News>> watchPublishedNews() {
+    final list = _news.where((n) => n.published).toList();
+    list.sort((a, b) { if (a.pinned != b.pinned) return a.pinned ? -1 : 1; return b.date.compareTo(a.date); });
+    return Stream.value(list);
+  }
+  @override
+  Stream<List<News>> watchAllNews() {
+    final list = List.of(_news)..sort((a, b) => b.date.compareTo(a.date));
+    return Stream.value(list);
+  }
+  @override
+  Future<void> upsertNews(News n) async {
+    final i = _news.indexWhere((e) => e.id == n.id);
+    if (i >= 0) { _news[i] = n; } else { _news.add(n); }
+  }
+  @override
+  Future<void> deleteNews(String id) async => _news.removeWhere((e) => e.id == id);
+
   // Getters para o seeder lerem todo o conteúdo bruto:
   List<Course> get allCourses => _courses;
   List<Internship> get allInternships => _internships;
@@ -906,4 +962,6 @@ class FakeUniverseRepository implements UniverseRepository {
   List<Faq> get allFaqs => _faqs;
   List<IfspInfo> get allIfspInfo => _ifspInfo;
   List<ContentDoc> get allContentDocs => _contentDocs;
+  // Getter para o seeder: retorna as notícias atuais do Fake.
+  List<News> get allNews => _news;
 }

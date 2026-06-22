@@ -32,5 +32,8 @@ Future<void> seedFirestore() async {
   for (var i = 0; i < fake.allTestimonials.length; i++) {
     batch.set(db.collection('testimonials').doc('t$i'), {...fake.allTestimonials[i].toMap(), 'authorUid': uid});
   }
+  for (final n in fake.allNews) {
+    batch.set(db.collection('news').doc(n.id), n.toMap());
+  }
   await batch.commit();
 }

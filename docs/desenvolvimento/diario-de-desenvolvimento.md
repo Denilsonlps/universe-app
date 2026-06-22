@@ -582,3 +582,48 @@ de uso, todos aplicados na `main`:
 
 ### Próximo passo
 SP3c — Notícias (card no hub admin + feed na home + tela de notícia + editor).
+
+---
+
+## 2026-06-18 — SP3c concluído: Notícias (fim do SP3)
+
+### O que foi construído
+Canal de **avisos e novidades** do campus dentro do app — fechando o SP3.
+
+- **Modelo `News`** (categoria, fonte, data, tempo de leitura, título, resumo, corpo
+  com `[[wikilinks]]`, **fatos rápidos**, imagem, `sourceUrl`, `published`, `pinned`).
+  Coleção `news/{id}`; `facts` como lista de mapas (Firestore não aceita array aninhado).
+- **Repositório:** `watchPublishedNews` (só publicadas, fixadas primeiro + data desc),
+  `watchAllNews` (admin), `upsertNews`/`deleteNews`; providers `publishedNewsProvider`/
+  `allNewsProvider`. Fake traz as 3 notícias do protótipo.
+- **Aluno:** bloco/**carrossel** de notícias na Home (com "Ver todas") → tela
+  **`/noticias`** (filtro por categoria) → **`/noticias/:id`** (capa, fatos rápidos,
+  corpo via `WikiParagraphs` com wikilinks p/ glossário e páginas, card de fonte
+  oficial). `NewsCard` reutilizável (compacto + lista).
+- **Admin:** 3º card no hub → **`/admin/noticias`** (lista com toggle publicar/
+  despublicar inline) e **editor** (`/admin/noticias/editar`): categoria (chips +
+  livre), fonte, tempo de leitura, resumo, corpo, **fatos rápidos** (editáveis),
+  **imagem** (`ImagePickerField`), link da fonte, e toggles **Destaque**/**Publicar**;
+  salvar/excluir com tratamento de erro.
+- **Regra do Firestore:** leitura de `news` restrita a **publicadas ou admin** —
+  condicionada no próprio catch-all (`col != 'news' || isAdmin() || published`),
+  porque as regras concedem por união (um `match /news` separado não restringiria).
+  Seeder popula `news`.
+
+### Decisões/correções
+- Fake passou a servir as 3 notícias via `_news` (instância), consistente com as
+  demais listas; teste de ordenação filtra os próprios ids.
+- Reuso pesado do SP3a/SP3b (WikiText/resolvedor, ImagePickerField/ContentImage,
+  AsyncListView, AppToggle, design system) — sem dependências novas.
+
+### Verificação
+- `flutter analyze`: sem erros. `flutter test`: **55/55** (round-trip do News,
+  ordenação/filtragem de publicadas, upsert/delete, smoke do editor). Regra do
+  Firestore validada (MCP). Execução subagent-driven com revisões.
+- **Pendências operacionais do usuário:** re-rodar "Popular dados (dev)" (cria `news`)
+  e **publicar a regra do Firestore** no console (senão a restrição de rascunho não
+  vale).
+
+### Estado do SP3
+SP3 (conteúdo rico) **concluído**: SP3a (leitura) + SP3b (editor + upload) + SP3c
+(notícias). O app agora tem conteúdo rico gerenciável e um canal de notícias.
