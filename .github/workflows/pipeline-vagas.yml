@@ -1,0 +1,29 @@
+name: Pipeline de Vagas
+on:
+  schedule:
+    - cron: '0 6 * * *'   # diariamente às 06:00 UTC (03:00 BRT)
+  workflow_dispatch: {}     # permite rodar manualmente
+
+jobs:
+  coletar-vagas:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Instalar Chrome
+        uses: browser-actions/setup-chrome@v1
+      - name: Instalar dependências
+        run: pip install -r pipeline/requirements.txt
+      - name: Gravar service account
+        run: printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > pipeline/service-account.json
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+      - name: Rodar pipeline
+        working-directory: pipeline
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          FIREBASE_SERVICE_ACCOUNT: service-account.json
+          MAX_VAGAS: '30'
+        run: python main.py

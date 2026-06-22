@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/providers/repository_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../shared/chrome/app_headers.dart';
 import '../../../shared/chrome/page_shell.dart';
 import '../../../shared/widgets/app_card.dart';
 import '../../../shared/widgets/icon_tile.dart';
 
-class AdminHubScreen extends StatelessWidget {
+class AdminHubScreen extends ConsumerWidget {
   const AdminHubScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final c = context.c;
+    final pend = ref.watch(vagasSugeridasProvider).valueOrNull?.length ?? 0;
     final cards = <({String icon, String title, String sub, String route})>[
       (icon: 'briefcase', title: 'Vagas e concursos', sub: 'Estágios, jovem aprendiz e concursos', route: '/admin/vagas'),
+      (icon: 'briefcase', title: 'Vagas sugeridas', sub: pend == 0 ? 'Nenhuma pendente' : '$pend aguardando revisão', route: '/admin/sugestoes'),
       (icon: 'book', title: 'Páginas de conteúdo', sub: 'Edite os benefícios que os alunos veem', route: '/admin/conteudo'),
       (icon: 'bell', title: 'Notícias', sub: 'Avisos e novidades do campus', route: '/admin/noticias'),
     ];

@@ -39,6 +39,7 @@ import '../../features/news/screens/news_list_screen.dart';
 import '../../features/news/screens/news_detail_screen.dart';
 import '../../features/admin/screens/admin_news_list_screen.dart';
 import '../../features/admin/screens/admin_news_edit_screen.dart';
+import '../../features/admin/screens/admin_sugestoes_screen.dart';
 import '../providers/profile_provider.dart';
 import '../providers/onboarding_provider.dart';
 import '../providers/repository_provider.dart';
@@ -109,7 +110,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/admin/vagas', pageBuilder: (c, s) => fadeSlide(s, const AdminPanelScreen())),
       GoRoute(path: '/admin/conteudo', pageBuilder: (c, s) => fadeSlide(s, const AdminContentListScreen())),
       GoRoute(path: '/admin/conteudo/editar', pageBuilder: (c, s) => fadeSlide(s, AdminContentEditScreen(doc: s.extra is ContentDoc ? s.extra as ContentDoc : null))),
-      GoRoute(path: '/admin/vaga', pageBuilder: (c, s) => fadeSlide(s, VagaFormScreen(vaga: s.extra is Internship ? s.extra as Internship : null))),
+      GoRoute(path: '/admin/sugestoes', pageBuilder: (c, s) => fadeSlide(s, const AdminSugestoesScreen())),
+      GoRoute(path: '/admin/vaga', pageBuilder: (c, s) {
+        final x = s.extra;
+        if (x is ({Internship vaga, String suggestionId})) return fadeSlide(s, VagaFormScreen(vaga: x.vaga, fromSuggestionId: x.suggestionId));
+        return fadeSlide(s, VagaFormScreen(vaga: x is Internship ? x : null));
+      }),
       GoRoute(path: '/admin/concurso', pageBuilder: (c, s) => fadeSlide(s, ConcursoFormScreen(contest: s.extra is Contest ? s.extra as Contest : null))),
       GoRoute(path: '/admin/noticias', pageBuilder: (c, s) => fadeSlide(s, const AdminNewsListScreen())),
       GoRoute(path: '/admin/noticias/editar', pageBuilder: (c, s) => fadeSlide(s, AdminNewsEditScreen(news: s.extra is News ? s.extra as News : null))),

@@ -6,6 +6,7 @@ import '../models/faq.dart';
 import '../models/ifsp_info.dart';
 import '../models/content_doc.dart';
 import '../models/news.dart';
+import '../models/vaga_sugerida.dart';
 
 /// Acesso ao conteúdo do app (camada de dados) — tempo real via streams.
 abstract interface class UniverseRepository {
@@ -44,4 +45,8 @@ abstract interface class UniverseRepository {
   Stream<List<News>> watchAllNews();
   Future<void> upsertNews(News n);
   Future<void> deleteNews(String id);
+
+  Stream<List<VagaSugerida>> watchVagasSugeridas();
+  Future<void> rejeitarVagaSugerida(String id);
+  Future<void> deleteVagaSugerida(String id);
 }
