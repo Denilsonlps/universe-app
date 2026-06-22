@@ -627,3 +627,48 @@ Canal de **avisos e novidades** do campus dentro do app — fechando o SP3.
 ### Estado do SP3
 SP3 (conteúdo rico) **concluído**: SP3a (leitura) + SP3b (editor + upload) + SP3c
 (notícias). O app agora tem conteúdo rico gerenciável e um canal de notícias.
+
+---
+
+## 2026-06-22 — SP4: Pipeline de Vagas automatizado (scraping + Gemini → aprovação)
+
+### O que foi construído
+A **camada de processamento externo** da arquitetura do TCC, agora ligada ao app: o
+pipeline Python coleta vagas, o Gemini **enriquece**, e o Setor de Estágios **aprova**
+no app. Reduz a digitação manual mantendo a curadoria (RF037).
+
+- **Contrato — coleção `vagas_sugeridas`:** id = `sha1(link)` (idempotente). Campos do
+  `Internship` + `source: 'gupy-auto'`, `scrapedAt`, `status: 'pendente'|'recusada'`.
+- **App:** modelo `VagaSugerida` (envolve `Internship`); repositório
+  `watchVagasSugeridas`/`rejeitar`/`delete` + `vagasSugeridasProvider`; **card no hub**
+  "Vagas sugeridas (N)"; **`AdminSugestoesScreen`** com **Aprovar** (cria a vaga via
+  `upsertInternship` com o mesmo id + remove a sugestão), **Editar** (abre o
+  `VagaFormScreen` pré-preenchido; ao salvar, remove a sugestão via `fromSuggestionId`)
+  e **Recusar** (tombstone `status:'recusada'`). Fake traz 2 sugestões de exemplo.
+- **Pipeline (`pipeline/`):** `main.py` evoluído — scraping da listagem (Gupy), abre a
+  **página de cada vaga**, Gemini em **modo JSON** extrai descrição/requisitos/
+  diferenciais/benefícios/bolsa/área/curso (mapeado p/ rótulo curto), e grava em
+  `vagas_sugeridas` via **`firebase-admin`**. **Dedup:** pula vagas já em `internships`
+  (aprovadas) ou `recusada`. `requirements.txt`, `README.md` (setup), `test_pipeline.py`
+  (map_course/vaga_id). Service account no `.gitignore`.
+- **Agendamento:** `.github/workflows/pipeline-vagas.yml` (cron diário + manual).
+- **Regra do Firestore:** `vagas_sugeridas` é **só admin** (estendido no catch-all,
+  junto com a regra de `news`). O pipeline (admin SDK) ignora as regras.
+
+### Decisões
+- `id = sha1(link)` em todas as pontas; aprovar reusa o id (dedup). Recusar mantém
+  tombstone. Procedência `source` distingue auto vs manual; edição do admin prevalece.
+- Mono-repo: o Python fica em `pipeline/` (versionado, evidência p/ o TCC).
+
+### Verificação
+- `flutter analyze`: sem erros. `flutter test`: **58/58** (round-trip VagaSugerida,
+  filtro/ordem das sugeridas, aprovar cria vaga + remove sugestão, smoke da tela).
+  Regra validada (MCP). `main.py` valida sintaxe; `map_course`/`vaga_id` testados.
+- **Pendências operacionais do usuário:** (1) criar a **service account** do Firebase e
+  os secrets `FIREBASE_SERVICE_ACCOUNT` e `GEMINI_API_KEY` no GitHub; (2) habilitar o
+  Actions; (3) publicar a regra do Firestore atualizada; (4) re-rodar o seed (cria
+  `vagas_sugeridas` de exemplo).
+
+### Nota de TCC
+Evolui a arquitetura documentada (de "CSV + cadastro manual" para "pipeline → Firestore
++ aprovação no app") — refletir no texto depois.
