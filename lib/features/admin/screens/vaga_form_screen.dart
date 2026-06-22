@@ -14,7 +14,8 @@ import '../../../shared/widgets/section_title.dart';
 
 class VagaFormScreen extends ConsumerStatefulWidget {
   final Internship? vaga; // null = nova
-  const VagaFormScreen({super.key, this.vaga});
+  final String? fromSuggestionId; // se veio de uma sugestão, removê-la ao salvar
+  const VagaFormScreen({super.key, this.vaga, this.fromSuggestionId});
   @override
   ConsumerState<VagaFormScreen> createState() => _VagaFormScreenState();
 }
@@ -62,6 +63,9 @@ class _VagaFormScreenState extends ConsumerState<VagaFormScreen> {
     );
     try {
       await repo.upsertInternship(vaga);
+      if (widget.fromSuggestionId != null) {
+        await repo.deleteVagaSugerida(widget.fromSuggestionId!);
+      }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vaga salva!')));
         context.pop();
