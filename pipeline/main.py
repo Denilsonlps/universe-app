@@ -179,7 +179,9 @@ def main():
                 "source": "gupy-auto", "scrapedAt": int(time.time() * 1000), "status": "pendente",
                 **extra,
             }
-            db.collection("vagas_sugeridas").document(vid).set(doc, merge=True)
+            # ja_tratada() já barrou aprovadas/recusadas; set limpo (sem merge)
+            # evita ressuscitar um tombstone 'recusada'.
+            db.collection("vagas_sugeridas").document(vid).set(doc)
             novas += 1
             time.sleep(2)
     finally:
