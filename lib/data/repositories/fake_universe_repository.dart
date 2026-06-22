@@ -6,6 +6,7 @@ import '../models/faq.dart';
 import '../models/ifsp_info.dart';
 import '../models/content_doc.dart';
 import '../models/news.dart';
+import '../models/vaga_sugerida.dart';
 import 'universe_repository.dart';
 
 class FakeUniverseRepository implements UniverseRepository {
@@ -953,6 +954,59 @@ class FakeUniverseRepository implements UniverseRepository {
   }
   @override
   Future<void> deleteNews(String id) async => _news.removeWhere((e) => e.id == id);
+
+  // ── Vagas sugeridas (pipeline) ──────────────────────────────────────────────
+  static final List<VagaSugerida> _seedSugeridas = [
+    VagaSugerida(
+      id: 'sug-exemplo-1',
+      scrapedAt: DateTime(2026, 6, 20), source: 'gupy-auto',
+      vaga: const Internship(
+        id: 'sug-exemplo-1', role: 'Estágio em Front-end', companyName: 'TechCorp',
+        area: 'Tecnologia da Informação', duration: '6h/dia · 12 meses',
+        jobDescription: 'Desenvolvimento de interfaces web com foco em acessibilidade.',
+        requirements: ['Cursando ADS', 'HTML, CSS e JS', 'Git'],
+        niceToHave: ['React', 'Figma'], companyDescription: 'Software house de SP.',
+        benefits: ['Vale-transporte', 'Vale-refeição'], grant: 'R\$ 1.200',
+        course: 'ADS', mode: 'Híbrido', link: 'https://portal.gupy.io/job/exemplo-1'),
+    ),
+    VagaSugerida(
+      id: 'sug-exemplo-2',
+      scrapedAt: DateTime(2026, 6, 21), source: 'gupy-auto',
+      vaga: const Internship(
+        id: 'sug-exemplo-2', role: 'Estágio em Logística', companyName: 'TransLog',
+        area: 'Operações', duration: '6h/dia · 12 meses',
+        jobDescription: 'Apoio ao controle de estoque e roteirização.',
+        requirements: ['Cursando Logística', 'Excel intermediário'],
+        niceToHave: ['WMS'], companyDescription: 'Operadora logística.',
+        benefits: ['Vale-transporte'], grant: 'R\$ 1.050',
+        course: 'Logística', mode: 'Presencial', link: 'https://portal.gupy.io/job/exemplo-2'),
+    ),
+  ];
+  final List<VagaSugerida> _vagasSugeridas = List.of(_seedSugeridas);
+
+  @override
+  Stream<List<VagaSugerida>> watchVagasSugeridas() {
+    final list = _vagasSugeridas.where((v) => v.status == 'pendente').toList()
+      ..sort((a, b) => b.scrapedAt.compareTo(a.scrapedAt));
+    return Stream.value(list);
+  }
+  @override
+  Future<void> rejeitarVagaSugerida(String id) async {
+    final i = _vagasSugeridas.indexWhere((v) => v.id == id);
+    if (i >= 0) {
+      final old = _vagasSugeridas[i];
+      _vagasSugeridas[i] = VagaSugerida(id: old.id, vaga: old.vaga, scrapedAt: old.scrapedAt, source: old.source, status: 'recusada');
+    }
+  }
+  @override
+  Future<void> deleteVagaSugerida(String id) async => _vagasSugeridas.removeWhere((v) => v.id == id);
+
+  /// Usado por testes/seed para inserir sugestões.
+  Future<void> upsertVagaSugerida(VagaSugerida v) async {
+    final i = _vagasSugeridas.indexWhere((e) => e.id == v.id);
+    if (i >= 0) { _vagasSugeridas[i] = v; } else { _vagasSugeridas.add(v); }
+  }
+  List<VagaSugerida> get allVagasSugeridas => _vagasSugeridas;
 
   // Getters para o seeder lerem todo o conteúdo bruto:
   List<Course> get allCourses => _courses;
