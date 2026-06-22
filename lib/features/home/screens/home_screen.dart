@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/providers/repository_provider.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../data/models/news.dart';
+import '../../news/widgets/news_card.dart';
 import '../../../shared/chrome/app_headers.dart';
 import '../../../shared/chrome/bottom_nav.dart';
 import '../../../shared/chrome/page_shell.dart';
@@ -96,6 +99,32 @@ class HomeScreen extends ConsumerWidget {
         // card de destaque
         _HighlightCard(onTap: () => _go(context, '/estagio')),
         const SizedBox(height: 22),
+        // Notícias (carrossel) — só aparece se houver publicadas
+        ...(() {
+          final news = ref.watch(publishedNewsProvider).valueOrNull ?? const <News>[];
+          if (news.isEmpty) return const <Widget>[];
+          final top = news.take(6).toList();
+          return [
+            Row(children: [
+              Expanded(child: SectionTitle('Notícias')),
+              GestureDetector(
+                onTap: () => context.push('/noticias'),
+                child: Text('Ver todas', style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: c.green700)),
+              ),
+            ]),
+            const SizedBox(height: 12),
+            SizedBox(
+              height: 148,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: top.length,
+                separatorBuilder: (context2, i2) => const SizedBox(width: 12),
+                itemBuilder: (_, i) => NewsCard(news: top[i], compact: true, onTap: () => context.push('/noticias/${top[i].id}', extra: top[i])),
+              ),
+            ),
+            const SizedBox(height: 22),
+          ];
+        }()),
         const SectionTitle('Explorar'),
         for (final it in homeItems) Padding(
           padding: const EdgeInsets.only(bottom: 11),
