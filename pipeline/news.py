@@ -35,7 +35,7 @@ def news_doc_id(link: str) -> str:
     return hashlib.sha1((link or "").encode("utf-8")).hexdigest()
 
 
-def _entry_data(entry, etiqueta):
+def _entry_data(entry):
     titulo = (entry.get("title") or "").strip()
     link = (entry.get("link") or "").strip()
     resumo_feed = re.sub(r"<[^>]+>", " ", entry.get("summary", "")).strip()
@@ -119,7 +119,7 @@ def main():
         for entry in parsed.entries:
             if novas >= max_noticias:
                 break
-            titulo, link, resumo_feed, dt_ms, img = _entry_data(entry, feed["source"])
+            titulo, link, resumo_feed, dt_ms, img = _entry_data(entry)
             if not titulo or not link:
                 continue
             if not casa_keyword(titulo + " " + resumo_feed):
