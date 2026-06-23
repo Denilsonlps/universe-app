@@ -10,6 +10,7 @@ import '../../data/models/ifsp_info.dart';
 import '../../data/models/content_doc.dart';
 import '../../data/models/news.dart';
 import '../../data/models/vaga_sugerida.dart';
+import '../../data/models/noticia_sugerida.dart';
 import '../../data/repositories/universe_repository.dart';
 import '../../data/repositories/firestore_universe_repository.dart';
 import '../../data/storage/storage_service.dart';
@@ -33,3 +34,4 @@ final allContentDocsProvider = StreamProvider<List<ContentDoc>>((ref) => ref.wat
 final publishedNewsProvider = StreamProvider<List<News>>((ref) => ref.watch(universeRepositoryProvider).watchPublishedNews());
 final allNewsProvider = StreamProvider<List<News>>((ref) => ref.watch(universeRepositoryProvider).watchAllNews());
 final vagasSugeridasProvider = StreamProvider<List<VagaSugerida>>((ref) => ref.watch(universeRepositoryProvider).watchVagasSugeridas());
+final noticiasSugeridasProvider = StreamProvider<List<NoticiaSugerida>>((ref) => ref.watch(universeRepositoryProvider).watchNoticiasSugeridas());

@@ -8,6 +8,7 @@ import '../models/ifsp_info.dart';
 import '../models/content_doc.dart';
 import '../models/news.dart';
 import '../models/vaga_sugerida.dart';
+import '../models/noticia_sugerida.dart';
 import 'universe_repository.dart';
 
 class FirestoreUniverseRepository implements UniverseRepository {
@@ -123,4 +124,17 @@ class FirestoreUniverseRepository implements UniverseRepository {
       _db.collection('vagas_sugeridas').doc(id).set({'status': 'recusada'}, SetOptions(merge: true));
   @override
   Future<void> deleteVagaSugerida(String id) => _db.collection('vagas_sugeridas').doc(id).delete();
+
+  @override
+  Stream<List<NoticiaSugerida>> watchNoticiasSugeridas() =>
+      _db.collection('noticias_sugeridas').snapshots().map((s) {
+        final list = _map(s, NoticiaSugerida.fromMap).where((n) => n.status == 'pendente').toList();
+        list.sort((a, b) => b.scrapedAt.compareTo(a.scrapedAt));
+        return list;
+      });
+  @override
+  Future<void> rejeitarNoticiaSugerida(String id) =>
+      _db.collection('noticias_sugeridas').doc(id).set({'status': 'recusada'}, SetOptions(merge: true));
+  @override
+  Future<void> deleteNoticiaSugerida(String id) => _db.collection('noticias_sugeridas').doc(id).delete();
 }
