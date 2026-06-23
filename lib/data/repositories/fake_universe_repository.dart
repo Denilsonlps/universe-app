@@ -7,6 +7,7 @@ import '../models/ifsp_info.dart';
 import '../models/content_doc.dart';
 import '../models/news.dart';
 import '../models/vaga_sugerida.dart';
+import '../models/noticia_sugerida.dart';
 import 'universe_repository.dart';
 
 class FakeUniverseRepository implements UniverseRepository {
@@ -1007,6 +1008,51 @@ class FakeUniverseRepository implements UniverseRepository {
     if (i >= 0) { _vagasSugeridas[i] = v; } else { _vagasSugeridas.add(v); }
   }
   List<VagaSugerida> get allVagasSugeridas => _vagasSugeridas;
+
+  // ── Notícias sugeridas (pipeline) ───────────────────────────────────────────
+  static final List<NoticiaSugerida> _seedNoticiasSugeridas = [
+    NoticiaSugerida(
+      id: 'noticia-sug-1', scrapedAt: DateTime(2026, 6, 22),
+      noticia: News(
+        id: 'noticia-sug-1', category: 'SiSU', source: 'G1', readTime: '1 min',
+        title: 'Sisu+: prazo de inscrição encerra nesta sexta', summary: 'Etapa complementar do SiSU recebe inscrições até sexta-feira.',
+        body: 'Etapa complementar do SiSU recebe inscrições até sexta-feira.', date: DateTime(2026, 6, 22),
+        facts: const [], sourceUrl: 'https://g1.globo.com/educacao/exemplo-1', published: false),
+    ),
+    NoticiaSugerida(
+      id: 'noticia-sug-2', scrapedAt: DateTime(2026, 6, 21),
+      noticia: News(
+        id: 'noticia-sug-2', category: 'Concurso', source: 'PCI Concursos', readTime: '1 min',
+        title: 'Concurso abre vagas de nível médio e superior', summary: 'Edital prevê vagas com salários de até R\$ 6 mil; inscrições abertas.',
+        body: 'Edital prevê vagas com salários de até R\$ 6 mil; inscrições abertas.', date: DateTime(2026, 6, 21),
+        facts: const [], sourceUrl: 'https://www.pciconcursos.com.br/exemplo-2', published: false),
+    ),
+  ];
+  final List<NoticiaSugerida> _noticiasSugeridas = List.of(_seedNoticiasSugeridas);
+
+  @override
+  Stream<List<NoticiaSugerida>> watchNoticiasSugeridas() {
+    final list = _noticiasSugeridas.where((n) => n.status == 'pendente').toList()
+      ..sort((a, b) => b.scrapedAt.compareTo(a.scrapedAt));
+    return Stream.value(list);
+  }
+  @override
+  Future<void> rejeitarNoticiaSugerida(String id) async {
+    final i = _noticiasSugeridas.indexWhere((n) => n.id == id);
+    if (i >= 0) {
+      final old = _noticiasSugeridas[i];
+      _noticiasSugeridas[i] = NoticiaSugerida(id: old.id, noticia: old.noticia, scrapedAt: old.scrapedAt, status: 'recusada');
+    }
+  }
+  @override
+  Future<void> deleteNoticiaSugerida(String id) async => _noticiasSugeridas.removeWhere((n) => n.id == id);
+
+  /// Usado por testes/seed para inserir sugestões de notícia.
+  Future<void> upsertNoticiaSugerida(NoticiaSugerida n) async {
+    final i = _noticiasSugeridas.indexWhere((e) => e.id == n.id);
+    if (i >= 0) { _noticiasSugeridas[i] = n; } else { _noticiasSugeridas.add(n); }
+  }
+  List<NoticiaSugerida> get allNoticiasSugeridas => _noticiasSugeridas;
 
   // Getters para o seeder lerem todo o conteúdo bruto:
   List<Course> get allCourses => _courses;

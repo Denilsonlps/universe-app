@@ -46,11 +46,26 @@ Como a Gupy bloqueia IPs de nuvem, agende numa máquina do campus:
    ```
 2. **Agendador de Tarefas** → Criar Tarefa Básica → diária → Ação: "Iniciar um programa" → o `run.bat`.
 
-## GitHub Actions — LIMITAÇÃO
-`.github/workflows/pipeline-vagas.yml` existe e os secrets (`GEMINI_API_KEY`,
-`FIREBASE_SERVICE_ACCOUNT`) estão configurados, **mas a Gupy bloqueia o IP do runner**
-do GitHub (a coleta retorna 0 vagas). Por isso o cron está desativado (só execução
-manual, para demonstração). Use a execução local/agendada acima.
+## GitHub Actions
+`.github/workflows/pipeline-vagas.yml` (vagas) e `pipeline-noticias.yml` (notícias)
+rodam no runner do GitHub com cron diário + execução manual. Ambos usam a **API JSON**
+(Gupy) / **RSS** (notícias) — sem navegador, então passam no runner. Secrets
+necessários: `GEMINI_API_KEY` e `FIREBASE_SERVICE_ACCOUNT`.
+
+> Histórico: a 1ª versão de vagas usava Selenium e era bloqueada pelo IP de nuvem da
+> Gupy; a migração para a API JSON resolveu, e o cron foi reativado.
 
 ## Testes
 `cd pipeline && pip install pytest && pytest`
+
+## Pipeline de Notícias (news.py)
+Coleta notícias de fontes RSS (G1 Educação, MEC, concursos, IFSP), filtra por
+palavra-chave, usa o Gemini para relevância/categoria/resumo e grava em
+`noticias_sugeridas` (curadoria no app). Rodar:
+```
+cd pipeline
+python news.py
+```
+Variáveis: `GEMINI_API_KEY`, `FIREBASE_SERVICE_ACCOUNT`, `MAX_NOTICIAS` (padrão 15).
+Agendado em `.github/workflows/pipeline-noticias.yml`. Só título + resumo + link são
+guardados (sem texto integral). Feeds que mudarem são manutenção esperada.

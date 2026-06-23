@@ -19,10 +19,11 @@ service cloud.firestore {
     // Catch-all: leitura logada e escrita admin. Restrições por coleção condicionadas
     // aqui (as regras concedem por união, então um match separado não restringiria):
     //  - `news`: leitura só de publicadas (ou admin).
-    //  - `vagas_sugeridas` (staging do pipeline): só admin lê.
+    //  - `vagas_sugeridas` / `noticias_sugeridas` (staging do pipeline): só admin lê.
     match /{col}/{id} {
       allow read: if signedIn()
         && (col != 'vagas_sugeridas' || isAdmin())
+        && (col != 'noticias_sugeridas' || isAdmin())
         && (col != 'news' || isAdmin() || resource.data.published == true);
       allow write: if isAdmin();
     }
