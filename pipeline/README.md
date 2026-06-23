@@ -54,3 +54,15 @@ manual, para demonstração). Use a execução local/agendada acima.
 
 ## Testes
 `cd pipeline && pip install pytest && pytest`
+
+## Pipeline de Notícias (news.py)
+Coleta notícias de fontes RSS (G1 Educação, MEC, concursos, IFSP), filtra por
+palavra-chave, usa o Gemini para relevância/categoria/resumo e grava em
+`noticias_sugeridas` (curadoria no app). Rodar:
+```
+cd pipeline
+python news.py
+```
+Variáveis: `GEMINI_API_KEY`, `FIREBASE_SERVICE_ACCOUNT`, `MAX_NOTICIAS` (padrão 15).
+Agendado em `.github/workflows/pipeline-noticias.yml`. Só título + resumo + link são
+guardados (sem texto integral). Feeds que mudarem são manutenção esperada.
