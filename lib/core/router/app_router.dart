@@ -40,6 +40,7 @@ import '../../features/news/screens/news_detail_screen.dart';
 import '../../features/admin/screens/admin_news_list_screen.dart';
 import '../../features/admin/screens/admin_news_edit_screen.dart';
 import '../../features/admin/screens/admin_sugestoes_screen.dart';
+import '../../features/admin/screens/admin_noticias_sugeridas_screen.dart';
 import '../providers/profile_provider.dart';
 import '../providers/onboarding_provider.dart';
 import '../providers/repository_provider.dart';
@@ -118,7 +119,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       }),
       GoRoute(path: '/admin/concurso', pageBuilder: (c, s) => fadeSlide(s, ConcursoFormScreen(contest: s.extra is Contest ? s.extra as Contest : null))),
       GoRoute(path: '/admin/noticias', pageBuilder: (c, s) => fadeSlide(s, const AdminNewsListScreen())),
-      GoRoute(path: '/admin/noticias/editar', pageBuilder: (c, s) => fadeSlide(s, AdminNewsEditScreen(news: s.extra is News ? s.extra as News : null))),
+      GoRoute(path: '/admin/noticias-sugeridas', pageBuilder: (c, s) => fadeSlide(s, const AdminNoticiasSugeridasScreen())),
+      GoRoute(path: '/admin/noticias/editar', pageBuilder: (c, s) {
+        final x = s.extra;
+        if (x is ({News noticia, String suggestionId})) return fadeSlide(s, AdminNewsEditScreen(news: x.noticia, fromSuggestionId: x.suggestionId));
+        return fadeSlide(s, AdminNewsEditScreen(news: x is News ? x : null));
+      }),
     ],
   );
 });

@@ -18,7 +18,8 @@ const _categorias = ['Campus', 'SiSU', 'Enem', 'Geral'];
 
 class AdminNewsEditScreen extends ConsumerStatefulWidget {
   final News? news;
-  const AdminNewsEditScreen({super.key, required this.news});
+  final String? fromSuggestionId; // se veio de uma sugestão, removê-la ao salvar
+  const AdminNewsEditScreen({super.key, required this.news, this.fromSuggestionId});
   @override
   ConsumerState<AdminNewsEditScreen> createState() => _AdminNewsEditScreenState();
 }
@@ -57,6 +58,9 @@ class _AdminNewsEditScreenState extends ConsumerState<AdminNewsEditScreen> {
     );
     try {
       await repo.upsertNews(news);
+      if (widget.fromSuggestionId != null) {
+        await repo.deleteNoticiaSugerida(widget.fromSuggestionId!);
+      }
       if (mounted) { ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Notícia salva!'))); context.pop(); }
     } catch (_) {
       if (mounted) { ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Erro ao salvar. Tente novamente.'))); setState(() => _saving = false); }
