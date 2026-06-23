@@ -702,3 +702,40 @@ um self-hosted runner numa máquina do campus).
 ### Nota de TCC
 A camada externa passou de "web scraping com Selenium" para "consumo da API da Gupy" —
 atualizar a descrição do pipeline no texto.
+
+---
+
+## 2026-06-23 — SP5: Pipeline de Notícias automatizado (RSS + Gemini → aprovação)
+
+### O que foi construído
+Espelha o SP4 (vagas), agora para **notícias**: um pipeline lê fontes de referência via
+RSS, o Gemini filtra relevância + categoriza + resume, e o resultado vira **sugestões**
+que o Setor aprova no app. Por direitos autorais, guarda só **título + resumo próprio +
+link** para a matéria na fonte.
+
+- **Contrato — `noticias_sugeridas`:** id = `sha1(link)`; campos do `News` + `scrapedAt`
+  + `status: 'pendente'|'recusada'`.
+- **App:** `NoticiaSugerida` (envolve `News`); repo `watch/rejeitar/delete` +
+  `noticiasSugeridasProvider`; card no hub "Notícias sugeridas (N)" →
+  `AdminNoticiasSugeridasScreen` (Aprovar = `upsertNews` mesmo id + remove sugestão /
+  Editar via `AdminNewsEditScreen.fromSuggestionId` / Recusar = tombstone). Fake com 2
+  exemplos.
+- **Pipeline (`pipeline/news.py`):** `feedparser` lê G1 Educação, MEC, concursos e IFSP;
+  pré-filtro por palavra-chave (sisu, enem, concurso, edital, estágio, bolsa…); Gemini
+  em modo JSON decide `{relevante, category, summary}`; grava via `firebase-admin`
+  (dedup por `news`/`recusada`); reaproveita `init_firestore`/`init_gemini` do `main.py`.
+  Nova dep `feedparser`. Workflow `pipeline-noticias.yml` (cron diário + manual).
+- **Regra do Firestore:** `noticias_sugeridas` só admin (estende o catch-all junto com
+  `news`/`vagas_sugeridas`).
+
+### Verificação
+- `flutter analyze`: sem erros. `flutter test`: **61/61** (round-trip NoticiaSugerida,
+  filtro/ordem das sugeridas, aprovar cria News + remove, smoke da tela). `news.py`
+  valida sintaxe; funções `casa_keyword`/`news_doc_id` testadas.
+- **Pendências operacionais do usuário:** publicar a regra atualizada do Firestore;
+  manter o Actions habilitado (secrets já existem); re-rodar o seed (cria
+  `noticias_sugeridas` de exemplo). Feeds que mudarem são manutenção esperada.
+
+### Nota de TCC
+A camada externa passou a ter **dois pipelines** (vagas via API Gupy; notícias via RSS),
+ambos com curadoria humana no app antes de chegar ao aluno (RF037).

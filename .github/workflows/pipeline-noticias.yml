@@ -1,0 +1,29 @@
+name: Pipeline de Notícias
+# Coleta notícias de fontes RSS, filtra por palavra-chave, classifica/resume com o
+# Gemini e grava em `noticias_sugeridas` (curadoria no app). Só HTTP/RSS → roda no runner.
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: '30 6 * * *'   # diariamente às 06:30 UTC (03:30 BRT)
+
+jobs:
+  coletar-noticias:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Instalar dependências
+        run: pip install -r pipeline/requirements.txt
+      - name: Gravar service account
+        run: printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > pipeline/service-account.json
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+      - name: Rodar pipeline de notícias
+        working-directory: pipeline
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          FIREBASE_SERVICE_ACCOUNT: service-account.json
+          MAX_NOTICIAS: '15'
+        run: python news.py
