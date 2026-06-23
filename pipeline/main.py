@@ -1,26 +1,29 @@
-import os, sys, time, json, re, hashlib
+import os, sys, time, json, re
 # Console do Windows (cp1252) não imprime emojis; força UTF-8 na saída.
 try:
     sys.stdout.reconfigure(encoding="utf-8")
     sys.stderr.reconfigure(encoding="utf-8")
 except Exception:
     pass
+import urllib.parse
+import urllib.request
 import firebase_admin
 from firebase_admin import credentials, firestore
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 load_dotenv()
 
 # Rótulos curtos de curso usados no app (devem casar com o VagaFormScreen).
 CURSOS_APP = ["ADS", "Gestão Pública", "Eng. de Produção", "Redes", "Administração", "Logística", "Todos"]
+
+# API pública de busca de vagas da Gupy (JSON — sem necessidade de navegador).
+GUPY_API = "https://employability-portal.gupy.io/api/v1/jobs"
+_UA = {"User-Agent": "Mozilla/5.0", "Accept": "application/json"}
+
+_MODE_MAP = {"on-site": "Presencial", "remote": "Remoto", "hybrid": "Híbrido"}
+
 
 def map_course(valor: str) -> str:
     """Normaliza o curso retornado pelo modelo para um rótulo do app."""
@@ -42,8 +45,15 @@ def map_course(valor: str) -> str:
             return rotulo
     return "Todos"
 
-def vaga_id(link: str) -> str:
-    return hashlib.sha1(link.encode("utf-8")).hexdigest()
+
+def job_doc_id(job_id) -> str:
+    """Id estável do documento a partir do id da vaga na Gupy."""
+    return f"gupy-{job_id}"
+
+
+def map_mode(workplace_type: str) -> str:
+    return _MODE_MAP.get((workplace_type or "").lower(), "Presencial")
+
 
 def init_firestore():
     cred_path = os.getenv("FIREBASE_SERVICE_ACCOUNT", "service-account.json")
@@ -51,8 +61,10 @@ def init_firestore():
     firebase_admin.initialize_app(cred)
     return firestore.client()
 
+
 def init_gemini():
     return genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+
 
 PROMPT_EXTRACAO = """Você extrai dados de uma vaga de estágio para um app acadêmico.
 Cursos do campus (use EXATAMENTE um destes em "course"): {cursos}
@@ -67,9 +79,10 @@ jobDescription (string, 1-3 frases), companyDescription (string, 1-2 frases),
 requirements (array de strings), niceToHave (array de strings), benefits (array de strings).
 Use "" ou [] quando não houver a informação. Responda só o JSON."""
 
+
 def extrair_estruturado(client, texto: str) -> dict:
-    prompt = PROMPT_EXTRACAO.format(cursos=", ".join(CURSOS_APP), texto=texto[:6000])
-    for tentativa in range(3):
+    prompt = PROMPT_EXTRACAO.format(cursos=", ".join(CURSOS_APP), texto=(texto or "")[:6000])
+    for _ in range(3):
         try:
             resp = client.models.generate_content(
                 model="gemini-2.5-flash",
@@ -99,100 +112,76 @@ def extrair_estruturado(client, texto: str) -> dict:
     return {"course": "Todos", "area": "", "duration": "", "grant": "",
             "jobDescription": "", "companyDescription": "", "requirements": [], "niceToHave": [], "benefits": []}
 
+
 def ja_tratada(db, vid: str) -> bool:
     if db.collection("internships").document(vid).get().exists:
         return True
     sug = db.collection("vagas_sugeridas").document(vid).get()
     return sug.exists and sug.to_dict().get("status") == "recusada"
 
-def coletar_listagem(driver, max_vagas: int):
-    """Retorna [(titulo, empresa, modalidade, link)] da listagem da Gupy."""
-    driver.get("https://portal.gupy.io/job-search/term=estágio")
-    time.sleep(3)
-    try:
-        b = driver.find_element(By.ID, "privacytools-banner-consent")
-        b.find_element(By.TAG_NAME, "button").click()
-        time.sleep(1)
-    except NoSuchElementException:
-        pass
-    vagas = []
-    while len(vagas) < max_vagas:
-        try:
-            WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.TAG_NAME, "h3")))
-        except TimeoutException:
-            break
-        cards = driver.find_elements(By.CSS_SELECTOR, "div[aria-label^='Empresa']")
-        for card in cards:
-            if len(vagas) >= max_vagas:
-                break
-            try:
-                pai = card.find_element(By.XPATH, "./parent::*")
-                titulo = pai.find_element(By.TAG_NAME, "h3").text
-                empresa = card.find_element(By.TAG_NAME, "p").text
-                try:
-                    spans = pai.find_elements(By.CSS_SELECTOR, "span.sc-23336bc7-1")
-                    modalidade = spans[1].text if len(spans) > 1 else "Presencial"
-                except Exception:
-                    modalidade = "Presencial"
-                link = pai.find_element(By.XPATH, "./ancestor::a[1]").get_attribute("href")
-                if titulo and link:
-                    vagas.append((titulo, empresa, modalidade, link))
-            except Exception:
-                continue
-        try:
-            botao = driver.find_element(By.XPATH, "//button[@aria-label='Próxima página']")
-            if not botao.is_enabled():
-                break
-            driver.execute_script("arguments[0].click();", botao)
-            time.sleep(2)
-        except NoSuchElementException:
-            break
-    return vagas
 
-def texto_da_vaga(driver, link: str) -> str:
-    driver.get(link)
-    time.sleep(2)
-    try:
-        WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.TAG_NAME, "main")))
-        return driver.find_element(By.TAG_NAME, "main").text
-    except Exception:
-        return driver.find_element(By.TAG_NAME, "body").text
+def buscar_vagas(termo: str, max_vagas: int):
+    """Busca vagas de estágio na API da Gupy (paginado). Retorna lista de dicts."""
+    out = []
+    offset, limit = 0, 20
+    while len(out) < max_vagas:
+        params = urllib.parse.urlencode({"jobName": termo, "limit": limit, "offset": offset})
+        req = urllib.request.Request(f"{GUPY_API}?{params}", headers=_UA)
+        with urllib.request.urlopen(req, timeout=25) as r:
+            payload = json.loads(r.read().decode("utf-8"))
+        data = payload.get("data", [])
+        if not data:
+            break
+        for job in data:
+            # Garante que é estágio (a busca por nome pode trazer outros tipos).
+            if job.get("type") and job.get("type") != "vacancy_type_internship":
+                continue
+            out.append(job)
+            if len(out) >= max_vagas:
+                break
+        total = payload.get("pagination", {}).get("total", 0)
+        offset += limit
+        if offset >= total:
+            break
+    return out
+
 
 def main():
     db = init_firestore()
     client = init_gemini()
-    options = Options()
-    options.add_argument("--headless=new")
-    options.add_argument("--disable-gpu")
-    options.add_argument("--window-size=1920,1080")
-    driver = webdriver.Chrome(options=options)
+    termo = os.getenv("TERMO_BUSCA", "estágio")
     max_vagas = int(os.getenv("MAX_VAGAS", "30"))
 
+    vagas = buscar_vagas(termo, max_vagas)
+    print(f"🔎 {len(vagas)} vagas retornadas pela API da Gupy.")
+
     novas = 0
-    try:
-        listagem = coletar_listagem(driver, max_vagas)
-        print(f"🔎 {len(listagem)} vagas na listagem.")
-        for titulo, empresa, modalidade, link in listagem:
-            vid = vaga_id(link)
-            if ja_tratada(db, vid):
-                print(f"⏭️  Pulando (já tratada): {titulo}")
-                continue
-            print(f"🤖 Enriquecendo: {titulo}")
-            extra = extrair_estruturado(client, texto_da_vaga(driver, link))
-            doc = {
-                "role": titulo, "companyName": empresa, "mode": modalidade, "link": link,
-                "tag": "Novo", "open": True, "closedAt": None,
-                "source": "gupy-auto", "scrapedAt": int(time.time() * 1000), "status": "pendente",
-                **extra,
-            }
-            # ja_tratada() já barrou aprovadas/recusadas; set limpo (sem merge)
-            # evita ressuscitar um tombstone 'recusada'.
-            db.collection("vagas_sugeridas").document(vid).set(doc)
-            novas += 1
-            time.sleep(2)
-    finally:
-        driver.quit()
+    for job in vagas:
+        vid = job_doc_id(job.get("id"))
+        titulo = job.get("name", "")
+        if not titulo:
+            continue
+        if ja_tratada(db, vid):
+            print(f"⏭️  Pulando (já tratada): {titulo}")
+            continue
+        print(f"🤖 Enriquecendo: {titulo}")
+        extra = extrair_estruturado(client, job.get("description", ""))
+        doc = {
+            "role": titulo,
+            "companyName": job.get("careerPageName", ""),
+            "mode": map_mode(job.get("workplaceType")),
+            "link": job.get("jobUrl", ""),
+            "tag": "Novo", "open": True, "closedAt": None,
+            "source": "gupy-auto", "scrapedAt": int(time.time() * 1000), "status": "pendente",
+            **extra,
+        }
+        # ja_tratada() já barrou aprovadas/recusadas; set limpo evita ressuscitar tombstone.
+        db.collection("vagas_sugeridas").document(vid).set(doc)
+        novas += 1
+        time.sleep(1)
+
     print(f"✅ {novas} sugestões gravadas em 'vagas_sugeridas'.")
+
 
 if __name__ == "__main__":
     main()
