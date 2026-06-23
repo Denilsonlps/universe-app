@@ -1,8 +1,12 @@
 name: Pipeline de Vagas
+# NOTA: a Gupy bloqueia os IPs de nuvem do GitHub Actions (anti-robô), então a coleta
+# retorna 0 vagas neste runner. O pipeline funciona localmente / numa máquina do campus
+# (ver pipeline/README.md). O cron agendado fica desativado; mantém-se só a execução
+# manual para fins de teste/demonstração.
 on:
-  schedule:
-    - cron: '0 6 * * *'   # diariamente às 06:00 UTC (03:00 BRT)
-  workflow_dispatch: {}     # permite rodar manualmente
+  workflow_dispatch: {}     # rodar manualmente (Actions → Run workflow)
+  # schedule:
+  #   - cron: '0 6 * * *'   # desativado: runner do GitHub é bloqueado pela Gupy
 
 jobs:
   coletar-vagas:

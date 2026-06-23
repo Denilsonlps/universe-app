@@ -17,16 +17,40 @@ coleção `vagas_sugeridas` do Firestore, para o Setor de Estágios aprovar no a
    - `FIREBASE_SERVICE_ACCOUNT=service-account.json`
    - `MAX_VAGAS=30` (opcional)
 
-## Rodar local
+## Rodar local (recomendado)
 ```
 cd pipeline
 python main.py
 ```
+No **PowerShell** (Windows), defina as variáveis na sessão antes:
+```powershell
+$env:GEMINI_API_KEY = "SUA_CHAVE"
+$env:FIREBASE_SERVICE_ACCOUNT = "service-account.json"
+$env:MAX_VAGAS = "30"
+python main.py
+```
+> Se `python` não for reconhecido no PowerShell, o Python existe mas não está no PATH.
+> Reinstale marcando **"Add python.exe to PATH"** (python.org), ou use o caminho completo
+> (ex.: `& "$env:LOCALAPPDATA\Programs\Python\Python312\python.exe" main.py`).
+> O script já força saída em UTF-8, então emojis no log não quebram o console do Windows.
 
-## Agendado (GitHub Actions)
-Veja `.github/workflows/pipeline-vagas.yml`. Configure os secrets do repositório:
-- `GEMINI_API_KEY`
-- `FIREBASE_SERVICE_ACCOUNT` (cole o JSON inteiro da service account)
+## Agendar localmente (Agendador de Tarefas do Windows)
+Como a Gupy bloqueia IPs de nuvem, agende numa máquina do campus:
+1. Crie `pipeline\run.bat` com:
+   ```bat
+   cd /d D:\projetos\universe_app\pipeline
+   set GEMINI_API_KEY=SUA_CHAVE
+   set FIREBASE_SERVICE_ACCOUNT=service-account.json
+   set MAX_VAGAS=30
+   python main.py >> run.log 2>&1
+   ```
+2. **Agendador de Tarefas** → Criar Tarefa Básica → diária → Ação: "Iniciar um programa" → o `run.bat`.
+
+## GitHub Actions — LIMITAÇÃO
+`.github/workflows/pipeline-vagas.yml` existe e os secrets (`GEMINI_API_KEY`,
+`FIREBASE_SERVICE_ACCOUNT`) estão configurados, **mas a Gupy bloqueia o IP do runner**
+do GitHub (a coleta retorna 0 vagas). Por isso o cron está desativado (só execução
+manual, para demonstração). Use a execução local/agendada acima.
 
 ## Testes
 `cd pipeline && pip install pytest && pytest`

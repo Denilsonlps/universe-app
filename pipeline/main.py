@@ -1,4 +1,10 @@
-import os, time, json, re, hashlib
+import os, sys, time, json, re, hashlib
+# Console do Windows (cp1252) não imprime emojis; força UTF-8 na saída.
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
+except Exception:
+    pass
 import firebase_admin
 from firebase_admin import credentials, firestore
 from dotenv import load_dotenv
