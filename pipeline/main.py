@@ -7,6 +7,7 @@ except Exception:
     pass
 import urllib.parse
 import urllib.request
+import urllib.error
 import firebase_admin
 from firebase_admin import credentials, firestore
 from dotenv import load_dotenv
@@ -55,6 +56,21 @@ def map_mode(workplace_type: str) -> str:
     return _MODE_MAP.get((workplace_type or "").lower(), "Presencial")
 
 
+def is_remote(job: dict) -> bool:
+    return bool(job.get("isRemoteWork")) or (job.get("workplaceType", "").lower() == "remote")
+
+
+# Estado-alvo do campus. Vagas não-remotas só interessam se forem deste estado.
+ESTADO_ALVO = os.getenv("ESTADO_ALVO", "São Paulo")
+
+
+def keep_vaga(job: dict) -> bool:
+    """Mantém a vaga se for remota (qualquer estado) ou presencial/híbrida em SP."""
+    if is_remote(job):
+        return True
+    return (job.get("state") or "") == ESTADO_ALVO
+
+
 def init_firestore():
     cred_path = os.getenv("FIREBASE_SERVICE_ACCOUNT", "service-account.json")
     cred = credentials.Certificate(cred_path)
@@ -82,7 +98,7 @@ Use "" ou [] quando não houver a informação. Responda só o JSON."""
 
 def extrair_estruturado(client, texto: str) -> dict:
     prompt = PROMPT_EXTRACAO.format(cursos=", ".join(CURSOS_APP), texto=(texto or "")[:6000])
-    for _ in range(3):
+    for tentativa in range(4):
         try:
             resp = client.models.generate_content(
                 model="gemini-2.5-flash",
@@ -106,6 +122,8 @@ def extrair_estruturado(client, texto: str) -> dict:
             m = re.search(r"retry in (\d+)", erro)
             if m:
                 time.sleep(int(m.group(1)) + 5)
+            elif "503" in erro or "UNAVAILABLE" in erro or "overloaded" in erro.lower():
+                time.sleep(10 * (tentativa + 1))  # backoff em sobrecarga temporária
             else:
                 print(f"❌ Erro no Gemini: {e}")
                 break
@@ -120,11 +138,13 @@ def ja_tratada(db, vid: str) -> bool:
     return sug.exists and sug.to_dict().get("status") == "recusada"
 
 
-def buscar_vagas(termo: str, max_vagas: int):
-    """Busca vagas de estágio na API da Gupy (paginado). Retorna lista de dicts."""
+def buscar_vagas(termo: str, max_vagas: int, max_paginas: int = 25):
+    """Busca vagas de estágio na API da Gupy (paginado), aplicando o filtro de
+    tipo (estágio) e localização (remota OU em SP). Pagina até juntar `max_vagas`
+    aprovadas ou esgotar (limitado por `max_paginas` por segurança)."""
     out = []
-    offset, limit = 0, 20
-    while len(out) < max_vagas:
+    offset, limit, paginas = 0, 20, 0
+    while len(out) < max_vagas and paginas < max_paginas:
         params = urllib.parse.urlencode({"jobName": termo, "limit": limit, "offset": offset})
         req = urllib.request.Request(f"{GUPY_API}?{params}", headers=_UA)
         with urllib.request.urlopen(req, timeout=25) as r:
@@ -133,17 +153,51 @@ def buscar_vagas(termo: str, max_vagas: int):
         if not data:
             break
         for job in data:
-            # Garante que é estágio (a busca por nome pode trazer outros tipos).
+            # Só estágio (a busca por nome pode trazer outros tipos) e local relevante.
             if job.get("type") and job.get("type") != "vacancy_type_internship":
+                continue
+            if not keep_vaga(job):
                 continue
             out.append(job)
             if len(out) >= max_vagas:
                 break
         total = payload.get("pagination", {}).get("total", 0)
         offset += limit
+        paginas += 1
         if offset >= total:
             break
     return out
+
+
+def vaga_existe(job_id: str) -> bool:
+    """True se a vaga ainda está no ar na Gupy (200); False se saiu (404).
+    Em erro de rede/instabilidade, retorna True para não encerrar por engano."""
+    try:
+        req = urllib.request.Request(f"{GUPY_API}/{job_id}", headers=_UA)
+        with urllib.request.urlopen(req, timeout=20) as r:
+            return r.status == 200
+    except urllib.error.HTTPError as e:
+        return e.code != 404
+    except Exception:
+        return True
+
+
+def encerrar_inativas(db) -> int:
+    """RF034: encerra vagas auto (id `gupy-<id>`) já publicadas que saíram do ar."""
+    fechadas = 0
+    for d in db.collection("internships").stream():
+        if not d.id.startswith("gupy-"):
+            continue
+        data = d.to_dict()
+        if not data.get("open", True):
+            continue
+        job_id = d.id[len("gupy-"):]
+        if not vaga_existe(job_id):
+            d.reference.update({"open": False, "closedAt": int(time.time() * 1000)})
+            fechadas += 1
+            print(f"🚫 Encerrada (saiu do ar): {data.get('role', d.id)}")
+        time.sleep(0.3)
+    return fechadas
 
 
 def main():
@@ -152,8 +206,13 @@ def main():
     termo = os.getenv("TERMO_BUSCA", "estágio")
     max_vagas = int(os.getenv("MAX_VAGAS", "30"))
 
+    # RF034: encerra as vagas auto já publicadas que saíram do ar.
+    fechadas = encerrar_inativas(db)
+    if fechadas:
+        print(f"🚫 {fechadas} vaga(s) encerrada(s) por terem saído do ar.")
+
     vagas = buscar_vagas(termo, max_vagas)
-    print(f"🔎 {len(vagas)} vagas retornadas pela API da Gupy.")
+    print(f"🔎 {len(vagas)} vagas (estágio · remota ou {ESTADO_ALVO}) coletadas da Gupy.")
 
     novas = 0
     for job in vagas:

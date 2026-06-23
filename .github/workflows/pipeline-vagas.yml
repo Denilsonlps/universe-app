@@ -25,5 +25,5 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           FIREBASE_SERVICE_ACCOUNT: service-account.json
-          MAX_VAGAS: '30'
+          MAX_VAGAS: '10'
         run: python main.py
