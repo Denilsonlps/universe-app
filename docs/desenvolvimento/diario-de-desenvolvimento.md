@@ -672,3 +672,33 @@ no app. Reduz a digitação manual mantendo a curadoria (RF037).
 ### Nota de TCC
 Evolui a arquitetura documentada (de "CSV + cadastro manual" para "pipeline → Firestore
 + aprovação no app") — refletir no texto depois.
+
+---
+
+## 2026-06-23 — SP4 (ajuste): coleta via API JSON da Gupy (substitui o Selenium)
+
+### Problema
+O GitHub Actions retornava 0 vagas: a Gupy bloqueia o **navegador headless em IP de
+nuvem** (anti-robô). Localmente funcionava, mas a automação na nuvem não.
+
+### Solução
+Descoberta a **API pública** da Gupy:
+`GET https://employability-portal.gupy.io/api/v1/jobs?jobName=estágio&limit&offset`
+→ JSON com `id, name, description (texto completo), careerPageName, jobUrl,
+workplaceType, city, type, pagination.total`. O `main.py` foi **reescrito** para
+consumir essa API com `requests`/`urllib` (sai o `selenium`/Chrome):
+- Muito mais leve, rápido e robusto (sem seletores de DOM frágeis); a descrição já
+  vem pronta para o Gemini extrair curso/área/requisitos/benefícios/bolsa.
+- **id estável** = `gupy-<id da vaga>` (em vez de `sha1(link)`); aprovar reusa o id.
+- Workflow do Actions simplificado (sem instalar Chrome) e **cron reativado** — uma API
+  HTTP tende a passar no runner do GitHub (a confirmar na execução).
+
+### Verificação
+Local: `🔎 6 vagas retornadas pela API` → 6 enriquecidas e gravadas em
+`vagas_sugeridas`. Funções `map_course`/`job_doc_id`/`map_mode` testadas.
+Pendência: rodar o Actions para confirmar se a API passa no runner (se não, plano B é
+um self-hosted runner numa máquina do campus).
+
+### Nota de TCC
+A camada externa passou de "web scraping com Selenium" para "consumo da API da Gupy" —
+atualizar a descrição do pipeline no texto.
