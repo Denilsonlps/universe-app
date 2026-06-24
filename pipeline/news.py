@@ -129,6 +129,9 @@ def main():
     max_noticias = int(os.getenv("MAX_NOTICIAS", "15"))
     # Teto por fonte: distribui a cota entre os feeds (evita uma só fonte dominar).
     por_fonte = max(1, -(-max_noticias // len(FEEDS)))  # ceil
+    # Janela de recência: só notícias publicadas nos últimos N dias (padrão 2).
+    max_dias = int(os.getenv("MAX_DIAS_NOTICIA", "2"))
+    cutoff_ms = int((time.time() - max_dias * 86400) * 1000)
     novas = 0
     for feed in FEEDS:
         if novas >= max_noticias:
@@ -144,6 +147,8 @@ def main():
                 break
             titulo, link, resumo_feed, dt_ms, img, veiculo = _entry_data(entry, feed["source"])
             if not titulo or not link:
+                continue
+            if dt_ms < cutoff_ms:  # notícia antiga (fora da janela de recência)
                 continue
             if not casa_keyword(titulo + " " + resumo_feed):
                 continue

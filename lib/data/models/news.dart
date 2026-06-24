@@ -20,6 +20,13 @@ class News {
         'published': published, 'pinned': pinned,
       };
 
+  News copyWith({bool? published, bool? pinned}) => News(
+        id: id, category: category, source: source, readTime: readTime,
+        title: title, summary: summary, body: body, date: date, facts: facts,
+        sourceUrl: sourceUrl, imageUrl: imageUrl,
+        published: published ?? this.published, pinned: pinned ?? this.pinned,
+      );
+
   factory News.fromMap(String id, Map<String, dynamic> m) => News(
         id: id,
         category: m['category'] ?? 'Geral', source: m['source'] ?? '',

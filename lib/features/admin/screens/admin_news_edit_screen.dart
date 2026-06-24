@@ -36,7 +36,8 @@ class _AdminNewsEditScreenState extends ConsumerState<AdminNewsEditScreen> {
   late String? _imageUrl = _n?.imageUrl;
   late final List<({String label, String value})> _facts = List.of(_n?.facts ?? const []);
   late bool _pinned = _n?.pinned ?? false;
-  late bool _published = _n?.published ?? true;
+  // Vindo de uma sugestão, já assume publicar; senão usa o valor da notícia (true em nova).
+  late bool _published = widget.fromSuggestionId != null ? true : (_n?.published ?? true);
   bool _saving = false;
   bool get _isNew => _n == null;
   bool get _valid => _title.trim().isNotEmpty && _body.trim().length > 10;

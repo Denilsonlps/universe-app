@@ -16,7 +16,7 @@ class AdminNoticiasSugeridasScreen extends ConsumerWidget {
 
   Future<void> _aprovar(BuildContext context, WidgetRef ref, NoticiaSugerida s) async {
     final repo = ref.read(universeRepositoryProvider);
-    await repo.upsertNews(s.noticia);
+    await repo.upsertNews(s.noticia.copyWith(published: true)); // aprovar = publicar
     await repo.deleteNoticiaSugerida(s.id);
     if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Notícia aprovada e publicada')));
   }
