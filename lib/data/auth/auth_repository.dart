@@ -18,5 +18,8 @@ abstract interface class AuthRepository {
 
   Future<AppUser> register({required String name, required String email, required String password});
 
+  /// Envia e-mail de redefinição de senha para o endereço informado.
+  Future<void> resetPassword(String email);
+
   Future<void> signOut();
 }

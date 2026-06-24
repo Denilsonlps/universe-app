@@ -739,3 +739,39 @@ link** para a matéria na fonte.
 ### Nota de TCC
 A camada externa passou a ter **dois pipelines** (vagas via API Gupy; notícias via RSS),
 ambos com curadoria humana no app antes de chegar ao aluno (RF037).
+
+---
+
+## SP6 — Polimento da Home + remoção dos "Em breve" (2026-06-24)
+
+### Objetivo
+Eliminar os placeholders "Em breve" das telas principais, ligando-os a dados/telas
+reais — maior ganho de qualidade percebida para a apresentação do TCC.
+
+### Mudanças
+- **Home (`home_screen.dart`):**
+  - Card de destaque agora exibe uma **vaga real em aberto** (`allInternshipsProvider`,
+    primeira `open && visibleAt`), com cargo + empresa · bolsa; toca → detalhe da vaga.
+    Some quando não há vagas (sem dado falso).
+  - Barra de **busca** abre a nova tela `/busca` (era "Em breve").
+  - **Sino** do cabeçalho abre `/noticias` (era "Em breve").
+  - Ação rápida "Moradia" (rota inexistente → "Em breve") trocada por **"Notícias"**.
+- **Busca (`features/search/screens/busca_screen.dart`):** tela nova. Busca unificada
+  (≥2 letras) em cursos, benefícios (contentDocs gov+inst), vagas e notícias, com
+  resultados agrupados e navegação direta para cada item.
+- **Perfil (`perfil_screen.dart`):**
+  - "Carteirinha digital" → nova tela `/carteirinha` (cartão gerado do perfil:
+    nome, curso curto, matrícula, avatar).
+  - "Alterar senha" → envia **e-mail de redefinição** (Firebase
+    `sendPasswordResetEmail`), com diálogo de confirmação.
+  - "Termos e privacidade" → nova tela estática `/termos`.
+- **Auth:** `AuthRepository.resetPassword` (interface) + implementações Firebase
+  (`sendPasswordResetEmail`) e Fake (valida conta existente).
+
+### Verificação
+- `flutter analyze`: sem erros. `flutter test`: **61/61** (suíte existente sem regressão).
+
+### Nota de TCC
+Restam como "Em breve" apenas guardas genéricas em rotas não usadas (fallback do drawer
+e do `_go` da Home); nenhuma entrada visível ao aluno cai nelas. Carteirinha é documento
+interno gerado a partir do perfil (não substitui a carteirinha institucional).

@@ -51,6 +51,13 @@ class FakeAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<void> resetPassword(String email) async {
+    if (!_accounts.containsKey(email.toLowerCase())) {
+      throw const AuthException('Conta não encontrada.');
+    }
+  }
+
+  @override
   Future<void> signOut() async {
     _current = null;
     _controller.add(null);

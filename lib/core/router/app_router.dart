@@ -12,6 +12,9 @@ import '../../features/auth/screens/splash_screen.dart';
 import '../../features/faqs/screens/duvidas_screen.dart';
 import '../../features/profile/screens/perfil_screen.dart';
 import '../../features/profile/screens/cadastrar_screen.dart';
+import '../../features/profile/screens/carteirinha_screen.dart';
+import '../../features/profile/screens/termos_screen.dart';
+import '../../features/search/screens/busca_screen.dart';
 import '../../features/auth/screens/onboarding_screen.dart';
 import '../../features/auth/screens/login_screen.dart';
 import '../../features/auth/screens/register_screen.dart';
@@ -87,6 +90,9 @@ final routerProvider = Provider<GoRouter>((ref) {
         ],
       ),
       GoRoute(path: '/cadastrar', pageBuilder: (c, s) => fadeSlide(s, const CadastrarScreen())),
+      GoRoute(path: '/busca', pageBuilder: (c, s) => fadeSlide(s, const BuscaScreen())),
+      GoRoute(path: '/carteirinha', pageBuilder: (c, s) => fadeSlide(s, const CarteirinhaScreen())),
+      GoRoute(path: '/termos', pageBuilder: (c, s) => fadeSlide(s, const TermosScreen())),
       GoRoute(path: '/ifsp', pageBuilder: (c, s) => fadeSlide(s, const IfspScreen())),
       GoRoute(path: '/ifsp/:key', pageBuilder: (c, s) => fadeSlide(s, IfspDetailScreen(detailKey: s.pathParameters['key']!))),
       GoRoute(path: '/cursos/detail', pageBuilder: (c, s) => fadeSlide(s, CourseDetailScreen(course: s.extra is Course ? s.extra as Course : null))),

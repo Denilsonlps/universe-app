@@ -24,6 +24,29 @@ class PerfilScreen extends ConsumerStatefulWidget {
 class _PerfilScreenState extends ConsumerState<PerfilScreen> {
   bool _notif = true;
 
+  Future<void> _alterarSenha(String? email) async {
+    final messenger = ScaffoldMessenger.of(context);
+    if (email == null || email.isEmpty) {
+      messenger.showSnackBar(const SnackBar(content: Text('Conta sem e-mail cadastrado.')));
+      return;
+    }
+    final ok = await showDialog<bool>(context: context, builder: (c) => AlertDialog(
+      title: const Text('Alterar senha'),
+      content: Text('Enviar um link de redefinição de senha para $email?'),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Cancelar')),
+        TextButton(onPressed: () => Navigator.pop(c, true), child: const Text('Enviar')),
+      ],
+    ));
+    if (ok != true) return;
+    try {
+      await ref.read(authRepositoryProvider).resetPassword(email);
+      messenger.showSnackBar(const SnackBar(content: Text('E-mail de redefinição enviado. Verifique sua caixa de entrada.')));
+    } catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text('Não foi possível enviar: $e')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final c = context.c;
@@ -117,14 +140,14 @@ class _PerfilScreenState extends ConsumerState<PerfilScreen> {
           const SizedBox(height: 14),
           AppCard(padding: EdgeInsets.zero, child: Column(children: [
             rowItem('edit', 'Editar perfil', () => context.push('/cadastrar')),
-            rowItem('card', 'Carteirinha digital', () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Em breve')))),
-            rowItem('shield', 'Alterar senha', () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Em breve'))), last: true),
+            rowItem('card', 'Carteirinha digital', () => context.push('/carteirinha')),
+            rowItem('shield', 'Alterar senha', () => _alterarSenha(user?.email), last: true),
           ])),
           const SizedBox(height: 14),
           AppCard(padding: EdgeInsets.zero, child: Column(children: [
             rowItem('question', 'Central de dúvidas', () => context.go('/duvidas')),
             rowItem('institution', 'Sobre o IFSP Pirituba', () => context.push('/ifsp')),
-            rowItem('doc', 'Termos e privacidade', () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Em breve'))), last: true),
+            rowItem('doc', 'Termos e privacidade', () => context.push('/termos'), last: true),
           ])),
           if (kDebugMode) ...[
             const SizedBox(height: 14),

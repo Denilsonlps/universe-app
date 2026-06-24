@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/providers/repository_provider.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../data/models/internship.dart';
 import '../../../data/models/news.dart';
 import '../../news/widgets/news_card.dart';
 import '../../../shared/chrome/app_headers.dart';
@@ -20,7 +21,7 @@ class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   static const _tabRoutes = {'/home', '/cursos', '/duvidas', '/perfil'};
-  static const _pushRoutes = {'/ifsp', '/beneficios/gov', '/beneficios/inst', '/estagio', '/cadastrar'};
+  static const _pushRoutes = {'/ifsp', '/beneficios/gov', '/beneficios/inst', '/estagio', '/cadastrar', '/noticias'};
 
   void _go(BuildContext context, String route) {
     if (_tabRoutes.contains(route)) {
@@ -49,17 +50,22 @@ class HomeScreen extends ConsumerWidget {
       (route: '/cadastrar', icon: 'edit', title: 'Cadastrar informações', sub: 'Atualize seus dados e documentos'),
     ];
     final quick = <({String route, String icon, String label})>[
-      (route: '/moradia', icon: 'house', label: 'Moradia'),
+      (route: '/noticias', icon: 'bell', label: 'Notícias'),
       (route: '/duvidas', icon: 'question', label: 'Dúvidas'),
       (route: '/beneficios/gov', icon: 'card', label: 'ID Jovem'),
       (route: '/ifsp', icon: 'pin', label: 'Endereço'),
     ];
+    // Vaga em destaque: primeira vaga aberta/visível (dados reais).
+    final vagas = ref.watch(allInternshipsProvider).valueOrNull ?? const <Internship>[];
+    final now = DateTime.now();
+    final abertas = vagas.where((v) => v.open && v.visibleAt(now)).toList();
+    final destaque = abertas.isEmpty ? null : abertas.first;
 
     return PageShell(
       bodyPadding: const EdgeInsets.all(16),
       header: HomeHeader(
         onMenu: () => Scaffold.of(context).openDrawer(),
-        onBell: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Em breve'))),
+        onBell: () => context.push('/noticias'),
       ),
       bottomNav: AppBottomNav(current: 'home', onTap: (k) => context.go('/$k')),
       body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -73,9 +79,9 @@ class HomeScreen extends ConsumerWidget {
           ])),
         ]),
         const SizedBox(height: 16),
-        // busca (placeholder)
+        // busca
         AppCard(
-          onTap: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Em breve'))),
+          onTap: () => context.push('/busca'),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
           radius: 14,
           child: Row(children: [
@@ -96,9 +102,15 @@ class HomeScreen extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 20),
-        // card de destaque
-        _HighlightCard(onTap: () => _go(context, '/estagio')),
-        const SizedBox(height: 22),
+        // card de destaque — vaga real em aberto (oculto se não houver)
+        if (destaque != null) ...[
+          _HighlightCard(
+            role: destaque.role,
+            subtitle: '${destaque.companyName} · ${destaque.grant}',
+            onTap: () => context.push('/estagio/vaga', extra: destaque),
+          ),
+          const SizedBox(height: 22),
+        ],
         // Notícias (carrossel) — só aparece se houver publicadas
         ...(() {
           final news = ref.watch(publishedNewsProvider).valueOrNull ?? const <News>[];
@@ -136,8 +148,9 @@ class HomeScreen extends ConsumerWidget {
 }
 
 class _HighlightCard extends StatelessWidget {
+  final String role, subtitle;
   final VoidCallback onTap;
-  const _HighlightCard({required this.onTap});
+  const _HighlightCard({required this.role, required this.subtitle, required this.onTap});
   @override
   Widget build(BuildContext context) {
     final c = context.c;
@@ -157,9 +170,9 @@ class _HighlightCard extends StatelessWidget {
             child: const Text('EM DESTAQUE', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 0.4, color: Colors.white)),
           ),
           const SizedBox(height: 12),
-          const Text('Estágio em Dev Web', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: -0.3)),
+          Text(role, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: -0.3)),
           const SizedBox(height: 4),
-          Text('Prefeitura de SP · bolsa R\$ 1.100 + VT', style: TextStyle(fontSize: 13, color: Colors.white.withValues(alpha: 0.8))),
+          Text(subtitle, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 13, color: Colors.white.withValues(alpha: 0.8))),
           const SizedBox(height: 14),
           Row(children: [
             const Text('Ver vaga', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white)),
