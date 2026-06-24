@@ -1,4 +1,4 @@
-import os, sys, time, json, re, hashlib, unicodedata
+import os, sys, time, json, re, hashlib, unicodedata, urllib.parse
 try:
     sys.stdout.reconfigure(encoding="utf-8")
     sys.stderr.reconfigure(encoding="utf-8")
@@ -8,12 +8,20 @@ import feedparser
 from google.genai import types
 from main import init_firestore, init_gemini  # reaproveita inicialização
 
-# Fontes RSS (rótulo + url). Ajuste/expanda conforme necessário.
+
+def _gnews(query: str) -> str:
+    """Feed RSS do Google News para uma consulta (pt-BR)."""
+    return "https://news.google.com/rss/search?" + urllib.parse.urlencode(
+        {"q": query, "hl": "pt-BR", "gl": "BR", "ceid": "BR:pt-419"})
+
+
+# Fontes RSS (rótulo + url). G1 Educação (geral) + buscas direcionadas no Google News
+# (robustas e temáticas — gov.br/IFSP/PCI não expõem RSS estável).
 FEEDS = [
     {"source": "G1 Educação", "url": "https://g1.globo.com/rss/g1/educacao/"},
-    {"source": "MEC", "url": "https://www.gov.br/mec/pt-br/assuntos/noticias/RSS"},
-    {"source": "PCI Concursos", "url": "https://www.pciconcursos.com.br/noticias/rss"},
-    {"source": "IFSP", "url": "https://www.ifsp.edu.br/component/content/?format=feed&type=rss"},
+    {"source": "IFSP", "url": _gnews('IFSP "Instituto Federal" São Paulo')},
+    {"source": "Concursos", "url": _gnews('concurso público edital São Paulo')},
+    {"source": "Educação", "url": _gnews('Sisu OR Enem OR Prouni OR Fies inscrições')},
 ]
 
 KEYWORDS = ["ifsp", "sisu", "enem", "prouni", "fies", "concurso", "edital",
@@ -35,10 +43,15 @@ def news_doc_id(link: str) -> str:
     return hashlib.sha1((link or "").encode("utf-8")).hexdigest()
 
 
-def _entry_data(entry):
+def _entry_data(entry, fonte_padrao):
     titulo = (entry.get("title") or "").strip()
     link = (entry.get("link") or "").strip()
     resumo_feed = re.sub(r"<[^>]+>", " ", entry.get("summary", "")).strip()
+    # Veículo real (Google News expõe <source>Veículo</source>); senão, o rótulo da fonte.
+    veiculo = ((entry.get("source") or {}).get("title") or "").strip() or fonte_padrao
+    # Google News põe " - Veículo" no fim do título; remove para ficar limpo.
+    if veiculo and titulo.endswith(f" - {veiculo}"):
+        titulo = titulo[: -(len(veiculo) + 3)].strip()
     # data
     dt_ms = int(time.time() * 1000)
     if entry.get("published_parsed"):
@@ -52,18 +65,25 @@ def _entry_data(entry):
             if (l.get("type") or "").startswith("image"):
                 img = l.get("href")
                 break
-    return titulo, link, resumo_feed, dt_ms, img
+    return titulo, link, resumo_feed, dt_ms, img, veiculo
 
 
-PROMPT = """Você cura notícias para um app de estudantes do IFSP.
+PROMPT = """Você cura notícias para um app de estudantes do IFSP Campus Pirituba.
 Categorias possíveis: {cats}.
 
 Notícia:
 Título: {titulo}
 Resumo: {resumo}
 
+Marque relevante=true SOMENTE se a notícia for de utilidade prática direta para o
+estudante, sobre: Enem, SiSU, Prouni, Fies, vestibular, matrícula, inscrições, editais,
+concurso público, bolsa/auxílio, estágio, ou o próprio IFSP.
+Marque relevante=false para: curiosidades, celebridades, esportes, opinião/colunas,
+rankings, entretenimento, política geral, ou notícias sem ação clara para o aluno.
+Na dúvida, prefira relevante=false.
+
 Responda em JSON:
-- relevante (bool): é útil para estudantes (vestibular, Enem, SiSU, concurso, bolsa, IFSP, educação)?
+- relevante (bool)
 - category (string): uma das categorias acima.
 - summary (string): resumo curto e neutro, 2-3 frases, sem copiar o texto literal.
 Responda só o JSON."""
@@ -107,6 +127,8 @@ def main():
     db = init_firestore()
     client = init_gemini()
     max_noticias = int(os.getenv("MAX_NOTICIAS", "15"))
+    # Teto por fonte: distribui a cota entre os feeds (evita uma só fonte dominar).
+    por_fonte = max(1, -(-max_noticias // len(FEEDS)))  # ceil
     novas = 0
     for feed in FEEDS:
         if novas >= max_noticias:
@@ -116,10 +138,11 @@ def main():
         except Exception as e:
             print(f"⚠️  Falha no feed {feed['source']}: {e}")
             continue
+        novas_feed = 0
         for entry in parsed.entries:
-            if novas >= max_noticias:
+            if novas >= max_noticias or novas_feed >= por_fonte:
                 break
-            titulo, link, resumo_feed, dt_ms, img = _entry_data(entry)
+            titulo, link, resumo_feed, dt_ms, img, veiculo = _entry_data(entry, feed["source"])
             if not titulo or not link:
                 continue
             if not casa_keyword(titulo + " " + resumo_feed):
@@ -132,7 +155,7 @@ def main():
                 continue
             resumo = aval["summary"] or resumo_feed[:300]
             doc = {
-                "category": aval["category"], "source": feed["source"], "readTime": "1 min",
+                "category": aval["category"], "source": veiculo, "readTime": "1 min",
                 "title": titulo, "summary": resumo, "body": resumo,
                 "date": dt_ms, "facts": [], "sourceUrl": link, "imageUrl": img,
                 "published": False, "pinned": False,
@@ -140,7 +163,8 @@ def main():
             }
             db.collection("noticias_sugeridas").document(vid).set(doc)
             novas += 1
-            print(f"📰 {feed['source']}: {titulo}")
+            novas_feed += 1
+            print(f"📰 [{feed['source']}/{veiculo}] {titulo}")
             time.sleep(1)
     print(f"✅ {novas} notícias sugeridas gravadas em 'noticias_sugeridas'.")
 
