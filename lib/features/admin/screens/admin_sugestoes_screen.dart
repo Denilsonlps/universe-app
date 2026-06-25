@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/providers/repository_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/models/vaga_sugerida.dart';
+import '../../../data/models/app_notification.dart';
 import '../../../shared/chrome/app_headers.dart';
 import '../../../shared/chrome/page_shell.dart';
 import '../../../shared/widgets/app_button.dart';
@@ -17,6 +18,10 @@ class AdminSugestoesScreen extends ConsumerWidget {
   Future<void> _aprovar(BuildContext context, WidgetRef ref, VagaSugerida s) async {
     final repo = ref.read(universeRepositoryProvider);
     await repo.upsertInternship(s.vaga); // mesmo id = sha1(link)
+    await repo.addNotification(AppNotification(
+      id: 'n${DateTime.now().millisecondsSinceEpoch}', type: 'vaga', targetCourse: s.vaga.course,
+      title: 'Nova vaga: ${s.vaga.role}', body: '${s.vaga.companyName} · ${s.vaga.grant}',
+      route: '/estagio', createdAt: DateTime.now()));
     await repo.deleteVagaSugerida(s.id);
     if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vaga aprovada e publicada')));
   }

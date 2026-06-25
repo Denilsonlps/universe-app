@@ -24,6 +24,13 @@ class PerfilScreen extends ConsumerStatefulWidget {
 class _PerfilScreenState extends ConsumerState<PerfilScreen> {
   bool _notif = true;
 
+  Future<void> _setOnlyMyCourse(bool v) async {
+    final profile = ref.read(currentProfileProvider).valueOrNull;
+    if (profile == null) return;
+    await ref.read(profileRepositoryProvider).save(profile.copyWith(onlyMyCourse: v));
+    ref.invalidate(currentProfileProvider);
+  }
+
   Future<void> _alterarSenha(String? email) async {
     final messenger = ScaffoldMessenger.of(context);
     if (email == null || email.isEmpty) {
@@ -125,6 +132,19 @@ class _PerfilScreenState extends ConsumerState<PerfilScreen> {
                 const SizedBox(width: 14),
                 Expanded(child: Text('Notificações', style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w600, color: c.ink))),
                 AppToggle(on: _notif, onChanged: (v) => setState(() => _notif = v)),
+              ]),
+            ),
+            Container(
+              padding: const EdgeInsets.fromLTRB(16, 15, 16, 15),
+              decoration: BoxDecoration(border: Border(bottom: BorderSide(color: c.line))),
+              child: Row(children: [
+                Icon(appIcon('cap'), size: 21, color: c.green700),
+                const SizedBox(width: 14),
+                Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text('Mostrar só o meu curso', style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w600, color: c.ink)),
+                  Text('Vagas e avisos do seu curso', style: TextStyle(fontSize: 11.5, color: c.ink3)),
+                ])),
+                AppToggle(on: profile?.onlyMyCourse ?? false, onChanged: _setOnlyMyCourse),
               ]),
             ),
             Padding(

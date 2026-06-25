@@ -30,11 +30,22 @@ class EstagioScreen extends ConsumerStatefulWidget {
 class _EstagioScreenState extends ConsumerState<EstagioScreen> {
   late String _course = widget.initialCourse;
   bool _estagios = true;
+  bool _appliedCoursePref = false;
 
   @override
   Widget build(BuildContext context) {
     final c = context.c;
     final isAdmin = ref.watch(isAdminProvider);
+    // Filtro "só o meu curso" (opt-in): na primeira carga, parte do curso do aluno.
+    if (!_appliedCoursePref) {
+      final p = ref.watch(currentProfileProvider).valueOrNull;
+      if (p != null) {
+        _appliedCoursePref = true;
+        if (widget.initialCourse == 'Todos' && p.onlyMyCourse && p.course != null) {
+          _course = courseShort(p.course!);
+        }
+      }
+    }
     final vagasAsync = ref.watch(internshipsProvider(_course));
     final concursosAsync = ref.watch(contestsProvider);
     final depoAsync = ref.watch(testimonialsProvider);

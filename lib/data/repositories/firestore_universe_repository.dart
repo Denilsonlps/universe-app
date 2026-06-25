@@ -9,6 +9,7 @@ import '../models/content_doc.dart';
 import '../models/news.dart';
 import '../models/vaga_sugerida.dart';
 import '../models/noticia_sugerida.dart';
+import '../models/app_notification.dart';
 import 'universe_repository.dart';
 
 class FirestoreUniverseRepository implements UniverseRepository {
@@ -137,4 +138,12 @@ class FirestoreUniverseRepository implements UniverseRepository {
       _db.collection('noticias_sugeridas').doc(id).set({'status': 'recusada'}, SetOptions(merge: true));
   @override
   Future<void> deleteNoticiaSugerida(String id) => _db.collection('noticias_sugeridas').doc(id).delete();
+
+  @override
+  Stream<List<AppNotification>> watchNotifications() => _db.collection('notifications')
+      .orderBy('createdAt', descending: true).limit(50).snapshots()
+      .map((s) => _map(s, AppNotification.fromMap));
+  @override
+  Future<void> addNotification(AppNotification n) =>
+      _db.collection('notifications').add(n.toMap());
 }

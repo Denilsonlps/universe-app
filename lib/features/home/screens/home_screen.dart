@@ -70,7 +70,8 @@ class HomeScreen extends ConsumerWidget {
       bodyPadding: const EdgeInsets.all(16),
       header: HomeHeader(
         onMenu: () => Scaffold.of(context).openDrawer(),
-        onBell: () => context.push('/noticias'),
+        onBell: () => context.push('/notificacoes'),
+        unread: ref.watch(unreadNotificationsCountProvider) > 0,
       ),
       bottomNav: AppBottomNav(current: 'home', onTap: (k) => context.go('/$k')),
       body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

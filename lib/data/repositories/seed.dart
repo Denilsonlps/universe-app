@@ -41,5 +41,8 @@ Future<void> seedFirestore() async {
   for (final n in fake.allNoticiasSugeridas) {
     batch.set(db.collection('noticias_sugeridas').doc(n.id), n.toMap());
   }
+  for (final n in fake.allNotifications) {
+    batch.set(db.collection('notifications').doc(n.id), n.toMap());
+  }
   await batch.commit();
 }

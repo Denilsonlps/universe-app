@@ -8,6 +8,7 @@ import '../models/content_doc.dart';
 import '../models/news.dart';
 import '../models/vaga_sugerida.dart';
 import '../models/noticia_sugerida.dart';
+import '../models/app_notification.dart';
 import 'universe_repository.dart';
 
 class FakeUniverseRepository implements UniverseRepository {
@@ -1053,6 +1054,28 @@ class FakeUniverseRepository implements UniverseRepository {
     if (i >= 0) { _noticiasSugeridas[i] = n; } else { _noticiasSugeridas.add(n); }
   }
   List<NoticiaSugerida> get allNoticiasSugeridas => _noticiasSugeridas;
+
+  // ── Notificações ────────────────────────────────────────────────────────────
+  static final List<AppNotification> _seedNotifications = [
+    AppNotification(
+      id: 'notif-1', type: 'vaga', targetCourse: 'ADS',
+      title: 'Nova vaga para ADS', body: 'Estágio em Front-end na TechCorp · R\$ 1.200',
+      route: '/estagio', createdAt: DateTime(2026, 6, 24, 9)),
+    AppNotification(
+      id: 'notif-2', type: 'noticia',
+      title: 'Sisu+ 2026', body: 'MEC libera consulta às vagas da etapa complementar.',
+      route: '/noticias', createdAt: DateTime(2026, 6, 23, 14)),
+  ];
+  final List<AppNotification> _notifications = List.of(_seedNotifications);
+
+  @override
+  Stream<List<AppNotification>> watchNotifications() {
+    final list = List.of(_notifications)..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return Stream.value(list);
+  }
+  @override
+  Future<void> addNotification(AppNotification n) async => _notifications.insert(0, n);
+  List<AppNotification> get allNotifications => _notifications;
 
   // Getters para o seeder lerem todo o conteúdo bruto:
   List<Course> get allCourses => _courses;

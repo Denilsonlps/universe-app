@@ -8,6 +8,7 @@ import '../models/content_doc.dart';
 import '../models/news.dart';
 import '../models/vaga_sugerida.dart';
 import '../models/noticia_sugerida.dart';
+import '../models/app_notification.dart';
 
 /// Acesso ao conteúdo do app (camada de dados) — tempo real via streams.
 abstract interface class UniverseRepository {
@@ -54,4 +55,8 @@ abstract interface class UniverseRepository {
   Stream<List<NoticiaSugerida>> watchNoticiasSugeridas();
   Future<void> rejeitarNoticiaSugerida(String id);
   Future<void> deleteNoticiaSugerida(String id);
+
+  /// Avisos da central de notificações (mais recentes primeiro).
+  Stream<List<AppNotification>> watchNotifications();
+  Future<void> addNotification(AppNotification n);
 }

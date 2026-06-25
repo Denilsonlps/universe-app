@@ -775,3 +775,38 @@ reais — maior ganho de qualidade percebida para a apresentação do TCC.
 Restam como "Em breve" apenas guardas genéricas em rotas não usadas (fallback do drawer
 e do `_go` da Home); nenhuma entrada visível ao aluno cai nelas. Carteirinha é documento
 interno gerado a partir do perfil (não substitui a carteirinha institucional).
+
+---
+
+## SP7a — Central de notificações + filtro por curso (2026-06-25)
+
+### Objetivo
+Avisar o estudante sobre novidades (vagas do seu curso, notícias) e permitir o filtro
+opt-in "só o meu curso". Push real no aparelho fica para o SP7b (FCM + Android).
+
+### Mudanças
+- **Modelo `AppNotification`** (`type` vaga/noticia/sistema, `targetCourse?`, `route?`,
+  `createdAt`) + coleção `notifications`. (Substituiu um modelo órfão do protótipo.)
+- **Repositório**: `watchNotifications()` (50 mais recentes) + `addNotification()` no
+  Firestore e no Fake (com 2 exemplos + getter p/ seed). `notificationsProvider`.
+- **Geração na curadoria (RF037)**: aprovar vaga/notícia cria a notificação
+  (vaga → targetCourse do curso, route `/estagio`; notícia → route `/noticias/{id}`).
+- **Perfil**: `StudentProfile` ganhou `onlyMyCourse` (opt-in, padrão false) e
+  `lastSeenNotificationsAt`. Toggle "Mostrar só o meu curso" no Perfil.
+- **UI**: sino da Home abre `/notificacoes` com badge de não-lidas
+  (`unreadNotificationsCountProvider`: compara `createdAt` com `lastSeenAt` e respeita o
+  filtro de curso). `NotificacoesScreen` marca como visto ao abrir.
+- **Filtro por curso** aplicado também: lista de estágios assume o curso do aluno quando
+  o toggle está ligado; destaque da Home já é sensível ao curso.
+- **Regras Firestore**: `notifications` já coberto pelo catch-all (leitura logada,
+  escrita admin) — sem mudança.
+- **Seed**: popula `notifications` de exemplo.
+
+### Verificação
+- `flutter analyze` limpo. `flutter test`: **63/63** (round-trip + `matchesCourse`).
+- Deploy no Firebase Hosting (https://universe-app-ifsp.web.app).
+
+### Nota de TCC
+A notificação só nasce de conteúdo **curado** pelo admin (nunca direto do raspador),
+mantendo o RF037. SP7b (push real no celular) exige build Android + FCM + função
+enviadora — planejado na spec `2026-06-25-sp7-notificacoes-design.md`.

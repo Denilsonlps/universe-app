@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/providers/repository_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/models/noticia_sugerida.dart';
+import '../../../data/models/app_notification.dart';
 import '../../../shared/chrome/app_headers.dart';
 import '../../../shared/chrome/page_shell.dart';
 import '../../../shared/widgets/app_button.dart';
@@ -16,7 +17,12 @@ class AdminNoticiasSugeridasScreen extends ConsumerWidget {
 
   Future<void> _aprovar(BuildContext context, WidgetRef ref, NoticiaSugerida s) async {
     final repo = ref.read(universeRepositoryProvider);
-    await repo.upsertNews(s.noticia.copyWith(published: true)); // aprovar = publicar
+    final publicada = s.noticia.copyWith(published: true);
+    await repo.upsertNews(publicada); // aprovar = publicar
+    await repo.addNotification(AppNotification(
+      id: 'n${DateTime.now().millisecondsSinceEpoch}', type: 'noticia',
+      title: publicada.title, body: publicada.summary,
+      route: '/noticias/${publicada.id}', createdAt: DateTime.now()));
     await repo.deleteNoticiaSugerida(s.id);
     if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Notícia aprovada e publicada')));
   }
