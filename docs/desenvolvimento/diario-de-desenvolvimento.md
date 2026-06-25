@@ -810,3 +810,27 @@ opt-in "só o meu curso". Push real no aparelho fica para o SP7b (FCM + Android)
 A notificação só nasce de conteúdo **curado** pelo admin (nunca direto do raspador),
 mantendo o RF037. SP7b (push real no celular) exige build Android + FCM + função
 enviadora — planejado na spec `2026-06-25-sp7-notificacoes-design.md`.
+
+---
+
+## SP7b — Push real (FCM): artefatos preparados (2026-06-25)
+
+### Situação
+A central (SP7a) já roda. O push no aparelho depende de pré-requisitos de ambiente que
+são do autor, então o que **não depende** deles foi adiantado e versionado; o cliente
+Flutter fica documentado para colar quando o ambiente estiver pronto.
+
+- **Bloqueio 1:** adicionar `firebase_messaging` exige `flutter pub get` com **Modo de
+  Desenvolvedor do Windows** ativo (symlinks de plugin). Sem isso o pub get falha.
+- **Bloqueio 2:** Cloud Functions exige **plano Blaze**.
+
+### Entregue agora (não quebra o build atual)
+- **Cloud Function** `functions/index.js` (gatilho `onCreate` em `notifications/{id}`;
+  filtra tokens por curso via `courseShort`; envia multicast; limpa tokens inválidos) +
+  `functions/package.json` + `.gitignore`. `firebase.json` ganhou `functions.source`.
+- **Guia** `docs/desenvolvimento/push-fcm-setup.md` com o passo a passo e o código do
+  cliente (`PushService`, provider, wiring no `main.dart`, build do APK, push web/VAPID).
+
+### Próximo (quando o autor liberar o ambiente)
+Ativar Modo Dev → `firebase_messaging` + PushService + wiring; Blaze →
+`firebase deploy --only functions`; `flutter build apk --release` para testar no celular.
