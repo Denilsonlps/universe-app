@@ -20,29 +20,51 @@ Future<void> _fcmBackgroundHandler(RemoteMessage message) async {}
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  if (!kIsWeb) FirebaseMessaging.onBackgroundMessage(_fcmBackgroundHandler);
+  runApp(const ProviderScope(child: UniverseApp()));
+}
 
-  if (!kIsWeb) {
-    FirebaseMessaging.onBackgroundMessage(_fcmBackgroundHandler);
-    // Em primeiro plano o Android não mostra o balão sozinho — exibimos um SnackBar.
+class UniverseApp extends ConsumerStatefulWidget {
+  const UniverseApp({super.key});
+  @override
+  ConsumerState<UniverseApp> createState() => _UniverseAppState();
+}
+
+class _UniverseAppState extends ConsumerState<UniverseApp> {
+  @override
+  void initState() {
+    super.initState();
+    if (!kIsWeb) _setupPushHandlers();
+  }
+
+  void _setupPushHandlers() {
+    // Foreground: o Android não mostra o balão sozinho — exibimos um SnackBar.
     FirebaseMessaging.onMessage.listen((m) {
       final n = m.notification;
       if (n == null) return;
-      final msg = scaffoldMessengerKey.currentState;
-      msg?.showSnackBar(SnackBar(
-        content: Text(n.title != null ? '${n.title}\n${n.body ?? ''}'.trim() : (n.body ?? 'Nova notificação')),
+      scaffoldMessengerKey.currentState?.showSnackBar(SnackBar(
+        content: Text((n.title != null ? '${n.title}\n${n.body ?? ''}' : (n.body ?? 'Nova notificação')).trim()),
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 4),
       ));
     });
+    // Toque na notificação (app em background) → navega para a rota.
+    FirebaseMessaging.onMessageOpenedApp.listen((m) => _openRoute(m.data['route']));
+    // App aberto a partir de uma notificação (estava encerrado).
+    FirebaseMessaging.instance.getInitialMessage().then((m) {
+      if (m != null) _openRoute(m.data['route']);
+    });
   }
 
-  runApp(const ProviderScope(child: UniverseApp()));
-}
+  void _openRoute(String? route) {
+    if (route == null || route.isEmpty) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      try { ref.read(routerProvider).push(route); } catch (_) {}
+    });
+  }
 
-class UniverseApp extends ConsumerWidget {
-  const UniverseApp({super.key});
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final mode = ref.watch(themeModeProvider);
     final router = ref.watch(routerProvider);
 

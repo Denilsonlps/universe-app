@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/providers/repository_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/models/news.dart';
+import '../../../data/models/app_notification.dart';
 import '../../../shared/chrome/app_headers.dart';
 import '../../../shared/chrome/page_shell.dart';
 import '../../../shared/content/image_picker_field.dart';
@@ -61,6 +62,11 @@ class _AdminNewsEditScreenState extends ConsumerState<AdminNewsEditScreen> {
       await repo.upsertNews(news);
       if (widget.fromSuggestionId != null) {
         await repo.deleteNoticiaSugerida(widget.fromSuggestionId!);
+        // Aprovar via "Editar" também avisa os alunos (RF037).
+        await repo.addNotification(AppNotification(
+          id: 'n${DateTime.now().millisecondsSinceEpoch}', type: 'noticia',
+          title: news.title, body: news.summary.isEmpty ? news.title : news.summary,
+          route: '/noticias/${news.id}', createdAt: DateTime.now()));
       }
       if (mounted) { ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Notícia salva!'))); context.pop(); }
     } catch (_) {

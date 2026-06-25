@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/providers/repository_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/models/internship.dart';
+import '../../../data/models/app_notification.dart';
 import '../../../shared/chrome/app_headers.dart';
 import '../../../shared/chrome/page_shell.dart';
 import '../../../shared/content/image_picker_field.dart';
@@ -65,6 +66,11 @@ class _VagaFormScreenState extends ConsumerState<VagaFormScreen> {
       await repo.upsertInternship(vaga);
       if (widget.fromSuggestionId != null) {
         await repo.deleteVagaSugerida(widget.fromSuggestionId!);
+        // Aprovar via "Editar" também avisa os alunos do curso (RF037).
+        await repo.addNotification(AppNotification(
+          id: 'n${DateTime.now().millisecondsSinceEpoch}', type: 'vaga', targetCourse: vaga.course,
+          title: 'Nova vaga: ${vaga.role}', body: '${vaga.companyName} · ${vaga.grant}',
+          route: '/estagio', createdAt: DateTime.now()));
       }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vaga salva!')));
