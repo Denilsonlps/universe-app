@@ -49,3 +49,6 @@ pipeline/service-account.json
 pipeline/.env
 pipeline/vagas_gupy.csv
 pipeline/__pycache__/
+
+# Firebase deploy cache
+.firebase/
