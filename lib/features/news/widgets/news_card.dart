@@ -21,6 +21,16 @@ class NewsCard extends StatelessWidget {
       child: Text(news.category, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: c.green700)),
     );
 
+    final destaquePill = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(color: const Color(0xFFFFF4D6), borderRadius: BorderRadius.circular(999)),
+      child: Row(mainAxisSize: MainAxisSize.min, children: [
+        Icon(appIcon('star'), size: 11, color: const Color(0xFFF2B01E)),
+        const SizedBox(width: 4),
+        const Text('Destaque', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Color(0xFF9A6B00))),
+      ]),
+    );
+
     if (compact) {
       return SizedBox(
         width: 250,
@@ -30,7 +40,7 @@ class NewsCard extends StatelessWidget {
             Row(children: [
               chip,
               const Spacer(),
-              if (news.pinned) Icon(appIcon('star'), size: 14, color: const Color(0xFFF2B01E)),
+              if (news.pinned) destaquePill,
             ]),
             const SizedBox(height: 9),
             Text(news.title, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, height: 1.3, color: c.ink)),
@@ -47,7 +57,7 @@ class NewsCard extends StatelessWidget {
         IconTile(news.category == 'Campus' ? 'institution' : 'cap', size: 56, iconSize: 26),
         const SizedBox(width: 13),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(children: [chip, if (news.pinned) ...[const SizedBox(width: 7), Icon(appIcon('star'), size: 13, color: const Color(0xFFF2B01E))]]),
+          Row(children: [chip, if (news.pinned) ...[const SizedBox(width: 7), destaquePill]]),
           const SizedBox(height: 6),
           Text(news.title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, height: 1.3, color: c.ink)),
           const SizedBox(height: 6),

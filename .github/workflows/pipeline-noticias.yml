@@ -26,4 +26,5 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           FIREBASE_SERVICE_ACCOUNT: service-account.json
           MAX_NOTICIAS: '15'
+          MAX_DIAS_NOTICIA: '2'
         run: python news.py

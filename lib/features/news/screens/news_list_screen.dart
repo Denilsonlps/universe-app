@@ -32,7 +32,8 @@ class _NewsListScreenState extends ConsumerState<NewsListScreen> {
           data: (all) {
             final cats = ['Todas', ...{for (final n in all) n.category}];
             if (!cats.contains(_cat)) _cat = 'Todas';
-            final list = _cat == 'Todas' ? all : all.where((n) => n.category == _cat).toList();
+            final list = (_cat == 'Todas' ? List<News>.of(all) : all.where((n) => n.category == _cat).toList())
+              ..sort((a, b) { if (a.pinned != b.pinned) return a.pinned ? -1 : 1; return b.date.compareTo(a.date); });
             return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               SizedBox(
                 height: 36,
