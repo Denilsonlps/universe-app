@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/providers/profile_provider.dart';
 import '../../../core/providers/repository_provider.dart';
+import '../../../data/courses.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/models/internship.dart';
 import '../../../data/models/news.dart';
@@ -55,11 +57,14 @@ class HomeScreen extends ConsumerWidget {
       (route: '/beneficios/gov', icon: 'card', label: 'ID Jovem'),
       (route: '/ifsp', icon: 'pin', label: 'Endereço'),
     ];
-    // Vaga em destaque: primeira vaga aberta/visível (dados reais).
+    // Vaga em destaque: prioriza o curso do aluno; senão, a primeira aberta.
     final vagas = ref.watch(allInternshipsProvider).valueOrNull ?? const <Internship>[];
     final now = DateTime.now();
     final abertas = vagas.where((v) => v.open && v.visibleAt(now)).toList();
-    final destaque = abertas.isEmpty ? null : abertas.first;
+    final meuCurso = ref.watch(currentProfileProvider).valueOrNull?.course;
+    final meuCursoCurto = meuCurso == null ? null : courseShort(meuCurso);
+    final doCurso = meuCursoCurto == null ? const <Internship>[] : abertas.where((v) => v.course == meuCursoCurto).toList();
+    final destaque = doCurso.isNotEmpty ? doCurso.first : (abertas.isEmpty ? null : abertas.first);
 
     return PageShell(
       bodyPadding: const EdgeInsets.all(16),
@@ -105,6 +110,7 @@ class HomeScreen extends ConsumerWidget {
         // card de destaque — vaga real em aberto (oculto se não houver)
         if (destaque != null) ...[
           _HighlightCard(
+            label: doCurso.isNotEmpty ? 'PARA O SEU CURSO' : 'EM DESTAQUE',
             role: destaque.role,
             subtitle: '${destaque.companyName} · ${destaque.grant}',
             onTap: () => context.push('/estagio/vaga', extra: destaque),
@@ -148,9 +154,9 @@ class HomeScreen extends ConsumerWidget {
 }
 
 class _HighlightCard extends StatelessWidget {
-  final String role, subtitle;
+  final String label, role, subtitle;
   final VoidCallback onTap;
-  const _HighlightCard({required this.role, required this.subtitle, required this.onTap});
+  const _HighlightCard({required this.label, required this.role, required this.subtitle, required this.onTap});
   @override
   Widget build(BuildContext context) {
     final c = context.c;
@@ -167,7 +173,7 @@ class _HighlightCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.16), borderRadius: BorderRadius.circular(999)),
-            child: const Text('EM DESTAQUE', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 0.4, color: Colors.white)),
+            child: Text(label, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 0.4, color: Colors.white)),
           ),
           const SizedBox(height: 12),
           Text(role, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: -0.3)),

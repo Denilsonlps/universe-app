@@ -39,35 +39,32 @@ class _BuscaScreenState extends ConsumerState<BuscaScreen> {
     final groups = query.length < 2 ? const <(String, List<_Hit>)>[] : _search();
 
     return PageShell(
-      bodyPadding: EdgeInsets.zero,
+      bodyPadding: const EdgeInsets.all(16),
       header: GreenHero(title: 'Buscar', subtitle: 'Cursos, benefícios, vagas e notícias', icon: 'search', onBack: () => context.pop()),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          AppField(
-            icon: 'search', hint: 'O que você procura?', value: _q,
-            onChanged: (v) => setState(() => _q = v),
-          ),
-          const SizedBox(height: 18),
-          Expanded(
-            child: query.length < 2
-                ? Center(child: Text('Digite ao menos 2 letras para buscar.', style: TextStyle(fontSize: 13, color: c.ink3)))
-                : groups.isEmpty
-                    ? const EmptyState(icon: 'search', title: 'Nada encontrado', body: 'Tente outras palavras.')
-                    : ListView(children: [
-                        for (final (label, hits) in groups) ...[
-                          SectionTitle('$label (${hits.length})'),
-                          const SizedBox(height: 10),
-                          for (final h in hits) Padding(
-                            padding: const EdgeInsets.only(bottom: 10),
-                            child: ListRow(icon: h.icon, title: h.title, subtitle: h.subtitle, onTap: h.onTap),
-                          ),
-                          const SizedBox(height: 8),
-                        ],
-                      ]),
-          ),
-        ]),
-      ),
+      body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        AppField(
+          icon: 'search', hint: 'O que você procura?', value: _q,
+          onChanged: (v) => setState(() => _q = v),
+        ),
+        const SizedBox(height: 18),
+        if (query.length < 2)
+          Padding(
+            padding: const EdgeInsets.only(top: 40),
+            child: Center(child: Text('Digite ao menos 2 letras para buscar.', style: TextStyle(fontSize: 13, color: c.ink3))),
+          )
+        else if (groups.isEmpty)
+          const EmptyState(icon: 'search', title: 'Nada encontrado', body: 'Tente outras palavras.')
+        else
+          for (final (label, hits) in groups) ...[
+            SectionTitle('$label (${hits.length})'),
+            const SizedBox(height: 10),
+            for (final h in hits) Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: ListRow(icon: h.icon, title: h.title, subtitle: h.subtitle, onTap: h.onTap),
+            ),
+            const SizedBox(height: 8),
+          ],
+      ]),
     );
   }
 

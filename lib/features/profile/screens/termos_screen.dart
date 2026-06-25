@@ -26,20 +26,17 @@ class TermosScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = context.c;
     return PageShell(
-      bodyPadding: EdgeInsets.zero,
+      bodyPadding: const EdgeInsets.all(16),
       header: GreenHero(title: 'Termos e privacidade', subtitle: 'Como tratamos seus dados', icon: 'doc', onBack: () => context.pop()),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: ListView(children: [
-          for (final (titulo, corpo) in _blocos) ...[
-            SectionTitle(titulo),
-            const SizedBox(height: 8),
-            Text(corpo, style: TextStyle(fontSize: 13.5, height: 1.55, color: c.ink2)),
-            const SizedBox(height: 18),
-          ],
-          Text('UNIVERSE · v1.0 · IFSP Pirituba', style: TextStyle(fontSize: 11, color: c.ink3)),
-        ]),
-      ),
+      body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        for (final (titulo, corpo) in _blocos) ...[
+          SectionTitle(titulo),
+          const SizedBox(height: 8),
+          Text(corpo, style: TextStyle(fontSize: 13.5, height: 1.55, color: c.ink2)),
+          const SizedBox(height: 18),
+        ],
+        Text('UNIVERSE · v1.0 · IFSP Pirituba', style: TextStyle(fontSize: 11, color: c.ink3)),
+      ]),
     );
   }
 }
