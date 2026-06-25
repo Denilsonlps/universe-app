@@ -834,3 +834,30 @@ Flutter fica documentado para colar quando o ambiente estiver pronto.
 ### Próximo (quando o autor liberar o ambiente)
 Ativar Modo Dev → `firebase_messaging` + PushService + wiring; Blaze →
 `firebase deploy --only functions`; `flutter build apk --release` para testar no celular.
+
+---
+
+## SP7b — Push real (FCM): cliente implementado (2026-06-25)
+
+Modo de Desenvolvedor do Windows ativado pelo autor → `firebase_messaging` adicionado.
+
+- **`firebase_messaging: ^15.1.3`** no pubspec.
+- **`PushService`** (`lib/data/push/push_service.dart`): pede permissão, pega o token e
+  grava em `users/{uid}.fcmTokens` (arrayUnion) + escuta `onTokenRefresh`. **Guard `kIsWeb`**
+  (web não registra — precisa de VAPID/SW), então o build/deploy web seguem intactos.
+- **`pushServiceProvider`** em repository_provider.
+- **`main.dart`**: handler de background (`@pragma('vm:entry-point')`), registro/limpeza do
+  token no `authStateProvider`, e **balão em foreground** via `scaffoldMessengerKey`
+  (SnackBar em `FirebaseMessaging.onMessage`).
+- **Cloud Function** `onNotificationCreated` deployada (Blaze): envia FCM por curso.
+  Primeiro deploy exigiu habilitar APIs (cloudfunctions/cloudbuild/run/eventarc/pubsub) e
+  aguardar a propagação do Eventarc Service Agent.
+- Verificação: `flutter analyze` limpo, **63 testes**, `flutter build web` OK.
+
+### Notícias
+Selo **"Destaque"** no card + ordenação pinned-first reforçada na lista; o carrossel já
+ordenava. `MAX_DIAS_NOTICIA=2` fixado no workflow de notícias.
+
+### Pendência de teste
+Validar push de ponta a ponta no **APK** (build/install no celular) — `flutter build apk
+--release`. Push web fica para depois (VAPID + service worker).

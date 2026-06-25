@@ -15,11 +15,13 @@ import '../../data/models/app_notification.dart';
 import '../../data/repositories/universe_repository.dart';
 import '../../data/repositories/firestore_universe_repository.dart';
 import '../../data/storage/storage_service.dart';
+import '../../data/push/push_service.dart';
 
 final universeRepositoryProvider = Provider<UniverseRepository>((ref) =>
     FirestoreUniverseRepository(FirebaseFirestore.instance));
 
 final storageServiceProvider = Provider<StorageService>((ref) => FirebaseStorageService(FirebaseStorage.instance));
+final pushServiceProvider = Provider<PushService>((ref) => PushService(FirebaseFirestore.instance));
 
 final coursesProvider = StreamProvider<List<Course>>((ref) => ref.watch(universeRepositoryProvider).watchCourses());
 final internshipsProvider = StreamProvider.family<List<Internship>, String>((ref, course) => ref.watch(universeRepositoryProvider).watchInternships(courseFilter: course));
