@@ -513,12 +513,6 @@ class FakeUniverseRepository implements UniverseRepository {
             'Atualize o cadastro a cada 2 anos ou sempre que algo mudar (endereço, renda, pessoas na casa).',
           ],
         ),
-        MediaSection(
-          mediaType: 'video',
-          heading: 'Tutorial em vídeo',
-          caption: 'Como fazer o Cadastro Único passo a passo (3 min)',
-          videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-        ),
         FaqSection(
           heading: 'Dúvidas frequentes',
           items: [
@@ -529,8 +523,7 @@ class FakeUniverseRepository implements UniverseRepository {
         SourcesSection(
           heading: 'Canais oficiais',
           items: [
-            (label: 'gov.br — Cadastro Único', url: 'gov.br/cadastrounico'),
-            (label: 'App Cadastro Único', url: 'play.google.com · App Store'),
+            (label: 'gov.br — Cadastro Único', url: 'gov.br/mds/pt-br/acoes-e-programas/cadastro-unico'),
           ],
         ),
       ],
@@ -564,7 +557,7 @@ class FakeUniverseRepository implements UniverseRepository {
           heading: 'Como emitir',
           items: [
             'Garanta que seu [[Cadastro Único]] está atualizado.',
-            'Baixe o aplicativo ID Jovem ou acesse o site oficial.',
+            'Acesse o site oficial idjovem.juventude.gov.br ou baixe o app ID Jovem (gov.br).',
             'Informe seu [[NIS]] e dados pessoais.',
             'Pronto: a carteira digital fica disponível no app para apresentar quando precisar.',
           ],
@@ -581,7 +574,8 @@ class FakeUniverseRepository implements UniverseRepository {
         SourcesSection(
           heading: 'Canais oficiais',
           items: [
-            (label: 'gov.br — ID Jovem', url: 'gov.br/cidadania/id-jovem'),
+            (label: 'ID Jovem — site oficial', url: 'idjovem.juventude.gov.br'),
+            (label: 'gov.br — sobre o ID Jovem', url: 'gov.br/juventude'),
           ],
         ),
       ],
@@ -655,7 +649,7 @@ class FakeUniverseRepository implements UniverseRepository {
         SourcesSection(
           heading: 'Canais oficiais',
           items: [
-            (label: 'Página oficial do Enem', url: 'gov.br/inep/enem'),
+            (label: 'Página oficial do Enem', url: 'enem.inep.gov.br'),
           ],
         ),
       ],
