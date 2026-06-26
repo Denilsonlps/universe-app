@@ -70,7 +70,7 @@ class _VagaFormScreenState extends ConsumerState<VagaFormScreen> {
         await repo.addNotification(AppNotification(
           id: 'n${DateTime.now().millisecondsSinceEpoch}', type: 'vaga', targetCourse: vaga.course,
           title: 'Nova vaga: ${vaga.role}', body: '${vaga.companyName} · ${vaga.grant}',
-          route: '/estagio', createdAt: DateTime.now()));
+          route: '/estagio/vaga/${vaga.id}', createdAt: DateTime.now()));
       }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vaga salva!')));

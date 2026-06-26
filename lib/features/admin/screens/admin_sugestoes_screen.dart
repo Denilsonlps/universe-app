@@ -30,7 +30,7 @@ class AdminSugestoesScreen extends ConsumerWidget {
     await repo.addNotification(AppNotification(
       id: 'n${DateTime.now().millisecondsSinceEpoch}', type: 'vaga', targetCourse: s.vaga.course,
       title: 'Nova vaga: ${s.vaga.role}', body: '${s.vaga.companyName} · ${s.vaga.grant}',
-      route: '/estagio', createdAt: DateTime.now()));
+      route: '/estagio/vaga/${s.vaga.id}', createdAt: DateTime.now()));
     await repo.deleteVagaSugerida(s.id);
     if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vaga aprovada e publicada')));
   }

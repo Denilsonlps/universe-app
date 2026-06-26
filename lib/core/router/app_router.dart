@@ -107,6 +107,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       }),
       GoRoute(path: '/estagio', pageBuilder: (c, s) => fadeSlide(s, EstagioScreen(initialCourse: s.extra is String ? s.extra as String : 'Todos'))),
       GoRoute(path: '/estagio/vaga', pageBuilder: (c, s) => fadeSlide(s, VagaDetailScreen(vaga: s.extra is Internship ? s.extra as Internship : null))),
+      GoRoute(path: '/estagio/vaga/:id', pageBuilder: (c, s) {
+        final extra = s.extra;
+        if (extra is Internship) return fadeSlide(s, VagaDetailScreen(vaga: extra));
+        return fadeSlide(s, _VagaById(id: s.pathParameters['id']!));
+      }),
       GoRoute(path: '/estagio/concurso', pageBuilder: (c, s) => fadeSlide(s, ConcursoDetailScreen(contest: s.extra is Contest ? s.extra as Contest : null))),
       GoRoute(path: '/estagio/depoimentos', pageBuilder: (c, s) => fadeSlide(s, const DepoimentosScreen())),
       GoRoute(path: '/noticias', pageBuilder: (c, s) => fadeSlide(s, const NewsListScreen())),
@@ -163,6 +168,23 @@ class _Shell extends ConsumerWidget {
         onLogout: () { Navigator.pop(context); ref.read(authRepositoryProvider).signOut(); },
       ),
       body: child,
+    );
+  }
+}
+
+class _VagaById extends ConsumerWidget {
+  final String id;
+  const _VagaById({required this.id});
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ref.watch(allInternshipsProvider).when(
+      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (e, _) => const VagaDetailScreen(vaga: null),
+      data: (list) {
+        Internship? v;
+        for (final e in list) { if (e.id == id) { v = e; break; } }
+        return VagaDetailScreen(vaga: v);
+      },
     );
   }
 }
