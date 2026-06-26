@@ -77,6 +77,9 @@ class _UniverseAppState extends ConsumerState<UniverseApp> {
         ref.read(pushServiceProvider).clear();
       }
     });
+    // Cobre o caso de já estar logado quando o app abre (o listen só pega mudanças).
+    final current = ref.read(authStateProvider).valueOrNull;
+    if (current != null) ref.read(pushServiceProvider).registerFor(current.id);
 
     return MaterialApp.router(
       title: 'Universe',

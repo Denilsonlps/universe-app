@@ -17,6 +17,7 @@ class PushService {
       final settings = await _fm.requestPermission();
       if (settings.authorizationStatus == AuthorizationStatus.denied) return;
       final token = await _fm.getToken();
+      debugPrint('PushService: permissão=${settings.authorizationStatus}, token=${token == null ? "null" : "ok"}');
       if (token != null) await _save(uid, token);
       _uid = uid;
       _fm.onTokenRefresh.listen((t) => _save(uid, t));

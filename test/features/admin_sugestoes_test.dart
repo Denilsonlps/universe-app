@@ -23,6 +23,9 @@ void main() {
     final antesVagas = (await repo.watchAllInternships().first).length;
     await t.tap(find.text('Aprovar').first);
     await t.pumpAndSettle();
+    // confirma no diálogo
+    await t.tap(find.text('Aprovar').last);
+    await t.pumpAndSettle();
 
     // virou Internship e saiu das sugestões
     expect((await repo.watchAllInternships().first).length, antesVagas + 1);

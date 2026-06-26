@@ -16,6 +16,15 @@ class AdminSugestoesScreen extends ConsumerWidget {
   const AdminSugestoesScreen({super.key});
 
   Future<void> _aprovar(BuildContext context, WidgetRef ref, VagaSugerida s) async {
+    final ok = await showDialog<bool>(context: context, builder: (c) => AlertDialog(
+      title: const Text('Aprovar vaga'),
+      content: Text('Publicar "${s.vaga.role}" e avisar os alunos do curso?'),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Cancelar')),
+        FilledButton(onPressed: () => Navigator.pop(c, true), child: const Text('Aprovar')),
+      ],
+    ));
+    if (ok != true) return;
     final repo = ref.read(universeRepositoryProvider);
     await repo.upsertInternship(s.vaga); // mesmo id = sha1(link)
     await repo.addNotification(AppNotification(
@@ -76,9 +85,9 @@ class AdminSugestoesScreen extends ConsumerWidget {
                 Text(s.vaga.jobDescription, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12.5, height: 1.45, color: c.ink2)),
                 const SizedBox(height: 12),
                 Row(children: [
-                  Expanded(child: AppButton('Aprovar', size: AppButtonSize.sm, icon: 'check', onTap: () => _aprovar(context, ref, s))),
+                  Expanded(child: AppButton('Aprovar', size: AppButtonSize.sm, onTap: () => _aprovar(context, ref, s))),
                   const SizedBox(width: 8),
-                  Expanded(child: AppButton('Editar', size: AppButtonSize.sm, variant: AppButtonVariant.outline, icon: 'edit',
+                  Expanded(child: AppButton('Editar', size: AppButtonSize.sm, variant: AppButtonVariant.outline,
                     onTap: () => context.push('/admin/vaga', extra: (vaga: s.vaga, suggestionId: s.id)))),
                   const SizedBox(width: 8),
                   Expanded(child: AppButton('Recusar', size: AppButtonSize.sm, variant: AppButtonVariant.ghost, onTap: () => _recusar(context, ref, s))),

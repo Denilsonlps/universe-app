@@ -16,6 +16,15 @@ class AdminNoticiasSugeridasScreen extends ConsumerWidget {
   const AdminNoticiasSugeridasScreen({super.key});
 
   Future<void> _aprovar(BuildContext context, WidgetRef ref, NoticiaSugerida s) async {
+    final ok = await showDialog<bool>(context: context, builder: (c) => AlertDialog(
+      title: const Text('Aprovar notícia'),
+      content: Text('Publicar "${s.noticia.title}" e avisar os alunos?'),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Cancelar')),
+        FilledButton(onPressed: () => Navigator.pop(c, true), child: const Text('Aprovar')),
+      ],
+    ));
+    if (ok != true) return;
     final repo = ref.read(universeRepositoryProvider);
     final publicada = s.noticia.copyWith(published: true);
     await repo.upsertNews(publicada); // aprovar = publicar
@@ -77,9 +86,9 @@ class AdminNoticiasSugeridasScreen extends ConsumerWidget {
                 Text(s.noticia.summary, maxLines: 3, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12.5, height: 1.45, color: c.ink2)),
                 const SizedBox(height: 12),
                 Row(children: [
-                  Expanded(child: AppButton('Aprovar', size: AppButtonSize.sm, icon: 'check', onTap: () => _aprovar(context, ref, s))),
+                  Expanded(child: AppButton('Aprovar', size: AppButtonSize.sm, onTap: () => _aprovar(context, ref, s))),
                   const SizedBox(width: 8),
-                  Expanded(child: AppButton('Editar', size: AppButtonSize.sm, variant: AppButtonVariant.outline, icon: 'edit',
+                  Expanded(child: AppButton('Editar', size: AppButtonSize.sm, variant: AppButtonVariant.outline,
                     onTap: () => context.push('/admin/noticias/editar', extra: (noticia: s.noticia, suggestionId: s.id)))),
                   const SizedBox(width: 8),
                   Expanded(child: AppButton('Recusar', size: AppButtonSize.sm, variant: AppButtonVariant.ghost, onTap: () => _recusar(context, ref, s))),

@@ -39,8 +39,16 @@ def casa_keyword(texto: str) -> bool:
     return any(k in t for k in KEYWORDS)
 
 
-def news_doc_id(link: str) -> str:
-    return hashlib.sha1((link or "").encode("utf-8")).hexdigest()
+def _norm_titulo(titulo: str) -> str:
+    """Título sem acento/pontuação/espaços extras — base estável p/ dedup."""
+    t = _sem_acento(re.sub(r"[^\w\s]", " ", titulo or ""))
+    return re.sub(r"\s+", " ", t).strip()
+
+
+def news_doc_id(titulo: str) -> str:
+    # Id pelo título normalizado: a mesma matéria (links diferentes no Google News
+    # e no G1) colapsa no mesmo documento, evitando sugestões repetidas.
+    return hashlib.sha1(_norm_titulo(titulo).encode("utf-8")).hexdigest()
 
 
 def _entry_data(entry, fonte_padrao):
@@ -133,6 +141,7 @@ def main():
     max_dias = int(os.getenv("MAX_DIAS_NOTICIA", "2"))
     cutoff_ms = int((time.time() - max_dias * 86400) * 1000)
     novas = 0
+    vistos = set()  # ids já vistos nesta execução (evita reprocessar a mesma matéria)
     for feed in FEEDS:
         if novas >= max_noticias:
             break
@@ -152,7 +161,10 @@ def main():
                 continue
             if not casa_keyword(titulo + " " + resumo_feed):
                 continue
-            vid = news_doc_id(link)
+            vid = news_doc_id(titulo)
+            if vid in vistos:  # mesma matéria já vista nesta execução (outro feed/link)
+                continue
+            vistos.add(vid)
             if ja_tratada(db, vid):
                 continue
             aval = avaliar(client, titulo, resumo_feed)

@@ -20,6 +20,9 @@ void main() {
     final antes = (await repo.watchAllNews().first).length;
     await t.tap(find.text('Aprovar').first);
     await t.pumpAndSettle();
+    // confirma no diálogo
+    await t.tap(find.text('Aprovar').last);
+    await t.pumpAndSettle();
     expect((await repo.watchAllNews().first).length, antes + 1);
   });
 }

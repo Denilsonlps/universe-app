@@ -26,18 +26,24 @@ class OnboardingScreen extends ConsumerStatefulWidget {
 }
 
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
+  final _pageCtrl = PageController();
   int _i = 0;
+
+  @override
+  void dispose() { _pageCtrl.dispose(); super.dispose(); }
 
   void _finish() {
     ref.read(onboardingSeenProvider.notifier).markSeen();
     context.go('/login');
   }
 
+  void _goTo(int page) => _pageCtrl.animateToPage(page,
+      duration: const Duration(milliseconds: 320), curve: Curves.easeInOut);
+
   @override
   Widget build(BuildContext context) {
     final c = context.c;
     final last = _i == _slides.length - 1;
-    final s = _slides[_i];
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -56,21 +62,29 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               ),
             ),
             Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32),
-                child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  Container(
-                    width: 120, height: 120,
-                    decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(34)),
-                    child: Icon(appIcon(s.icon), size: 58, color: Colors.white),
-                  ),
-                  const SizedBox(height: 36),
-                  Text(s.title, textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 27, fontWeight: FontWeight.w800, color: Colors.white, height: 1.2, letterSpacing: -0.4)),
-                  const SizedBox(height: 16),
-                  Text(s.body, textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 14.5, height: 1.55, color: Colors.white.withValues(alpha: 0.78))),
-                ]),
+              child: PageView.builder(
+                controller: _pageCtrl,
+                itemCount: _slides.length,
+                onPageChanged: (k) => setState(() => _i = k),
+                itemBuilder: (_, k) {
+                  final s = _slides[k];
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 32),
+                    child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                      Container(
+                        width: 120, height: 120,
+                        decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(34)),
+                        child: Icon(appIcon(s.icon), size: 58, color: Colors.white),
+                      ),
+                      const SizedBox(height: 36),
+                      Text(s.title, textAlign: TextAlign.center,
+                          style: const TextStyle(fontSize: 27, fontWeight: FontWeight.w800, color: Colors.white, height: 1.2, letterSpacing: -0.4)),
+                      const SizedBox(height: 16),
+                      Text(s.body, textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 14.5, height: 1.55, color: Colors.white.withValues(alpha: 0.78))),
+                    ]),
+                  );
+                },
               ),
             ),
             Padding(
@@ -78,20 +92,24 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               child: Column(children: [
                 Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                   for (var k = 0; k < _slides.length; k++)
-                    AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
-                      height: 8, width: k == _i ? 26 : 8,
-                      decoration: BoxDecoration(
-                        color: k == _i ? c.green400 : Colors.white.withValues(alpha: 0.3),
-                        borderRadius: BorderRadius.circular(999),
+                    GestureDetector(
+                      onTap: () => _goTo(k),
+                      behavior: HitTestBehavior.opaque,
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                        height: 8, width: k == _i ? 26 : 8,
+                        decoration: BoxDecoration(
+                          color: k == _i ? c.green400 : Colors.white.withValues(alpha: 0.3),
+                          borderRadius: BorderRadius.circular(999),
+                        ),
                       ),
                     ),
                 ]),
-                const SizedBox(height: 28),
+                const SizedBox(height: 20),
                 _WhiteButton(
                   label: last ? 'Começar' : 'Próximo',
-                  onTap: () => last ? _finish() : setState(() => _i++),
+                  onTap: () => last ? _finish() : _goTo(_i + 1),
                 ),
               ]),
             ),

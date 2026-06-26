@@ -23,22 +23,26 @@ exports.onNotificationCreated = onDocumentCreated("notifications/{id}", async (e
   const n = event.data && event.data.data();
   if (!n) return;
   const target = n.targetCourse || null; // null = para todos
+  console.log(`Notificação criada: target=${target} title="${n.title}"`);
 
   const db = getFirestore();
   const users = await db.collection("users").get();
 
   // Mapa token -> docId, para limpar tokens inválidos depois.
   const tokenOwner = {};
+  let comToken = 0;
   users.forEach((doc) => {
     const u = doc.data();
     const list = u.fcmTokens;
     if (!Array.isArray(list) || list.length === 0) return;
+    comToken += 1;
     if (target && courseShort(u.course) !== target) return; // só o curso-alvo
     list.forEach((t) => { tokenOwner[t] = doc.id; });
   });
 
   const tokens = Object.keys(tokenOwner);
-  if (tokens.length === 0) return;
+  console.log(`Usuários: ${users.size}, com token: ${comToken}, tokens-alvo: ${tokens.length}`);
+  if (tokens.length === 0) { console.log("Nenhum token-alvo — nada enviado."); return; }
 
   const messaging = getMessaging();
   const base = {

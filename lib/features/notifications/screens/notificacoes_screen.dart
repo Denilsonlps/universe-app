@@ -27,6 +27,7 @@ class NotificacoesScreen extends ConsumerStatefulWidget {
 
 class _NotificacoesScreenState extends ConsumerState<NotificacoesScreen> {
   bool _marked = false;
+  DateTime? _seenSnapshot; // "visto" no momento de abrir (para destacar as novas)
 
   /// Marca a central como vista (zera o badge) — uma vez, quando o perfil carrega.
   void _markSeen() {
@@ -34,10 +35,14 @@ class _NotificacoesScreenState extends ConsumerState<NotificacoesScreen> {
     final profile = ref.read(currentProfileProvider).valueOrNull;
     if (profile == null) return;
     _marked = true;
+    setState(() => _seenSnapshot = profile.lastSeenNotificationsAt);
     ref.read(profileRepositoryProvider)
         .save(profile.copyWith(lastSeenNotificationsAt: DateTime.now()))
         .then((_) => ref.invalidate(currentProfileProvider));
   }
+
+  bool _isNova(DateTime createdAt) =>
+      _seenSnapshot == null ? true : createdAt.isAfter(_seenSnapshot!);
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +81,9 @@ class _NotificacoesScreenState extends ConsumerState<NotificacoesScreen> {
                 icon: n.icon,
                 title: n.title,
                 subtitle: '${n.body}\n${_fmt(n.createdAt)}',
+                trailing: _isNova(n.createdAt)
+                    ? Container(width: 9, height: 9, decoration: BoxDecoration(color: c.green500, shape: BoxShape.circle))
+                    : null,
                 showChevron: n.route != null,
                 onTap: n.route == null ? null : () => context.push(n.route!),
               ),

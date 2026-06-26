@@ -214,12 +214,26 @@ def main():
     vagas = buscar_vagas(termo, max_vagas)
     print(f"🔎 {len(vagas)} vagas (estágio · remota ou {ESTADO_ALVO}) coletadas da Gupy.")
 
+    # Dedup por conteúdo (cargo+empresa): reposts com ids diferentes não repetem.
+    def _key(role, company):
+        return f"{(role or '').strip().lower()}|{(company or '').strip().lower()}"
+
+    vistos = set()  # chaves já sugeridas (pendentes) + vistas nesta execução
+    for d in db.collection("vagas_sugeridas").where("status", "==", "pendente").stream():
+        v = d.to_dict()
+        vistos.add(_key(v.get("role"), v.get("companyName")))
+
     novas = 0
     for job in vagas:
         vid = job_doc_id(job.get("id"))
         titulo = job.get("name", "")
         if not titulo:
             continue
+        chave = _key(titulo, job.get("careerPageName", ""))
+        if chave in vistos:  # repost / duplicata (mesmo cargo+empresa)
+            print(f"⏭️  Pulando (duplicata): {titulo}")
+            continue
+        vistos.add(chave)
         if ja_tratada(db, vid):
             print(f"⏭️  Pulando (já tratada): {titulo}")
             continue
