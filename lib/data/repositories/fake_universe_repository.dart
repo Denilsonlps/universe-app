@@ -44,7 +44,6 @@ class FakeUniverseRepository implements UniverseRepository {
           'aprendizagem de máquina, e gestão, análise e segurança de dados e informação.',
       researchUrl: 'https://dgp.cnpq.br/dgp/espelhogrupo/7528238432160652',
       curriculumUrl: 'https://drive.ifsp.edu.br/s/CS3ah4zmKiNCYTy',
-      ppcUrl: 'https://drive.ifsp.edu.br/s/pjtMN8o6NIueODd',
     ),
     Course(
       name: 'Gestão Pública',
@@ -53,6 +52,21 @@ class FakeUniverseRepository implements UniverseRepository {
       duration: '2,5 anos',
       period: 'Noturno',
       icon: 'institution',
+      about: 'Objetivo geral\n\n'
+          'O Curso Superior de Tecnologia em Gestão Pública tem como objetivo formar profissionais aptos a '
+          'atuar de maneira efetiva, transparente e participativa na gestão de órgãos e entidades da '
+          'Administração Direta e Indireta das diferentes esferas de governo, contribuindo para a melhoria '
+          'da qualidade dos serviços públicos prestados à sociedade, bem como atuar em empresas privadas que '
+          'demandam profissionais com estas características.\n\n'
+          'Competências e habilidades\n\n'
+          '• Diagnosticar o cenário político, econômico, social e legal da gestão pública;\n'
+          '• Desenvolver e aplicar inovações científico-tecnológicas nos processos de gestão pública;\n'
+          '• Planejar, implantar, supervisionar e avaliar projetos e programas de políticas públicas voltados ao desenvolvimento local e regional;\n'
+          '• Aplicar metodologias inovadoras de gestão, baseadas nos princípios da administração pública, legislação vigente e ética profissional;\n'
+          '• Planejar e implantar ações vinculadas à prestação de serviços públicos;\n'
+          '• Avaliar e emitir parecer técnico em sua área de formação.',
+      researchUrl: 'https://drive.ifsp.edu.br/s/3SL4sdji1xy9mgB',
+      curriculumUrl: 'https://drive.ifsp.edu.br/s/DbRVXWiCXF887tq',
     ),
     Course(
       name: 'Letras — Português / Inglês',
@@ -69,6 +83,26 @@ class FakeUniverseRepository implements UniverseRepository {
       duration: '5 anos',
       period: 'Integral',
       icon: 'settings',
+      about: 'Objetivo geral\n\n'
+          'O curso de Engenharia de Produção do Câmpus São Paulo Pirituba visa formar um profissional com '
+          'sólida formação técnico-científica, visão sistêmica e generalista, capaz de transformar a realidade '
+          'por meio da solução de problemas — projetando, implantando, readequando e gerenciando sistemas '
+          'produtivos de bens ou serviços, com busca contínua por melhoria e respeito aos fatores econômicos, '
+          'ao elemento humano, ao meio ambiente e aos contextos sociais, políticos e culturais.\n\n'
+          'Competências e habilidades\n\n'
+          '• Formular e conceber soluções de engenharia, compreendendo os usuários e seu contexto;\n'
+          '• Analisar e compreender fenômenos físicos e químicos por meio de modelos validados por experimentação;\n'
+          '• Conceber, projetar e analisar sistemas, produtos (bens e serviços), componentes ou processos;\n'
+          '• Implantar, supervisionar e controlar as soluções de Engenharia;\n'
+          '• Comunicar-se eficazmente nas formas escrita, oral e gráfica;\n'
+          '• Trabalhar e liderar equipes multidisciplinares.',
+      research: 'A Extensão no IFSP promove a interação transformadora entre a comunidade acadêmica e a '
+          'sociedade. No Câmpus Pirituba, destacam-se iniciativas como a concepção de uma Incubadora de '
+          'Inovação, a criação de uma Empresa Júnior e projetos como o Programa Mulheres do IFSP.\n\n'
+          'Na pesquisa, estudantes de Engenharia de Produção têm acesso a programas de iniciação científica e '
+          'podem atuar em grupos interdisciplinares, como AMBIENTEC, GETS, NEOGEP, GITES e SONAED.',
+      researchUrl: 'https://drive.google.com/file/d/1LOqJB2cRKGBv_iY2VYVaGQ_TpJa5GwIt/view',
+      curriculumUrl: 'https://drive.google.com/file/d/1KIEafQRje36V9XfVe0OTJst-nuDGOxCs/view',
     ),
     Course(
       name: 'Administração',
@@ -85,6 +119,20 @@ class FakeUniverseRepository implements UniverseRepository {
       duration: '2 anos',
       period: 'Vespertino',
       icon: 'globe',
+      about: 'Objetivo geral\n\n'
+          'O curso técnico em Redes de Computadores visa formar profissionais capazes de planejar, implementar, '
+          'gerenciar e manter ambientes de TI com redes de computadores de forma confiável, robusta e organizada. '
+          'O curso articula competências técnicas, éticas e socioambientais, promovendo o pensamento crítico, o '
+          'protagonismo e a criatividade, e integrando ensino, pesquisa e extensão.\n\n'
+          'Competências e habilidades\n\n'
+          '• Projetar, implementar e gerenciar redes seguindo normas técnicas, com confiabilidade, disponibilidade e segurança;\n'
+          '• Definir e implementar políticas de segurança e de acesso a dados;\n'
+          '• Configurar e manter dispositivos ativos e passivos e dominar protocolos de comunicação;\n'
+          '• Aplicar pensamento crítico e raciocínio lógico na solução de problemas;\n'
+          '• Integrar fundamentos científicos e tecnológicos relacionando teoria e prática;\n'
+          '• Atuar com autonomia, empreendedorismo e preparo para o mercado de trabalho.',
+      researchUrl: 'https://drive.ifsp.edu.br/s/Mtk2SrW7fgyhTDv',
+      curriculumUrl: 'https://drive.ifsp.edu.br/s/iB9ck3VC90moQto',
     ),
     Course(
       name: 'Logística',

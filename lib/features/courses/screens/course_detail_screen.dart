@@ -84,14 +84,15 @@ class CourseDetailScreen extends StatelessWidget {
                 'O curso de ${course.name} forma profissionais com sólida base teórica e prática, preparados para o mercado de trabalho e para a continuidade dos estudos. As aulas acontecem no período ${course.period.toLowerCase()}, no campus Pirituba.',
             style: TextStyle(fontSize: 13.5, height: 1.6, color: c.ink2),
           )),
-          if (course.research != null) ...[
+          if (course.research != null || course.researchUrl != null) ...[
             const SizedBox(height: 18),
             const SectionTitle('Pesquisas e Extensões'),
-            AppCard(child: Text(course.research!, style: TextStyle(fontSize: 13.5, height: 1.6, color: c.ink2))),
-            if (course.researchUrl != null) ...[
+            if (course.research != null) ...[
+              AppCard(child: Text(course.research!, style: TextStyle(fontSize: 13.5, height: 1.6, color: c.ink2))),
               const SizedBox(height: 10),
-              _DocLink(label: 'Grupo de pesquisa (CNPq)', subtitle: 'Abrir o espelho do grupo', icon: 'globe', url: course.researchUrl!),
             ],
+            if (course.researchUrl != null)
+              _DocLink(label: 'Pesquisas e Extensões', subtitle: 'Abrir documento do curso', icon: 'globe', url: course.researchUrl!),
           ],
           if (course.curriculumUrl != null || course.ppcUrl != null) ...[
             const SizedBox(height: 18),
