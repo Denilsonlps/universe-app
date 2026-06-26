@@ -44,6 +44,16 @@ class _NotificacoesScreenState extends ConsumerState<NotificacoesScreen> {
   bool _isNova(DateTime createdAt) =>
       _seenSnapshot == null ? true : createdAt.isAfter(_seenSnapshot!);
 
+  /// Descarta (some só para este usuário) — guarda o id no perfil.
+  void _descartar(String id) {
+    final profile = ref.read(currentProfileProvider).valueOrNull;
+    if (profile == null) return;
+    final novos = [...profile.dismissedNotifications, id];
+    ref.read(profileRepositoryProvider)
+        .save(profile.copyWith(dismissedNotifications: novos))
+        .then((_) => ref.invalidate(currentProfileProvider));
+  }
+
   @override
   Widget build(BuildContext context) {
     final c = context.c;
@@ -53,6 +63,7 @@ class _NotificacoesScreenState extends ConsumerState<NotificacoesScreen> {
 
     final meuCursoCurto = profile?.course == null ? null : courseShort(profile!.course!);
     final onlyMine = profile?.onlyMyCourse ?? false;
+    final dismissed = profile?.dismissedNotifications ?? const <String>[];
 
     return PageShell(
       bodyPadding: const EdgeInsets.all(16),
@@ -67,25 +78,39 @@ class _NotificacoesScreenState extends ConsumerState<NotificacoesScreen> {
         emptyTitle: 'Sem notificações',
         emptyBody: 'Quando surgir uma vaga ou notícia, você verá por aqui.',
         data: (all) {
-          final list = onlyMine ? all.where((n) => n.matchesCourse(meuCursoCurto)).toList() : all;
+          final list = [
+            for (final n in all)
+              if (!dismissed.contains(n.id) && (!onlyMine || n.matchesCourse(meuCursoCurto))) n,
+          ];
           if (list.isEmpty) {
             return Padding(
               padding: const EdgeInsets.only(top: 40),
-              child: Center(child: Text('Nenhuma notificação para o seu curso.', style: TextStyle(fontSize: 13, color: c.ink3))),
+              child: Center(child: Text('Nenhuma notificação por aqui.', style: TextStyle(fontSize: 13, color: c.ink3))),
             );
           }
           return Column(children: [
             for (final n in list) Padding(
               padding: const EdgeInsets.only(bottom: 10),
-              child: ListRow(
-                icon: n.icon,
-                title: n.title,
-                subtitle: '${n.body}\n${_fmt(n.createdAt)}',
-                trailing: _isNova(n.createdAt)
-                    ? Container(width: 9, height: 9, decoration: BoxDecoration(color: c.green500, shape: BoxShape.circle))
-                    : null,
-                showChevron: n.route != null,
-                onTap: n.route == null ? null : () => context.push(n.route!),
+              child: Dismissible(
+                key: ValueKey(n.id),
+                direction: DismissDirection.endToStart,
+                onDismissed: (_) => _descartar(n.id),
+                background: Container(
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.only(right: 22),
+                  decoration: BoxDecoration(color: c.error.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(16)),
+                  child: Icon(Icons.delete_outline, color: c.error),
+                ),
+                child: ListRow(
+                  icon: n.icon,
+                  title: n.title,
+                  subtitle: '${n.body}\n${_fmt(n.createdAt)}',
+                  trailing: _isNova(n.createdAt)
+                      ? Container(width: 9, height: 9, decoration: BoxDecoration(color: c.green500, shape: BoxShape.circle))
+                      : null,
+                  showChevron: n.route != null,
+                  onTap: n.route == null ? null : () => context.push(n.route!),
+                ),
               ),
             ),
           ]);

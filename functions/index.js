@@ -22,7 +22,8 @@ const courseShort = (full) => SHORT[full] || "Todos";
 exports.onNotificationCreated = onDocumentCreated("notifications/{id}", async (event) => {
   const n = event.data && event.data.data();
   if (!n) return;
-  const target = n.targetCourse || null; // null = para todos
+  // "Todos" (ou vazio) = para todos os alunos; senão, só o curso-alvo.
+  const target = (n.targetCourse && n.targetCourse !== "Todos") ? n.targetCourse : null;
   console.log(`Notificação criada: target=${target} title="${n.title}"`);
 
   const db = getFirestore();
@@ -51,10 +52,13 @@ exports.onNotificationCreated = onDocumentCreated("notifications/{id}", async (e
   };
 
   const invalid = [];
+  let ok = 0, fail = 0;
   for (let i = 0; i < tokens.length; i += 500) {
     const batch = tokens.slice(i, i + 500);
     const res = await messaging.sendEachForMulticast({ ...base, tokens: batch });
+    ok += res.successCount; fail += res.failureCount;
     res.responses.forEach((r, idx) => {
+      if (!r.success) console.log(`Falha no envio: ${r.error && r.error.code} - ${r.error && r.error.message}`);
       if (!r.success) {
         const code = r.error && r.error.code;
         if (code === "messaging/registration-token-not-registered" ||
@@ -64,6 +68,7 @@ exports.onNotificationCreated = onDocumentCreated("notifications/{id}", async (e
       }
     });
   }
+  console.log(`Envio FCM: sucesso=${ok}, falha=${fail}`);
 
   // Remove tokens mortos dos respectivos usuários.
   const { FieldValue } = require("firebase-admin/firestore");
