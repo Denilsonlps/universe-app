@@ -44,6 +44,7 @@ class FakeUniverseRepository implements UniverseRepository {
           'aprendizagem de máquina, e gestão, análise e segurança de dados e informação.',
       researchUrl: 'https://dgp.cnpq.br/dgp/espelhogrupo/7528238432160652',
       curriculumUrl: 'https://drive.ifsp.edu.br/s/CS3ah4zmKiNCYTy',
+      ppcUrl: 'https://cursos.ifsp.edu.br/graduacao/curso/PTB130200/',
     ),
     Course(
       name: 'Gestão Pública',
@@ -67,6 +68,7 @@ class FakeUniverseRepository implements UniverseRepository {
           '• Avaliar e emitir parecer técnico em sua área de formação.',
       researchUrl: 'https://drive.ifsp.edu.br/s/3SL4sdji1xy9mgB',
       curriculumUrl: 'https://drive.ifsp.edu.br/s/DbRVXWiCXF887tq',
+      ppcUrl: 'https://cursos.ifsp.edu.br/graduacao/curso/PTB130000/',
     ),
     Course(
       name: 'Letras — Português / Inglês',
@@ -103,6 +105,7 @@ class FakeUniverseRepository implements UniverseRepository {
           'podem atuar em grupos interdisciplinares, como AMBIENTEC, GETS, NEOGEP, GITES e SONAED.',
       researchUrl: 'https://drive.google.com/file/d/1LOqJB2cRKGBv_iY2VYVaGQ_TpJa5GwIt/view',
       curriculumUrl: 'https://drive.google.com/file/d/1KIEafQRje36V9XfVe0OTJst-nuDGOxCs/view',
+      ppcUrl: 'https://cursos.ifsp.edu.br/campus/PTB',
     ),
     Course(
       name: 'Administração',
@@ -133,6 +136,7 @@ class FakeUniverseRepository implements UniverseRepository {
           '• Atuar com autonomia, empreendedorismo e preparo para o mercado de trabalho.',
       researchUrl: 'https://drive.ifsp.edu.br/s/Mtk2SrW7fgyhTDv',
       curriculumUrl: 'https://drive.ifsp.edu.br/s/iB9ck3VC90moQto',
+      ppcUrl: 'https://cursos.ifsp.edu.br/campus/PTB',
     ),
     Course(
       name: 'Logística',
