@@ -7,6 +7,7 @@ import '../../../shared/chrome/app_headers.dart';
 import '../../../shared/chrome/page_shell.dart';
 import '../../../shared/widgets/app_card.dart';
 import '../../../shared/widgets/empty_state.dart';
+import '../widgets/campus_map.dart';
 
 class IfspDetailScreen extends ConsumerWidget {
   final String detailKey;
@@ -41,6 +42,10 @@ class IfspDetailScreen extends ConsumerWidget {
             child: detail == null
                 ? EmptyState(icon: 'search', title: 'Informação indisponível', body: 'Não encontramos detalhes para este item.')
                 : Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    if (detailKey == 'endereco') ...[
+                      const CampusMap(),
+                      const SizedBox(height: 12),
+                    ],
                     if (detail.body != null)
                       AppCard(child: Text(detail.body!, style: TextStyle(fontSize: 13.5, height: 1.6, color: c.ink2))),
                     if (detail.rows.isNotEmpty) ...[

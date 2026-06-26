@@ -665,7 +665,7 @@ class FakeUniverseRepository implements UniverseRepository {
       sections: [
         RichSection(
           heading: 'O que é',
-          body: 'O Programa de Auxílio Permanência ([[PAP]]) é uma das principais ações de assistência estudantil do IFSP. Oferece apoio financeiro para que estudantes em vulnerabilidade consigam se manter no curso, incluindo auxílio-moradia, alimentação e transporte.',
+          body: 'O Programa de Auxílio Permanência ([[PAP]]) tem como objetivo viabilizar a igualdade de oportunidades entre os estudantes e contribuir para a melhoria do desempenho acadêmico, combatendo a retenção e a evasão decorrentes de dificuldades socioeconômicas.\n\nPor meio do PAP são destinadas verbas para: auxílios Alimentação, Transporte e Moradia; apoio a estudantes pais e mães (auxílio-creche); Auxílio Saúde; e apoio didático-pedagógico.',
         ),
         DocsSection(
           heading: 'Documentos para a inscrição',
@@ -686,20 +686,15 @@ class FakeUniverseRepository implements UniverseRepository {
             'Se aprovado, o auxílio é pago mensalmente conforme o edital.',
           ],
         ),
-        MediaSection(
-          mediaType: 'video',
-          heading: 'Tutorial em vídeo',
-          caption: 'Como se inscrever no PAP pelo SUAP (5 min)',
-          videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-        ),
         const CalloutSection(
           variant: 'info',
-          body: 'Dúvidas sobre documentação? Procure o serviço social do campus — atendimento humano e confidencial.',
+          body: 'As inscrições abrem por edital da DAE/CSP do campus. Confira o edital vigente e seus anexos antes de se inscrever. Dúvidas sobre documentação? Procure o serviço social do campus — atendimento humano e confidencial.',
         ),
         SourcesSection(
           heading: 'Canais oficiais',
           items: [
-            (label: 'Assistência Estudantil — IFSP', url: 'ptb.ifsp.edu.br/assistencia'),
+            (label: 'Inscrições e informações (DAE/CSP)', url: 'ptb.ifsp.edu.br/index.php/dae/csp'),
+            (label: 'Tutorial do PAP', url: 'ifsp.edu.br/tutorialpap'),
           ],
         ),
       ],
@@ -735,7 +730,7 @@ class FakeUniverseRepository implements UniverseRepository {
         SourcesSection(
           heading: 'Canais oficiais',
           items: [
-            (label: 'Editais de ensino — IFSP', url: 'ptb.ifsp.edu.br/editais'),
+            (label: 'Editais — IFSP Pirituba', url: 'ptb.ifsp.edu.br/index.php/editais'),
           ],
         ),
       ],
@@ -767,15 +762,20 @@ class FakeUniverseRepository implements UniverseRepository {
             'Apresente os resultados no congresso de Iniciação Científica.',
           ],
         ),
-        MediaSection(
-          mediaType: 'image',
+        StepsSection(
           heading: 'Linha do tempo da pesquisa',
-          caption: 'Do projeto ao congresso: como funciona um ano de IC',
+          items: [
+            'Edital de IC publicado e inscrições abertas.',
+            'Submissão do projeto com o orientador.',
+            'Avaliação e divulgação dos selecionados.',
+            'Execução da pesquisa (cerca de 12 meses) com bolsa mensal.',
+            'Entrega do relatório final e apresentação no congresso de IC.',
+          ],
         ),
         SourcesSection(
           heading: 'Canais oficiais',
           items: [
-            (label: 'Pesquisa e Inovação — IFSP', url: 'ptb.ifsp.edu.br/pesquisa'),
+            (label: 'Pesquisa e Inovação — IFSP', url: 'ifsp.edu.br/pesquisa-e-inovacao'),
           ],
         ),
       ],
@@ -809,7 +809,7 @@ class FakeUniverseRepository implements UniverseRepository {
         SourcesSection(
           heading: 'Canais oficiais',
           items: [
-            (label: 'Extensão — IFSP', url: 'ptb.ifsp.edu.br/extensao'),
+            (label: 'Extensão — IFSP', url: 'ifsp.edu.br/extensao'),
           ],
         ),
       ],
