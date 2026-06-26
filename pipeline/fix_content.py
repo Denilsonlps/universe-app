@@ -226,6 +226,83 @@ fix_curso("Redes de Computadores", {
     "ppcUrl": "https://cursos.ifsp.edu.br/campus/PTB",
 })
 
+PTB = "https://cursos.ifsp.edu.br/campus/PTB"
+
+fix_curso("Letras — Português / Inglês", {
+    "researchUrl": "https://drive.ifsp.edu.br/s/YTcEjKGS0krEV0B",
+    "curriculumUrl": "https://drive.ifsp.edu.br/s/BJ5aZCTZEFx6cTH",
+    "ppcUrl": PTB,
+})
+
+fix_curso("Administração", {
+    "about": ("Objetivo geral\n\n"
+        "O Técnico em Administração articula competências técnicas e conhecimentos historicamente "
+        "construídos a valores estéticos, éticos, políticos, culturais, científicos e tecnológicos. Forma um "
+        "profissional cidadão, preparado para refletir sobre questões sociais, orientado pelo respeito à "
+        "diversidade, à inclusão social, ao meio ambiente e aos direitos humanos.\n\n"
+        "Competências e habilidades\n\n"
+        "• Atuar na área administrativa de forma ética, inovadora e conforme a legislação, unindo teoria e prática;\n"
+        "• Desenvolver autonomia intelectual, pensamento crítico e protagonismo no aprendizado;\n"
+        "• Aplicar gestão organizacional, análise de indicadores, tomada de decisão e comportamento empreendedor;\n"
+        "• Compreender a sociedade e promover práticas inclusivas alinhadas aos direitos humanos;\n"
+        "• Preparar-se para o mundo do trabalho com responsabilidade social e ambiental;\n"
+        "• Ler, produzir textos e usar múltiplas linguagens com senso crítico."),
+    "researchUrl": "https://drive.ifsp.edu.br/s/OVUCAUUaO9nSrZr",
+    "curriculumUrl": "https://drive.ifsp.edu.br/s/xCA3fbWjLLWC1WL",
+    "ppcUrl": PTB,
+})
+
+fix_curso("Logística", {
+    "about": ("Objetivo geral\n\n"
+        "O Curso Técnico em Logística tem como objetivo formar profissionais e cidadãos técnicos de nível médio "
+        "competentes técnica, ética e politicamente, com elevado grau de responsabilidade social, capazes de "
+        "saber, saber fazer e gerenciar atividades e aspectos organizacionais e humanos, visando à produção de "
+        "bens, serviços e conhecimentos.\n\n"
+        "Competências e habilidades\n\n"
+        "• Planejar, programar, operar e controlar funções logísticas nas organizações;\n"
+        "• Integrar educação básica e profissional com atuação ética e sustentável;\n"
+        "• Usar criticamente as tecnologias de informação e comunicação;\n"
+        "• Respeitar direitos humanos, inclusão social e diversidade;\n"
+        "• Dominar a linguagem matemática aplicada à logística;\n"
+        "• Manter relações éticas e criativas com fornecedores, clientes e setores internos."),
+    "researchUrl": "https://drive.google.com/file/d/1hhKftSo4jXmjcUDHhf4Btlca3zdqsovq/view",
+    "curriculumUrl": "https://drive.google.com/file/d/1_b4GQTJwYgH3SwqdeVAc5QcD-RIB2jTZ/view",
+    "ppcUrl": PTB,
+})
+
+fix_curso("PROEJA — Administração", {
+    "about": ("Objetivo geral\n\n"
+        "O principal objetivo do curso é o resgate da cidadania do público de jovens e adultos, a partir do "
+        "reconhecimento da educação como direito e da articulação entre formação geral e formação para o "
+        "trabalho — especificamente para a atuação como Técnico em Administração (Resolução CNE/CEB nº 6/2012).\n\n"
+        "Competências e habilidades\n\n"
+        "• Flexibilizar métodos e organização para reduzir abandono e reprovação;\n"
+        "• Oferecer ensino significativo, respeitando os conhecimentos prévios dos estudantes;\n"
+        "• Fortalecer leitura, escrita e matemática para a aprendizagem contínua;\n"
+        "• Capacitar para a atuação como técnico em Administração, com foco no arranjo produtivo local;\n"
+        "• Integrar disciplinas técnicas e comuns com ênfase na interdisciplinaridade;\n"
+        "• Valorizar conhecimentos prévios, estimulando autoestima, pensamento crítico e cidadania."),
+    "researchUrl": "https://drive.google.com/file/d/10ZyW8FFzldpSlR14CAYtfrXq0poDnjji/view",
+    "curriculumUrl": "https://drive.google.com/file/d/1gL2YzsVwXk-1jDeNcqVCMGxtY2JQmjgH/view",
+    "ppcUrl": PTB,
+})
+
+fix_curso("Humanidades", {
+    "about": ("Objetivo geral\n\n"
+        "A Especialização em Humanidades — Educação, Política e Sociedade é um curso presencial que oferece "
+        "qualificação a licenciados e bacharéis das Ciências Humanas e áreas correlatas. Com grade "
+        "multidisciplinar, busca uma formação abrangente e atualizada, ampliando o capital cultural dos "
+        "pós-graduandos com base no debate acadêmico contemporâneo.\n\n"
+        "Competências e habilidades\n\n"
+        "• Formar a partir de uma perspectiva crítica e plural da sociedade contemporânea;\n"
+        "• Compreender o percurso histórico do último século e seus dilemas políticos, sociais e culturais;\n"
+        "• Avaliar as relações de poder nas diversas esferas da vida social;\n"
+        "• Apoiar licenciados no aprimoramento da atividade docente;\n"
+        "• Envolver os estudantes com a pesquisa acadêmica e a publicação científica."),
+    "curriculumUrl": "https://drive.ifsp.edu.br/s/qb7AGLXfExwwgRF",
+    "ppcUrl": PTB,
+})
+
 patch("contentDocs", "gov-cadunico", fix_cadunico)
 patch("contentDocs", "gov-idjovem", fix_idjovem)
 patch("contentDocs", "gov-isencoes", fix_isencoes)
