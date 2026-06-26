@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/models/course.dart';
 import '../../../data/courses.dart';
@@ -8,8 +9,38 @@ import '../../../shared/chrome/page_shell.dart';
 import '../../../shared/widgets/app_button.dart';
 import '../../../shared/widgets/app_card.dart';
 import '../../../shared/widgets/empty_state.dart';
+import '../../../shared/widgets/icon_tile.dart';
 import '../../../shared/widgets/list_row.dart';
 import '../../../shared/widgets/section_title.dart';
+
+Future<void> _abrir(String url) async {
+  await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+}
+
+/// Card-botão para abrir um documento do curso (grade, PPC, link de pesquisa).
+class _DocLink extends StatelessWidget {
+  final String label, subtitle, icon, url;
+  const _DocLink({required this.label, required this.subtitle, required this.icon, required this.url});
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: AppCard(
+        onTap: () => _abrir(url),
+        child: Row(children: [
+          Icon(appIcon(icon), size: 20, color: c.green700),
+          const SizedBox(width: 12),
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(label, style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700, color: c.ink)),
+            Text(subtitle, style: TextStyle(fontSize: 11.5, color: c.ink3)),
+          ])),
+          Icon(Icons.open_in_new, size: 16, color: c.ink3),
+        ]),
+      ),
+    );
+  }
+}
 
 /// Recebe o curso via `extra` do go_router (evita encoding de nomes com '/' e acentos).
 class CourseDetailScreen extends StatelessWidget {
@@ -49,9 +80,27 @@ class CourseDetailScreen extends StatelessWidget {
           const SizedBox(height: 18),
           const SectionTitle('Sobre o curso'),
           AppCard(child: Text(
-            'O curso de ${course.name} forma profissionais com sólida base teórica e prática, preparados para o mercado de trabalho e para a continuidade dos estudos. As aulas acontecem no período ${course.period.toLowerCase()}, no campus Pirituba.',
+            course.about ??
+                'O curso de ${course.name} forma profissionais com sólida base teórica e prática, preparados para o mercado de trabalho e para a continuidade dos estudos. As aulas acontecem no período ${course.period.toLowerCase()}, no campus Pirituba.',
             style: TextStyle(fontSize: 13.5, height: 1.6, color: c.ink2),
           )),
+          if (course.research != null) ...[
+            const SizedBox(height: 18),
+            const SectionTitle('Pesquisas e Extensões'),
+            AppCard(child: Text(course.research!, style: TextStyle(fontSize: 13.5, height: 1.6, color: c.ink2))),
+            if (course.researchUrl != null) ...[
+              const SizedBox(height: 10),
+              _DocLink(label: 'Grupo de pesquisa (CNPq)', subtitle: 'Abrir o espelho do grupo', icon: 'globe', url: course.researchUrl!),
+            ],
+          ],
+          if (course.curriculumUrl != null || course.ppcUrl != null) ...[
+            const SizedBox(height: 18),
+            const SectionTitle('Documentos do curso'),
+            if (course.curriculumUrl != null)
+              _DocLink(label: 'Grade curricular', subtitle: 'Disciplinas e matriz do curso', icon: 'doc', url: course.curriculumUrl!),
+            if (course.ppcUrl != null)
+              _DocLink(label: 'Projeto Pedagógico de Curso (PPC)', subtitle: 'Documento oficial do curso', icon: 'book', url: course.ppcUrl!),
+          ],
           const SizedBox(height: 18),
           const SectionTitle('Formas de ingresso'),
           for (final (t, s) in const [('Vestibular IFSP', 'Prova realizada no fim do ano'), ('SiSU / Enem', 'Parte das vagas via nota do Enem'), ('Transferência', 'Para alunos de outras instituições')])

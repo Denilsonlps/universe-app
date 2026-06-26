@@ -121,6 +121,48 @@ def fix_extensao(d):
             s["items"] = [{"label": "Extensão — IFSP", "url": "ifsp.edu.br/extensao"}]
 
 
+ADS_ABOUT = (
+    "Objetivo geral\n\n"
+    "O Curso Superior de Tecnologia em Análise e Desenvolvimento de Sistemas tem por objetivo "
+    "desenvolver as habilidades do estudante para atuar na área de Tecnologia da Informação, "
+    "tendo como referência os conhecimentos mais importantes da atividade profissional, e promover "
+    "o desenvolvimento de competências de raciocínio, objetividade e iniciativa, além de estimular "
+    "a cidadania e a responsabilidade social com espírito crítico, ético, inovador e empreendedor.\n\n"
+    "Competências e habilidades\n\n"
+    "• Analisar, projetar, desenvolver, testar, implantar e manter sistemas computacionais de informação;\n"
+    "• Avaliar, selecionar, especificar e utilizar metodologias, tecnologias e ferramentas da Engenharia "
+    "de Software, linguagens de programação e bancos de dados;\n"
+    "• Coordenar equipes de produção de software;\n"
+    "• Vistoriar, realizar perícia, avaliar e emitir laudo e parecer técnico em sua área de formação."
+)
+ADS_RESEARCH = (
+    "A pesquisa científica faz parte da cultura acadêmica do IFSP, com projetos desenvolvidos por "
+    "servidores(as) e estudantes. O principal grupo de pesquisa do curso de ADS é o GITES.\n\n"
+    "GITES — Grupo de Informática e Tecnologia em Educação e Sociedade\n\n"
+    "O GITES promove estudos, discussões e pesquisas focados em pesquisa e inovação tecnológica e no "
+    "aprimoramento de conhecimentos em informática e TIC no contexto da educação e da sociedade. Linhas "
+    "de pesquisa: educação a distância, algoritmos e programação, análise e mineração de dados, robótica, "
+    "aprendizagem de máquina, e gestão, análise e segurança de dados e informação."
+)
+
+
+def fix_curso(nome, dados):
+    achou = False
+    for d in db.collection("courses").where("name", "==", nome).stream():
+        d.reference.set(dados, merge=True)
+        achou = True
+        print(f"OK courses/{d.id} ({nome})")
+    if not achou:
+        print(f"!! curso não encontrado: {nome}")
+
+
+fix_curso("Análise e Desenvolvimento de Sistemas", {
+    "about": ADS_ABOUT, "research": ADS_RESEARCH,
+    "researchUrl": "https://dgp.cnpq.br/dgp/espelhogrupo/7528238432160652",
+    "curriculumUrl": "https://drive.ifsp.edu.br/s/CS3ah4zmKiNCYTy",
+    "ppcUrl": "https://drive.ifsp.edu.br/s/pjtMN8o6NIueODd",
+})
+
 patch("contentDocs", "gov-cadunico", fix_cadunico)
 patch("contentDocs", "gov-idjovem", fix_idjovem)
 patch("contentDocs", "gov-isencoes", fix_isencoes)
