@@ -14,7 +14,8 @@ class IfspScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final infoAsync = ref.watch(ifspInfoProvider);
-    const stats = [('1909', 'Fundado'), ('10+', 'Cursos'), ('1.2k', 'Alunos')];
+    final cursosCount = ref.watch(coursesProvider).valueOrNull?.length;
+    final stats = [('2016', 'Fundado'), (cursosCount == null ? '—' : '$cursosCount', 'Cursos'), ('1.2k', 'Alunos')];
     return PageShell(
       bodyPadding: EdgeInsets.zero,
       header: GreenHero(
