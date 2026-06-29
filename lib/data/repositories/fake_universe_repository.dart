@@ -43,7 +43,7 @@ class FakeUniverseRepository implements UniverseRepository {
           'de pesquisa: educação a distância, algoritmos e programação, análise e mineração de dados, robótica, '
           'aprendizagem de máquina, e gestão, análise e segurança de dados e informação.',
       researchUrl: 'https://dgp.cnpq.br/dgp/espelhogrupo/7528238432160652',
-      curriculumUrl: 'https://drive.ifsp.edu.br/s/CS3ah4zmKiNCYTy',
+      curriculumUrl: 'https://drive.ifsp.edu.br/s/CS3ah4zmKiNCYTy?dir=/&editing=false&openfile=true',
       ppcUrl: 'https://cursos.ifsp.edu.br/graduacao/curso/PTB130200/',
     ),
     Course(
@@ -208,6 +208,15 @@ class FakeUniverseRepository implements UniverseRepository {
       duration: '1,5 ano',
       period: 'Noturno',
       icon: 'award',
+      about: 'Objetivo geral\n\n'
+          'A Especialização em Gestão de Projetos prepara profissionais para gerenciar projetos complexos que '
+          'exigem conhecimento especializado — uma habilidade cada vez mais requisitada pelas empresas. O curso '
+          'é presencial, gratuito e aberto a profissionais de todas as áreas (não apenas Administração, Gestão '
+          'ou Engenharia), com ingresso anual em fevereiro.\n\n'
+          'O corpo docente é formado por mestres e doutores com experiência nos setores público, privado e do '
+          'terceiro setor. A escolha de um gerente de projetos capacitado aumenta muito as chances de sucesso '
+          'de um projeto.',
+      ppcUrl: 'https://drive.ifsp.edu.br/s/cHKckyfPDflmhK9',
     ),
     Course(
       name: 'Humanidades',
