@@ -68,7 +68,7 @@ class MenuDrawer extends StatelessWidget {
               if (isAdmin)
                 ListTile(
                   leading: Icon(appIcon('shield'), color: c.green700),
-                  title: Text('Painel do Setor de Estágios', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: c.ink)),
+                  title: Text('Painel de Administração', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: c.ink)),
                   trailing: Icon(appIcon('chevR'), size: 16, color: c.ink3),
                   onTap: () => onNavigate('/admin'),
                 ),

@@ -861,3 +861,42 @@ ordenava. `MAX_DIAS_NOTICIA=2` fixado no workflow de notícias.
 ### Pendência de teste
 Validar push de ponta a ponta no **APK** (build/install no celular) — `flutter build apk
 --release`. Push web fica para depois (VAPID + service worker).
+
+---
+
+## Ajustes de identidade e conteúdo (2026-07-01)
+
+Rodada de acabamento a partir da revisão do app pelo autor. Três frentes:
+
+### 1. CEP do IFSP corrigido (02610-002 → 05110-000)
+O endereço do campus estava com o CEP errado. A tela do IFSP é servida pela coleção
+**`ifspInfo`** do Firestore (não muda só com o código), então a correção foi em dois lugares:
+- **Produção:** script pontual `pipeline/fix_ifsp_cep.py` (get-modify-set, idempotente,
+  deep-replace do CEP em qualquer campo, inclusive no `detail` aninhado). Atualizou
+  `ifspInfo/endereco`.
+- **Seed/dev:** `fake_universe_repository.dart` (bloco `endereco`).
+- Decisão de escopo: **não** tornar a tela do IFSP editável pelo admin agora — ela usa
+  modelo próprio (`IfspInfo`/`IfspDetail`), separado do editor de `ContentDocs`; fica como
+  evolução futura.
+
+### 2. "Painel do Setor de Estágios" → "Painel de Administração"
+O painel já abrange vagas, notícias e páginas de conteúdo, então o rótulo ganhou um nome
+mais abrangente na UI (drawer, `admin_hub_screen`, `admin_panel_screen`) + teste
+`admin_gating_test` ajustado. **No TCC nada muda**: "Setor de Estágios" continua como o
+*ator/curador* nas seções §2.2/§2.4; apenas o rótulo visível ficou mais genérico.
+
+### 3. Ícone do app (Android + web)
+Faltava a identidade visual nos ícones (eram os padrões do Flutter). Gerado o ícone
+1024px **por código** (`scratchpad/gen_icon.py`, PIL) reproduzindo o `UniverseAppIcon` da
+marca — squircle verde com gradiente, "V" branco e o ponto verde-claro (cabeça do formando):
+- Fontes em `assets/icon/` (`app_icon.png` cheio + `app_icon_foreground.png` p/ adaptativo).
+- **`flutter_launcher_icons`** (dev dep) gerou: Android legado + **adaptativo**
+  (foreground/background `#00573A`), **web** (Icon-192/512 + maskable) e **favicon**.
+- Metadados genéricos corrigidos de brinde: rótulo Android **"Universe"**, `<title>` e
+  descrição da web, e `manifest.json` (nome real + tema verde `#00573A`).
+
+### Publicação
+- **Web:** `flutter build web --release` → `firebase deploy --only hosting` →
+  **https://universe-app-ifsp.web.app** (nova versão no ar, já com ícone/manifesto).
+- **APK:** `flutter build apk --release` (release novo com o ícone e o rename).
+- Verificação: `flutter analyze lib test` **sem issues**; `admin_gating_test` verde.

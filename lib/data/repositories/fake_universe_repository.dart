@@ -333,7 +333,7 @@ class FakeUniverseRepository implements UniverseRepository {
         key: 'endereco',
         icon: 'pin',
         title: 'Endereço',
-        body: 'Av. Mutinga, 951 — Pirituba\nSão Paulo / SP · CEP 02610-002',
+        body: 'Av. Mutinga, 951 — Pirituba\nSão Paulo / SP · CEP 05110-000',
       ),
     ),
     IfspInfo(
