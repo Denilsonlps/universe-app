@@ -12,7 +12,15 @@ class FirebaseAuthRepository implements AuthRepository {
       : AppUser(id: u.uid, name: u.displayName ?? (u.email?.split('@').first ?? 'Estudante'), email: u.email ?? '');
 
   @override
-  Stream<AppUser?> authState() => _auth.authStateChanges().map(_map);
+  Stream<AppUser?> authState() async* {
+    // No cold start, o primeiro evento de authStateChanges pode chegar como
+    // `null` mesmo havendo sessão salva em disco — o que derrubava a navegação
+    // de volta ao onboarding/login. Emitimos primeiro o usuário já restaurado
+    // (currentUser é síncrono após o Firebase.initializeApp) para refletir a
+    // sessão persistida de imediato; depois seguimos os eventos reais.
+    yield _map(_auth.currentUser);
+    yield* _auth.authStateChanges().map(_map);
+  }
 
   @override
   AppUser? get currentUser => _map(_auth.currentUser);
