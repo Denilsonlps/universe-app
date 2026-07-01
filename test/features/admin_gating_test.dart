@@ -21,13 +21,13 @@ void main() {
     await t.pumpWidget(host(false));
     await t.tap(find.text('abrir'));
     await t.pumpAndSettle();
-    expect(find.text('Painel do Setor de Estágios'), findsNothing);
+    expect(find.text('Painel de Administração'), findsNothing);
   });
 
   testWidgets('admin vê o painel admin no drawer', (t) async {
     await t.pumpWidget(host(true));
     await t.tap(find.text('abrir'));
     await t.pumpAndSettle();
-    expect(find.text('Painel do Setor de Estágios'), findsOneWidget);
+    expect(find.text('Painel de Administração'), findsOneWidget);
   });
 }

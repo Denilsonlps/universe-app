@@ -1,11 +1,11 @@
 {
-    "name": "universe_app",
-    "short_name": "universe_app",
+    "name": "Universe — IFSP Campus Pirituba",
+    "short_name": "Universe",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#00573A",
+    "theme_color": "#00573A",
+    "description": "App para estudantes do IFSP Campus Pirituba: campus, cursos, benefícios, estágios e notícias.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

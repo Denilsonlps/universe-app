@@ -55,6 +55,9 @@ dev_dependencies:
   custom_lint: ^0.7.6
   riverpod_lint: ^2.6.4
 
+  # Ícones do app (Android + web + favicon)
+  flutter_launcher_icons: ^0.14.1
+
 flutter:
   uses-material-design: true
 
@@ -62,3 +65,17 @@ flutter:
     - assets/images/
     - assets/icons/
     - assets/svg/
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/icon/app_icon.png"
+  adaptive_icon_background: "#00573A"
+  adaptive_icon_foreground: "assets/icon/app_icon_foreground.png"
+  min_sdk_android: 21
+  remove_alpha_ios: true
+  web:
+    generate: true
+    image_path: "assets/icon/app_icon.png"
+    background_color: "#00573A"
+    theme_color: "#00573A"

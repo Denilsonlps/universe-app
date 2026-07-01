@@ -53,7 +53,7 @@ class _AdminPanelScreenState extends ConsumerState<AdminPanelScreen> {
       ),
       body: PageShell(
         bodyPadding: const EdgeInsets.all(16),
-        header: PageHeader(title: 'Painel — Setor de Estágios', onBack: () => context.pop()),
+        header: PageHeader(title: 'Painel de Administração', onBack: () => context.pop()),
         body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Container(
             padding: const EdgeInsets.all(4),

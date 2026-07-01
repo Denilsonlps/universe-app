@@ -25,7 +25,7 @@ class AdminHubScreen extends ConsumerWidget {
     ];
     return PageShell(
       bodyPadding: const EdgeInsets.all(16),
-      header: GreenHero(title: 'Painel administrativo', subtitle: 'Setor de Estágios e Comunicação', icon: 'shield', onBack: () => context.pop()),
+      header: GreenHero(title: 'Painel de Administração', subtitle: 'Setor de Estágios e Comunicação', icon: 'shield', onBack: () => context.pop()),
       body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text('O que você publica aparece para os alunos na hora.', style: TextStyle(fontSize: 12.5, color: c.ink3)),
         const SizedBox(height: 14),
