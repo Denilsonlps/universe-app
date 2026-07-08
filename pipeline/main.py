@@ -1,3 +1,16 @@
+"""Pipeline de VAGAS DE ESTÁGIO — camada de processamento externo (Python + IA).
+
+Fluxo (executado de forma agendada no GitHub Actions, sem servidor próprio):
+  1. Coleta vagas de estágio na API pública da Gupy (JSON).
+  2. Filtra por tipo (estágio) e localização (remota, ou presencial/híbrida em SP).
+  3. Envia a descrição de cada vaga ao Google Gemini, que CLASSIFICA o curso do
+     campus e EXTRAI/RESUME os dados (resumo, requisitos, bolsa, benefícios).
+  4. Grava o resultado em `vagas_sugeridas` (status "pendente"), para a curadoria
+     humana aprovar/editar/recusar no app antes de publicar.
+  5. Encerra automaticamente vagas já publicadas que saíram do ar (RF034).
+
+Nenhuma vaga é publicada automaticamente: a IA apenas SUGERE; a decisão é humana.
+"""
 import os, sys, time, json, re
 # Console do Windows (cp1252) não imprime emojis; força UTF-8 na saída.
 try:
@@ -82,6 +95,9 @@ def init_gemini():
     return genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 
+# Instrução (prompt) enviada ao Gemini: define a TAREFA (classificar o curso +
+# extrair/estruturar os campos) e exige a resposta em JSON. Os cursos válidos são
+# injetados no texto para o modelo escolher exatamente um deles.
 PROMPT_EXTRACAO = """Você extrai dados de uma vaga de estágio para um app acadêmico.
 Cursos do campus (use EXATAMENTE um destes em "course"): {cursos}
 Se nenhum servir, use "Todos".
@@ -97,6 +113,15 @@ Use "" ou [] quando não houver a informação. Responda só o JSON."""
 
 
 def extrair_estruturado(client, texto: str) -> dict:
+    """Envia a descrição bruta da vaga ao Gemini e retorna os campos estruturados.
+
+    `response_mime_type="application/json"` força o modelo a responder em JSON
+    (mais confiável de parsear). Faz até 4 tentativas com backoff quando há
+    limite de taxa (429 "retry in N") ou sobrecarga temporária (503). Se tudo
+    falhar, devolve um dicionário vazio (curso "Todos") para NÃO interromper o
+    lote por causa de uma única vaga problemática. `map_course` normaliza o
+    curso devolvido pelo modelo para um dos rótulos válidos do app.
+    """
     prompt = PROMPT_EXTRACAO.format(cursos=", ".join(CURSOS_APP), texto=(texto or "")[:6000])
     for tentativa in range(4):
         try:
@@ -238,6 +263,7 @@ def main():
             print(f"⏭️  Pulando (já tratada): {titulo}")
             continue
         print(f"🤖 Enriquecendo: {titulo}")
+        # Chama a IA: classifica o curso e estrutura/resume a descrição da vaga.
         extra = extrair_estruturado(client, job.get("description", ""))
         doc = {
             "role": titulo,
@@ -248,6 +274,8 @@ def main():
             "source": "gupy-auto", "scrapedAt": int(time.time() * 1000), "status": "pendente",
             **extra,
         }
+        # Grava como SUGESTÃO pendente — só vira conteúdo público (coleção
+        # `internships`) depois que o admin aprovar no painel (curadoria humana).
         # ja_tratada() já barrou aprovadas/recusadas; set limpo evita ressuscitar tombstone.
         db.collection("vagas_sugeridas").document(vid).set(doc)
         novas += 1

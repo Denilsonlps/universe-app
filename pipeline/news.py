@@ -1,3 +1,17 @@
+"""Pipeline de NOTÍCIAS — camada de processamento externo (Python + IA).
+
+Fluxo (executado de forma agendada no GitHub Actions):
+  1. Lê feeds RSS de fontes oficiais/confiáveis (G1 Educação + buscas no Google News).
+  2. Pré-filtra por palavras-chave e por janela de recência (últimos N dias).
+  3. Envia título/resumo ao Google Gemini, que decide a RELEVÂNCIA para o
+     estudante, CLASSIFICA a categoria (Campus, SiSU, Enem, Concurso, Geral) e
+     gera um RESUMO curto e neutro.
+  4. Grava as relevantes em `noticias_sugeridas` (status "pendente"), para a
+     curadoria humana revisar/publicar no app.
+
+Deduplicação por título normalizado: a mesma matéria vinda de feeds/links
+diferentes colapsa em um único documento, evitando sugestões repetidas.
+"""
 import os, sys, time, json, re, hashlib, unicodedata, urllib.parse
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -76,6 +90,9 @@ def _entry_data(entry, fonte_padrao):
     return titulo, link, resumo_feed, dt_ms, img, veiculo
 
 
+# Instrução (prompt) enviada ao Gemini: além de resumir e categorizar, o modelo
+# atua como um FILTRO DE RELEVÂNCIA (relevante=true/false), descartando conteúdo
+# sem utilidade prática para o estudante. "Na dúvida, relevante=false" reduz ruído.
 PROMPT = """Você cura notícias para um app de estudantes do IFSP Campus Pirituba.
 Categorias possíveis: {cats}.
 
@@ -98,6 +115,13 @@ Responda só o JSON."""
 
 
 def avaliar(client, titulo, resumo):
+    """Pergunta ao Gemini se a notícia é relevante e obtém categoria + resumo.
+
+    Mesmo padrão do pipeline de vagas: saída em JSON, até 4 tentativas com backoff
+    para limite de taxa/sobrecarga, e fallback seguro (relevante=False) se falhar,
+    para não publicar algo sem avaliação. A categoria é validada contra a lista
+    permitida (CATEGORIAS); fora dela, cai em "Geral".
+    """
     p = PROMPT.format(cats=", ".join(CATEGORIAS), titulo=titulo, resumo=resumo[:2000])
     for tentativa in range(4):
         try:
@@ -167,6 +191,7 @@ def main():
             vistos.add(vid)
             if ja_tratada(db, vid):
                 continue
+            # IA avalia relevância + categoria + resumo; descarta o que não for útil.
             aval = avaliar(client, titulo, resumo_feed)
             if not aval["relevante"]:
                 continue

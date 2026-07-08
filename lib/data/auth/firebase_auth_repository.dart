@@ -3,6 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../models/app_user.dart';
 import 'auth_repository.dart';
 
+/// Implementação de PRODUÇÃO do [AuthRepository] sobre o Firebase Authentication.
+///
+/// Converte o `User` do Firebase no modelo [AppUser] do app. O login/registro
+/// e a persistência de sessão são delegados ao SDK do Firebase. Nos testes, é
+/// substituída pelo `FakeAuthRepository`.
 class FirebaseAuthRepository implements AuthRepository {
   FirebaseAuthRepository(this._auth);
   final FirebaseAuth _auth;

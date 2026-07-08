@@ -17,6 +17,11 @@ final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 @pragma('vm:entry-point')
 Future<void> _fcmBackgroundHandler(RemoteMessage message) async {}
 
+/// Ponto de entrada do app. Sequência de inicialização:
+/// 1) garante o binding do Flutter;
+/// 2) inicializa o Firebase (Auth, Firestore, Storage, Messaging);
+/// 3) registra o handler de mensagens em background (apenas fora do web);
+/// 4) sobe o app dentro de um `ProviderScope` (raiz do Riverpod).
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -24,6 +29,9 @@ Future<void> main() async {
   runApp(const ProviderScope(child: UniverseApp()));
 }
 
+/// Raiz do aplicativo. Configura o `MaterialApp.router` (tema + rotas),
+/// escuta o estado de autenticação para registrar/limpar o token de push e
+/// instala os handlers de notificação em primeiro plano (foreground).
 class UniverseApp extends ConsumerStatefulWidget {
   const UniverseApp({super.key});
   @override
