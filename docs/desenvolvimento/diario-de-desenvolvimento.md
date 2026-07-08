@@ -900,3 +900,52 @@ marca — squircle verde com gradiente, "V" branco e o ponto verde-claro (cabeç
   **https://universe-app-ifsp.web.app** (nova versão no ar, já com ícone/manifesto).
 - **APK:** `flutter build apk --release` (release novo com o ícone e o rename).
 - Verificação: `flutter analyze lib test` **sem issues**; `admin_gating_test` verde.
+
+---
+
+## Investigação: login não persiste + notificações (2026-07-01)
+
+Relato do autor (aparelho **Xiaomi/Redmi, HyperOS**): ao fechar o app, o login se
+perdia (voltava ao onboarding) e as notificações pararam de chegar. Depuração
+sistemática (skill `systematic-debugging`), com evidências antes de qualquer correção.
+
+### Diagnóstico (causa raiz única)
+Três evidências convergentes provaram **uma só causa**:
+1. **Logcat no aparelho:** `[UNIVERSE-AUTH] cold-start currentUser=null` após fechar —
+   a sessão do Firebase Auth **não é restaurada** do disco.
+2. **Cloud Function `onNotificationCreated`:** dispara e acha o token, mas o envio falha
+   com **`messaging/registration-token-not-registered`** — o token FCM **morreu**.
+3. O código **não** deleta token nem instância (`grep` por `deleteToken`/`deleteInstance`:
+   nada). Logo, o apagamento é **externo**.
+
+Sessão do Auth **e** token FCM ficam no armazenamento local do Firebase (Installations).
+Os dois sumindo ao fechar ⇒ **o HyperOS/MIUI limpa o estado local do app** ao removê-lo
+dos recentes (comportamento conhecido de ROMs OEM agressivas; apps não "confiáveis" pela
+ROM não recebem autostart/persistência). **Não é bug do app** — regrediu quando o app
+passou a usar FCM/segundo plano (SP7b) e a ROM passou a restringi-lo.
+
+### Prova em emulador (Android limpo, API 37)
+Mesmo APK, num emulador sem MIUI: login → **force-stop** (PID muda) → reabrir →
+`cold-start currentUser=<uid>` e app abre **logado na Home**; push **chega** normalmente.
+O autor repetiu o teste manualmente (fechando pelos recentes) com o mesmo resultado.
+Confirma: **código correto; a causa é o gerenciamento do HyperOS.**
+
+### Mitigação (aparelho)
+Para o app no Xiaomi: **Autostart ativado**, **Bateria = Sem restrições** e **travar nos
+Recentes**. Resolve login **e** notificações (mesma causa). Vale como *limitação conhecida*
+do TCC (ROMs OEM agressivas), com mitigação documentada.
+
+### Correções de código (robustez, com testes)
+Independentes da limitação do device, mas corretas:
+- **`redirect` do router** agora espera as duas fontes assíncronas (auth + onboarding
+  visto) assentarem antes de decidir a rota — corrige a **corrida** em que, no arranque,
+  o app ia para `/onboarding` antes de o `SharedPreferences` carregar e **ficava preso**.
+  Lógica extraída para a função pura `authRedirect` (7 testes cobrindo os estados).
+- **`onboardingSeenProvider`** passou a expor `bool?` (`null` = carregando).
+- **`authState()`** semeia o stream com `_auth.currentUser` no cold start (evita o `null`
+  inicial do `authStateChanges` derrubar a navegação).
+- Verificação: `flutter analyze lib test` **sem issues**; **72 testes** verdes.
+
+### Publicação
+- Build limpa: `flutter build apk --release` + `flutter build web --release` →
+  `firebase deploy --only hosting` (**https://universe-app-ifsp.web.app**).

@@ -52,30 +52,37 @@ import 'transitions.dart';
 
 const _authRoutes = {'/onboarding', '/login', '/register'};
 
+/// Decisão de rota, isolada para ser testável sem widgets.
+///
+/// [auth] estado da sessão; [onbSeen] se o onboarding já foi visto
+/// (`null` = ainda carregando do disco). Enquanto qualquer uma das duas
+/// fontes assíncronas não assentou, mantém o usuário no /splash — isso evita
+/// a corrida em que o app, no arranque, mandava para /onboarding antes de o
+/// SharedPreferences carregar (e ficava preso lá).
+String? authRedirect(AsyncValue<AppUser?> auth, bool? onbSeen, String loc) {
+  if (auth.isLoading || onbSeen == null) return '/splash';
+  final loggedIn = auth.valueOrNull != null;
+  if (!loggedIn) {
+    if (_authRoutes.contains(loc)) return null;
+    return onbSeen ? '/login' : '/onboarding';
+  }
+  if (loc == '/splash' || _authRoutes.contains(loc)) return '/home';
+  return null;
+}
+
 final routerProvider = Provider<GoRouter>((ref) {
   final authListenable = ValueNotifier<AsyncValue<AppUser?>>(const AsyncValue.loading());
   ref.onDispose(authListenable.dispose);
   ref.listen(authStateProvider, (_, next) => authListenable.value = next, fireImmediately: true);
 
-  final onbListenable = ValueNotifier<bool>(false);
+  final onbListenable = ValueNotifier<bool?>(null);
   ref.onDispose(onbListenable.dispose);
   ref.listen(onboardingSeenProvider, (_, next) => onbListenable.value = next, fireImmediately: true);
 
   return GoRouter(
     initialLocation: '/splash',
     refreshListenable: Listenable.merge([authListenable, onbListenable]),
-    redirect: (context, state) {
-      final auth = authListenable.value;
-      if (auth.isLoading) return '/splash';
-      final loggedIn = auth.valueOrNull != null;
-      final loc = state.matchedLocation;
-      if (!loggedIn) {
-        if (_authRoutes.contains(loc)) return null;
-        return onbListenable.value ? '/login' : '/onboarding';
-      }
-      if (loc == '/splash' || _authRoutes.contains(loc)) return '/home';
-      return null;
-    },
+    redirect: (context, state) => authRedirect(authListenable.value, onbListenable.value, state.matchedLocation),
     routes: [
       GoRoute(path: '/splash', builder: (c, s) => const SplashScreen()),
       GoRoute(path: '/onboarding', builder: (c, s) => const OnboardingScreen()),

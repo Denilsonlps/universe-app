@@ -12,6 +12,12 @@ import '../models/noticia_sugerida.dart';
 import '../models/app_notification.dart';
 import 'universe_repository.dart';
 
+/// Implementação de PRODUÇÃO do [UniverseRepository] sobre o Cloud Firestore.
+///
+/// A leitura usa `snapshots()` (streams), então o app sincroniza em TEMPO REAL:
+/// o que o admin publica aparece na hora para o aluno. A escrita (`upsert…`/
+/// `delete…`) é usada pelo painel de administração. Nos testes, esta classe é
+/// trocada pelo `FakeUniverseRepository` (em memória, sem rede).
 class FirestoreUniverseRepository implements UniverseRepository {
   FirestoreUniverseRepository(this._db);
   final FirebaseFirestore _db;
